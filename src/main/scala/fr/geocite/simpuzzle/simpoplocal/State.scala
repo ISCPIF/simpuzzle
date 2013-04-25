@@ -71,7 +71,7 @@ object State {
 
       //println("I register ( " + this.id + ")  copy nb innovation = " + innovations.size + " at date " + date )
       /** Compute the new ressource based on a list of innovations the city recently get after adoption and/or creation **/
-      val newRessources = computeResource(availableResource, innovations, innovationFactor)
+      val newResources = computeResource(availableResource, innovations, innovationFactor)
 
       // println("AvailableRessource = " + availableResource + " transform into " + newRessources + " innovationFactor : " + innovationFactor + " after " + innovations.size  + " impact")
 
@@ -85,7 +85,7 @@ object State {
 
       val newCity =
         this.copy(
-          availableResource = newRessources,
+          availableResource = newResources,
           tradePlace = newTradeplace
         )
 
