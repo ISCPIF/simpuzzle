@@ -17,6 +17,7 @@
 
 package fr.geocite.simpuzzle.simpoplocal
 
-trait EndingCondition extends fr.geocite.simpuzzle.EndingCondition with State {
-
+trait TimeEndingCondition extends EndingCondition {
+  def maxDate: Int = 4000
+  def ended(state: STATE) = state.date >= maxDate
 }
