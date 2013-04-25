@@ -17,12 +17,21 @@
 
 package fr.geocite.simpuzzle
 
-trait StepByStep extends State with InitialState with Step with EndingCondition {
+trait StepByStep <: State with InitialState with Step with EndingCondition {
 
   def states =
-    Iterator.iterate(initial)(step)
+    Iterator.iterate(initial)(step).takeWhile(!ended(_))
 
-  def run =
-    states.dropWhile(!ended(_)).next
+  def run = {
+    def last(i: Iterator[STATE]): STATE = {
+      val e = i.next
+      if(i.hasNext) last(i)
+      else e
+    }
+    last(states)
+  }
+
+
+    //states.dropWhile(!ended(_)).next
 
 }
