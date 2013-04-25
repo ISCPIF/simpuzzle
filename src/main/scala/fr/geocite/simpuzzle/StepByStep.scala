@@ -31,7 +31,4 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
     last(states)
   }
 
-
-    //states.dropWhile(!ended(_)).next
-
 }
