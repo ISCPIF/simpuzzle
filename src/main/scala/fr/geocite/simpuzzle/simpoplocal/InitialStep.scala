@@ -24,7 +24,7 @@ import math._
 
 trait InitialStep extends fr.geocite.simpuzzle.InitialState with State with EuclideanNeighborhood {
 
-  def cityFile: File
+  def cityFile: Option[File] = None
 
   def maxAbundance: Double
 
@@ -34,6 +34,9 @@ trait InitialStep extends fr.geocite.simpuzzle.InitialState with State with Eucl
   def rangeRadiusClass3 = 5.0
 
   lazy val initial = {
+
+    val input =
+      cityFile.map(Source.fromFile).getOrElse(Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("init-situation.txt")))
 
     /* Read File to create city, one line by city
      * 0 > id
@@ -45,7 +48,7 @@ trait InitialStep extends fr.geocite.simpuzzle.InitialState with State with Eucl
      * 7 > class of city
      */
     val cities =
-      Source.fromFile(cityFile).getLines.map {
+      input.getLines.map {
         line => line.slice(1, line.size - 1).split("\\s").map(_.toDouble)
       }.map {
         c =>
