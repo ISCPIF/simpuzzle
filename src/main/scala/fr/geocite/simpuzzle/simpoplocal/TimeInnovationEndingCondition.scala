@@ -24,15 +24,6 @@ trait TimeInnovationEndingCondition extends EndingCondition {
 
   /**
    * @param cities list of cities used to compute this indicator
-   * @return sum of population for this list of cities
-   */
-  def maxCities(state: STATE): Double =
-    state.cities.map {
-      _.population
-    }.max
-
-  /**
-   * @param cities list of cities used to compute this indicator
    * @return sum of all innovation stored in multiple tradeplaces/cities
    */
   def maxInnovation(state: STATE): Double =
@@ -42,7 +33,6 @@ trait TimeInnovationEndingCondition extends EndingCondition {
 
   def ended(state: STATE) = {
     val maxInnov = maxInnovation(state)
-    val maxCity = maxCities(state)
 
     // 3a - Break the simulation loop if one of these conditions is true
     state.date >= 4000 || maxInnov > maxInnovation

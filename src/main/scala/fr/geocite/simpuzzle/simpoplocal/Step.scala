@@ -20,7 +20,7 @@ package fr.geocite.simpuzzle.simpoplocal
 import State._
 import util.Random
 
-trait Step extends fr.geocite.simpuzzle.Step with State with InitialStep {
+trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
 
   def distanceF: Double
   def pSuccessAdoption: Double

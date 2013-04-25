@@ -22,7 +22,7 @@ import io.Source
 import State._
 import math._
 
-trait InitialStep extends fr.geocite.simpuzzle.InitialState with State with EuclideanNeighborhood {
+trait InitialState extends fr.geocite.simpuzzle.InitialState with State with EuclideanNeighborhood {
 
   def cityFile: Option[File] = None
 
