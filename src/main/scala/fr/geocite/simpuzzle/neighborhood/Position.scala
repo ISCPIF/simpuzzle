@@ -17,7 +17,7 @@
 
 package fr.geocite.simpuzzle.neighborhood
 
-trait Position <: LocalisedCities {
+trait Position {
   def x: Double
   def y: Double
 }
