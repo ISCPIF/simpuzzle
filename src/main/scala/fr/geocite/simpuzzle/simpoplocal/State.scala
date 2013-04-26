@@ -21,6 +21,7 @@ import util.Random
 import java.util.concurrent.atomic.AtomicInteger
 import Util._
 import scala.annotation.tailrec
+import fr.geocite.simpuzzle.neighborhood._
 
 object State {
 
@@ -33,7 +34,20 @@ object State {
       resourceMax: Double,
       percolationIndex: Int,
       cityClass: Int,
-      tradePlace: TradePlace) {
+      tradePlace: TradePlace) extends Position with Radius with Id {
+
+
+  def rangeRadiusClass1 = 20.0
+  def rangeRadiusClass2 = 10.0
+  def rangeRadiusClass3 = 5.0
+
+    def radius =
+      cityClass match {
+        case 1 => rangeRadiusClass1
+        case 2 => rangeRadiusClass2
+        case 3 => rangeRadiusClass3
+        case _ => error(s"Invalid city class $cityClass")
+      }
 
     /**
      *  Recursively compute the new ressource value given an limited innovations list
@@ -142,7 +156,7 @@ object State {
      * @return A tuple whith current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
      */
     def tryToAdopt(
-      localNetwork: Iterable[CityDist],
+      localNetwork: Iterable[DistanceNeighborhood.Neighbor[City]],
       state: Seq[City],
       distanceF: Double,
       pSuccessAdoption: Double,
@@ -157,7 +171,7 @@ object State {
             tradePlace.innovations.size > 0 &&
               tradePlace.computeInteractionInterCities(
                 population,
-                state(neighbor.cityId).population,
+                state(neighbor.neighbor.id).population,
                 neighbor.distance,
                 distanceF,
                 pSuccessAdoption
@@ -168,7 +182,7 @@ object State {
         innovatingPoolByCity.flatMap {
           neighbor =>
             // take one random unique (after filtering by root innovation id) innovation into pool of city
-            tradePlace.filterInnovations(state(neighbor.cityId).tradePlace.innovations).randomElement
+            tradePlace.filterInnovations(state(neighbor.neighbor.id).tradePlace.innovations).randomElement
         }.groupBy(_.rootId).map {
           case (k, v) => v.toIndexedSeq.randomElement.get
         }

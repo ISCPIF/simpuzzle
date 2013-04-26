@@ -20,18 +20,15 @@ package fr.geocite.simpuzzle.simpoplocal
 import java.io.File
 import io.Source
 import State._
-import math._
+import fr.geocite.simpuzzle.neighborhood._
 
-trait InitialState extends fr.geocite.simpuzzle.InitialState with State with EuclideanNeighborhood {
+trait InitialState <: fr.geocite.simpuzzle.InitialState with State with DistanceNeighborhood with EuclideanDistance {
 
   def cityFile: Option[File] = None
 
   def maxAbundance: Double
 
   def meanPopulation: Double = 80.0
-  def rangeRadiusClass1 = 20.0
-  def rangeRadiusClass2 = 10.0
-  def rangeRadiusClass3 = 5.0
 
   lazy val initial = {
 
@@ -89,17 +86,17 @@ trait InitialState extends fr.geocite.simpuzzle.InitialState with State with Euc
         city.cityClass match {
           case 1 =>
             //All city of class 1 connected to all city of class 1
-            neighbors(citiesClass1, city, rangeRadiusClass1)
+            neighbors(citiesClass1, city)
           case 2 =>
             //All city of class 2 connected to all other cities (class 3 to 1) in porteRadiusClass2
-            neighbors(citiesClass1, city, rangeRadiusClass2) ++
-              neighbors(citiesClass2, city, rangeRadiusClass2) ++
-              neighbors(citiesClass3, city, rangeRadiusClass2)
+            neighbors(citiesClass1, city) ++
+              neighbors(citiesClass2, city) ++
+              neighbors(citiesClass3, city)
           case 3 =>
             //All city of class 3 connected to all other cities (class 3 to 1) in porteRadiusClass3
-            neighbors(citiesClass1, city, rangeRadiusClass3) ++
-              neighbors(citiesClass2, city, rangeRadiusClass3) ++
-              neighbors(citiesClass3, city, rangeRadiusClass3)
+            neighbors(citiesClass1, city) ++
+              neighbors(citiesClass2, city) ++
+              neighbors(citiesClass3, city)
         }
     }.toIndexedSeq
   }
