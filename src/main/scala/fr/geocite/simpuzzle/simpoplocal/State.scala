@@ -36,10 +36,9 @@ object State {
       cityClass: Int,
       tradePlace: TradePlace) extends Position with Radius with Id {
 
-
-  def rangeRadiusClass1 = 20.0
-  def rangeRadiusClass2 = 10.0
-  def rangeRadiusClass3 = 5.0
+    def rangeRadiusClass1 = 20.0
+    def rangeRadiusClass2 = 10.0
+    def rangeRadiusClass3 = 5.0
 
     def radius =
       cityClass match {
@@ -74,13 +73,11 @@ object State {
      *
      * @param innovations List of innovations used to compute new city ressources
      * @param innovationFactor Innovation factor which help to compute impact of innovation for city ressources
-     * @param innovationLife Time of activation for innovation
      * @return A city updated with innovations and the history of all exchanges : trade place register all the new innovations,
      *         and multiple impact on ressources is applicated
      */
     def updatedInnovations(innovations: Iterable[Innovation],
       innovationFactor: Double,
-      innovationLife: Int,
       date: Int) = {
 
       //println("I register ( " + this.id + ")  copy nb innovation = " + innovations.size + " at date " + date )
@@ -93,8 +90,7 @@ object State {
         tradePlace.registerCopyOfInnovations(
           innovations,
           this,
-          date,
-          innovationLife
+          date
         )
 
       val newCity =
@@ -112,12 +108,10 @@ object State {
     /**
      *
      * @param innovationFactor
-     * @param innovationLife
      * @param date
      * @return
      */
     def updatedInnovations(innovationFactor: Double,
-      innovationLife: Int,
       date: Int) = {
 
       //println("I register ( " + this.id + ")  ONE original innovation at date " + date)
@@ -126,7 +120,7 @@ object State {
       //println("AvailableRessource = " + availableResource + " transform into " + newRessources + " innovationFactor : " + innovationFactor + " after only one impact")
 
       val (newTradePlace, newExchange) =
-        tradePlace.registerOriginalInnovation(this.id, date, innovationLife)
+        tradePlace.registerOriginalInnovation(this.id, date)
 
       val newCity =
         this.copy(
@@ -150,7 +144,6 @@ object State {
      * @param distanceF Parameter of friction between exchange inter-cities
      * @param pSuccessAdoption Probability of adoption
      * @param innovationFactor Impact factor of innovation on the ressource
-     * @param innovationLife Fix the life of innovation in the model
      * @param date The time in simulation
      * @param aprng The random number generator object
      * @return A tuple whith current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
@@ -161,7 +154,6 @@ object State {
       distanceF: Double,
       pSuccessAdoption: Double,
       innovationFactor: Double,
-      innovationLife: Int,
       date: Int)(implicit aprng: Random): (City, List[ExchangeLine]) = {
 
       // recover all neighbors cities with innovation and which success the interaction test
@@ -191,7 +183,6 @@ object State {
       updatedInnovations(
         innovationCaptured,
         innovationFactor,
-        innovationLife,
         date
       )
     }
@@ -200,18 +191,16 @@ object State {
      *
      * @param innovationFactor
      * @param pSucessInteraction
-     * @param innovationLife
      * @param date
      * @param aprng
      * @return
      */
     def tryToInnove(innovationFactor: Double,
       pSucessInteraction: Double,
-      innovationLife: Int,
       date: Int)(implicit aprng: Random) = {
 
       if (tradePlace.computeInteractionIntraCities(population, pSucessInteraction))
-        updatedInnovations(innovationFactor, innovationLife, date)
+        updatedInnovations(innovationFactor, date)
       else (this, List.empty)
     }
 
@@ -267,12 +256,11 @@ object State {
      * Create and register one innovation by turn
      * @param city
      * @param time
-     * @param innovationLife
      * @return
      */
-    def registerOriginalInnovation(city: Int,
-      time: Int,
-      innovationLife: Int) = {
+    def registerOriginalInnovation(
+      city: Int,
+      time: Int) = {
 
       val innovation = new Innovation(city = city, date = time)
 
@@ -292,14 +280,12 @@ object State {
      * @param newInnovations
      * @param city
      * @param time
-     * @param innovationLife
      * @return
      */
     def registerCopyOfInnovations(
       newInnovations: Iterable[Innovation],
       city: City,
-      time: Int,
-      innovationLife: Int) = {
+      time: Int) = {
 
       // Need to recopy innovation object to store hierarchical diffusion
       // ( before, after )

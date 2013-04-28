@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 25/04/13 Romain Reuillon
+ * Copyright (C) 28/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,19 +15,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.neighborhood
+package fr.geocite.simpuzzle.simpoplocal
 
-object DistanceNeighborhood {
-  case class Neighbor[T](neighbor: T, distance: Double)
-}
+import State._
 
-trait DistanceNeighborhood <: Distance {
+trait LimitedInnovationLife extends InnovationLife {
 
-  def neighbors[T <: Position with Radius with Id](all: Seq[T], center: T) =
-    all.map {
-      c => DistanceNeighborhood.Neighbor(c, distance(center, c))
-    }.filter {
-      n => n.distance < center.radius && center.id != n.neighbor.id
-    }
+  def innovationLife: Int
 
+  def deprecateInnovations(city: City, date: Int) =
+    city.copy(
+      tradePlace =
+        city.tradePlace.copy(
+          innovations =
+            city.tradePlace.innovations.filter {
+              innovation => ((date - innovation.date) <= innovationLife)
+            }
+        )
+    )
 }

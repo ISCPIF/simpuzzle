@@ -25,7 +25,7 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
   def run = {
     def last(i: Iterator[STATE]): STATE = {
       val e = i.next
-      if(i.hasNext) last(i)
+      if (i.hasNext) last(i)
       else e
     }
     last(states)

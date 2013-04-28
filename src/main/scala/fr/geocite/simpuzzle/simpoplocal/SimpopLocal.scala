@@ -22,7 +22,6 @@ import java.io.File
 
 object SimpopLocal {
   def apply(
-    innovationLife: Int,
     maxInnovation: Int,
     maxAbundance: Double,
     distanceF: Double,
@@ -30,11 +29,10 @@ object SimpopLocal {
     pSuccessAdoption: Double,
     innovationFactor: Double) = {
 
-    val (_innovationLife, _maxInnovation, _maxAbundance, _distanceF, _pSuccessInteraction, _pSuccessAdoption, _innovationFactor) =
-      (innovationLife, maxInnovation, maxAbundance, distanceF, pSuccessInteraction, pSuccessAdoption, innovationFactor)
+    val (_maxInnovation, _maxAbundance, _distanceF, _pSuccessInteraction, _pSuccessAdoption, _innovationFactor) =
+      (maxInnovation, maxAbundance, distanceF, pSuccessInteraction, pSuccessAdoption, innovationFactor)
 
-    new StepByStep with InitialState with Step with TimeInnovationEndingCondition {
-      def innovationLife = _innovationLife
+    new StepByStep with InitialState with Step with TimeInnovationEndingCondition with UnlimitedInnovationLife {
       def maxInnovation = _maxInnovation
       def maxAbundance = _maxAbundance
       def distanceF = _distanceF

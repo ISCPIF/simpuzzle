@@ -20,13 +20,12 @@ package fr.geocite.simpuzzle.simpoplocal
 import State._
 import util.Random
 
-trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
+trait Step extends fr.geocite.simpuzzle.Step with State with InitialState with InnovationLife {
 
   def distanceF: Double
   def pSuccessAdoption: Double
   def pSuccessInteraction: Double
   def innovationFactor: Double
-  def innovationLife: Int
 
   def ratePopulation = 0.02
 
@@ -63,15 +62,7 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
     val city: City = state(cityId)
 
     // Filter city, recreate trade place with only innovation life , we remove all innovation which have life equal to 0
-    val filteredCity =
-      city.copy(
-        tradePlace = city.tradePlace.copy(innovations =
-          city.tradePlace.innovations.filter {
-            innovation => ((date - innovation.date) <= innovationLife)
-          }
-        ))
-    //if (date % innovationLife == 0)
-    //println("ID : " + cityId + " NbInnovation Before = " + city.tradePlace.innovations.size + " / NbInnovation After = " + filteredCity.tradePlace.innovations.size )
+    val filteredCity = deprecateInnovations(city, date)
 
     //////////////////////////////////
     // 1 > Growing cities
@@ -92,7 +83,6 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
         distanceF,
         pSuccessAdoption,
         innovationFactor,
-        innovationLife,
         date
       )
 
@@ -105,7 +95,6 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
       cityAfterAdoption.tryToInnove(
         innovationFactor,
         pSuccessInteraction,
-        innovationLife,
         date
       )
 
