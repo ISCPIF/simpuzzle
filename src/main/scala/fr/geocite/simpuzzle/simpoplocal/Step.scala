@@ -20,7 +20,7 @@ package fr.geocite.simpuzzle.simpoplocal
 import State._
 import util.Random
 
-trait Step extends fr.geocite.simpuzzle.Step with State with InitialState with InnovationLife {
+trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
 
   def distanceF: Double
   def pSuccessAdoption: Double
@@ -40,6 +40,9 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState with I
     // 4 - take only the first object (cities) in the list "evolved"
     State.SimpopLocalState(state.date + 1, cities = evolved.map { case (city, _) => city })
   }
+
+  //By default no deprecation
+  def deprecateInnovations(city: City, date: Int): City = city
 
   /**
    * *

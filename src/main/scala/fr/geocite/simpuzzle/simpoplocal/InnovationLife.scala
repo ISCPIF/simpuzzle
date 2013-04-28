@@ -19,6 +19,18 @@ package fr.geocite.simpuzzle.simpoplocal
 
 import State._
 
-trait InnovationLife {
-  def deprecateInnovations(city: City, date: Int): City
+trait InnovationLife extends Step {
+
+  def innovationLife: Int
+
+  override def deprecateInnovations(city: City, date: Int) =
+    city.copy(
+      tradePlace =
+        city.tradePlace.copy(
+          innovations =
+            city.tradePlace.innovations.filter {
+              innovation => ((date - innovation.date) <= innovationLife)
+            }
+        )
+    )
 }
