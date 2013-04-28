@@ -17,7 +17,9 @@
 
 package fr.geocite.simpuzzle.simpoplocal
 
-trait TimeInnovationEndingCondition extends EndingCondition {
+import fr.geocite.simpuzzle.EndingCondition
+
+trait TimeInnovationEndingCondition extends EndingCondition with State {
 
   def maxDate = 4000
   def maxInnovation: Double
