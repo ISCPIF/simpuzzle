@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.marius.zero.zero
+package fr.geocite.simpuzzle.marius.one.zero
 
 import scala.util.Random
-import fr.geocite.simpuzzle.marius.UniformPopulation
+import fr.geocite.simpuzzle.marius._
 
-trait MariusInitialState <: fr.geocite.simpuzzle.InitialState with MariusState with UniformPopulation {
-  def initial(implicit rng: Random) = MariusState(0, populations.map(City(_)))
+trait MariusInitialState <: MariusState with UniformPopulation with UniformHydrocarbon {
+  def initial(implicit rng: Random) = {
+    val cities = (populations zip hydrocarbons).map {
+      case (p, h) => City(p, h)
+    }
+    MariusState(0, cities)
+  }
 }

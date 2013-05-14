@@ -117,7 +117,7 @@ object State {
       //println("I register ( " + this.id + ")  ONE original innovation at date " + date)
       val newRessources = impactResource(availableResource, innovationFactor)
 
-      //println("AvailableRessource = " + availableResource + " transform into " + newRessources + " innovationFactor : " + innovationFactor + " after only one impact")
+      //println("AvailableRessource = " + availableResource + " transform into " + newRessources + " innovationFactor : " + innovationFactor + " after only zero impact")
 
       val (newTradePlace, newExchange) =
         tradePlace.registerOriginalInnovation(this.id, date)
@@ -169,11 +169,11 @@ object State {
                 pSuccessAdoption
               )
         }
-      // ask each neighbors cities to exchange one innovation, and one only, then sum all of them for the next step
+      // ask each neighbors cities to exchange zero innovation, and zero only, then sum all of them for the next step
       val innovationCaptured =
         innovatingPoolByCity.flatMap {
           neighbor =>
-            // take one random unique (after filtering by root innovation id) innovation into pool of city
+            // take zero random unique (after filtering by root innovation id) innovation into pool of city
             tradePlace.filterInnovations(state(neighbor.neighbor.id).tradePlace.innovations).randomElement
         }.groupBy(_.rootId).map {
           case (k, v) => v.toIndexedSeq.randomElement.get
@@ -253,7 +253,7 @@ object State {
       diff(innovationsAvailable, innovations).toIndexedSeq
 
     /**
-     * Create and register one innovation by turn
+     * Create and register zero innovation by turn
      * @param city
      * @param time
      * @return

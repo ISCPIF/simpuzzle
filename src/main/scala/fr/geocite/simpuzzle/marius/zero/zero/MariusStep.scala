@@ -31,7 +31,7 @@ trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState {
     s.cities.map {
       city =>
         val newPopulation = city.population * (1 + (rate * rng.nextDouble + stdRate))
-        City(newPopulation, city.x, city.y)
+        City(newPopulation)
     }
 
 }

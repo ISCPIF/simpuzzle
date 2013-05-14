@@ -36,7 +36,7 @@ trait TimeInnovationEndingCondition extends EndingCondition with State {
   def ended(state: STATE) = {
     val maxInnov = maxInnovation(state)
 
-    // 3a - Break the simulation loop if one of these conditions is true
+    // 3a - Break the simulation loop if zero of these conditions is true
     state.date >= 4000 || maxInnov > maxInnovation
   }
 }

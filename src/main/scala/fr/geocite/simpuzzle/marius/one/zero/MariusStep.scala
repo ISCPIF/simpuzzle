@@ -15,11 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.marius.zero.zero
+package fr.geocite.simpuzzle.marius.one.zero
 
 import scala.util.Random
-import fr.geocite.simpuzzle.marius.UniformPopulation
 
-trait MariusInitialState <: fr.geocite.simpuzzle.InitialState with MariusState with UniformPopulation {
-  def initial(implicit rng: Random) = MariusState(0, populations.map(City(_)))
+trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState {
+
+  /// Annual mean growth rate
+  def rate: Double
+  def stdRate: Double
+  def hydrocarbonBonus: Double
+
+  def step(s: STATE)(implicit rng: Random) = MariusState(s.step + 1, cityGrowth(s))
+
+  def cityGrowth(s: STATE)(implicit rng: Random) =
+    s.cities.map {
+      city =>
+        val newPopulation = city.population * (1 + (rate * rng.nextDouble + stdRate) + hydrocarbonBonus)
+        city.copy(population = newPopulation)
+    }
+
 }

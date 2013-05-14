@@ -38,7 +38,7 @@ trait InitialState <: fr.geocite.simpuzzle.InitialState with State with Distance
     val input =
       cityFile.map(Source.fromFile).getOrElse(Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("init-situation.txt")))
 
-    /* Read File to create city, one line by city
+    /* Read File to create city, zero line by city
      * 0 > id
      * 1 > x
      * 2 > y

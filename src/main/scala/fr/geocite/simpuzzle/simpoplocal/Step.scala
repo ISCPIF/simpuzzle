@@ -78,7 +78,7 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
     // 2 > try to adopt and register innovation in neighbouring
     //////////////////////////////////
 
-    /** Return a new city and an historic of exchange if city adopt one or multiple innovation **/
+    /** Return a new city and an historic of exchange if city adopt zero or multiple innovation **/
     val (cityAfterAdoption, historyAfterAdoption) =
       growingCity.tryToAdopt(
         territory(cityId),
