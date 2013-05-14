@@ -17,8 +17,9 @@
 
 package fr.geocite.simpuzzle
 
-import scala.util.Random
+trait TimeEndingCondition extends EndingCondition with State {
+  type STATE <: { def step: Int }
 
-trait InitialState extends State {
-  def initial(implicit rng: Random): STATE
+  def maxStep: Int
+  def ended(state: STATE) = state.step >= maxStep
 }

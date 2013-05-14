@@ -21,6 +21,7 @@ import java.io.File
 import io.Source
 import State._
 import fr.geocite.simpuzzle.neighborhood._
+import scala.util.Random
 
 trait InitialState <: fr.geocite.simpuzzle.InitialState with State with DistanceNeighborhood with EuclideanDistance {
 
@@ -30,7 +31,9 @@ trait InitialState <: fr.geocite.simpuzzle.InitialState with State with Distance
 
   def meanPopulation: Double = 80.0
 
-  lazy val initial = {
+  def initial(implicit rng: Random) = initialState
+
+  lazy val initialState = {
 
     val input =
       cityFile.map(Source.fromFile).getOrElse(Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("init-situation.txt")))
@@ -65,7 +68,7 @@ trait InitialState <: fr.geocite.simpuzzle.InitialState with State with Distance
   }
 
   lazy val territory = {
-    val cities = initial.cities
+    val cities = initialState.cities
 
     // Store Cities into IndexedSeq[City]
     // create link 1, radius limit = true

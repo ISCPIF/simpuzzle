@@ -29,7 +29,7 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
 
   def ratePopulation = 0.02
 
-  def step(state: STATE) = {
+  def step(state: STATE)(implicit rng: Random) = {
     // 3b - Apply on each city the function evolveCity() which contain the sequence of action for each city
     // and return a list of tuple (city, exchange) which represent a new state at time t+1 for these cities
     val evolved =
@@ -55,7 +55,7 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
   def evolveCity(
     cityId: Int,
     state: Seq[City],
-    date: Int)(implicit aprng: Random = new Random): (City, List[ExchangeLine]) = {
+    date: Int)(implicit rng: Random): (City, List[ExchangeLine]) = {
 
     //////////////////////////////////
     // 0 > Update state of tradePlace

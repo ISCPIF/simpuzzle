@@ -385,7 +385,9 @@ object State {
 
   case class ExchangeLine(date: Int, cityStart: Int, cityEnd: Int, innovation: Innovation)
 
-  case class SimpopLocalState(date: Int, cities: Seq[City])
+  case class SimpopLocalState(date: Int, cities: Seq[City]) {
+    def step = date
+  }
 
   case class CityDist(cityId: Int, distance: Double)
 

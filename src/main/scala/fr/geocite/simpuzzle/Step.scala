@@ -17,6 +17,8 @@
 
 package fr.geocite.simpuzzle
 
+import scala.util.Random
+
 trait Step extends State {
-  def step(s: STATE): STATE
+  def step(s: STATE)(implicit rng: Random): STATE
 }

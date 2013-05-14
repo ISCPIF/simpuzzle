@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 25/04/13 Romain Reuillon
+ * Copyright (C) 14/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.marius.zero.zero
 
-import scala.util.Random
-
-trait InitialState extends State {
-  def initial(implicit rng: Random): STATE
+trait MariusState <: fr.geocite.simpuzzle.State {
+  case class MariusState(step: Int, cities: Seq[City])
+  type STATE = MariusState
 }

@@ -17,12 +17,14 @@
 
 package fr.geocite.simpuzzle
 
+import scala.util.Random
+
 trait StepByStep <: State with InitialState with Step with EndingCondition {
 
-  def states =
+  def states(implicit rng: Random) =
     Iterator.iterate(initial)(step).takeWhile(!ended(_))
 
-  def run = {
+  def run(implicit rng: Random) = {
     def last(i: Iterator[STATE]): STATE = {
       val e = i.next
       if (i.hasNext) last(i)
