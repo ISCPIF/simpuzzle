@@ -17,6 +17,26 @@
 
 package fr.geocite.simpoplocal
 
-trait TimeEndingCondition <: fr.geocite.simpuzzle.TimeEndingCondition with State {
-  def maxStep: Int = 4000
+import fr.geocite.simpuzzle.EndingCondition
+
+trait SimpopLocalTimeInnovationEndingCondition extends EndingCondition with SimpopLocalState {
+
+  def maxDate = 4000
+  def maxInnovation: Double
+
+  /**
+   * @param cities list of cities used to compute this indicator
+   * @return sum of all innovation stored in multiple tradeplaces/cities
+   */
+  def maxInnovation(state: STATE): Double =
+    state.cities.map {
+      _.tradePlace.totalInnovation
+    }.sum
+
+  def ended(state: STATE) = {
+    val maxInnov = maxInnovation(state)
+
+    // 3a - Break the simulation loop if zero of these conditions is true
+    state.date >= 4000 || maxInnov > maxInnovation
+  }
 }

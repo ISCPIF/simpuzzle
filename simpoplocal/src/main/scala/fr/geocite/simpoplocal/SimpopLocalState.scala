@@ -23,18 +23,21 @@ import Util._
 import scala.annotation.tailrec
 import fr.geocite.simpuzzle.neighborhood._
 
-object State {
+trait SimpopLocalState extends fr.geocite.simpuzzle.State {
+  case class SimpopLocalState(date: Int, cities: Seq[City]) {
+    def step = date
+  }
 
   case class City(
-      id: Int,
-      x: Double,
-      y: Double,
-      population: Double,
-      availableResource: Double,
-      resourceMax: Double,
-      percolationIndex: Int,
-      cityClass: Int,
-      tradePlace: TradePlace) extends Position with Radius with Id {
+                   id: Int,
+                   x: Double,
+                   y: Double,
+                   population: Double,
+                   availableResource: Double,
+                   resourceMax: Double,
+                   percolationIndex: Int,
+                   cityClass: Int,
+                   tradePlace: TradePlace) extends Position with Radius with Id {
 
     def rangeRadiusClass1 = 20.0
     def rangeRadiusClass2 = 10.0
@@ -56,8 +59,8 @@ object State {
      * @return The final value for the ressource after application of all innovation
      */
     @tailrec private def computeResource(resource: Double,
-      innovations: Iterable[Innovation],
-      innovationFactor: Double): Double = {
+                                         innovations: Iterable[Innovation],
+                                         innovationFactor: Double): Double = {
 
       def impactedResource = impactResource(resource, innovationFactor)
 
@@ -77,8 +80,8 @@ object State {
      *         and multiple impact on ressources is applicated
      */
     def updatedInnovations(innovations: Iterable[Innovation],
-      innovationFactor: Double,
-      date: Int) = {
+                           innovationFactor: Double,
+                           date: Int) = {
 
       //println("I register ( " + this.id + ")  copy nb innovation = " + innovations.size + " at date " + date )
       /** Compute the new ressource based on a list of innovations the city recently get after adoption and/or creation **/
@@ -105,6 +108,7 @@ object State {
 
     }
 
+
     /**
      *
      * @param innovationFactor
@@ -112,7 +116,7 @@ object State {
      * @return
      */
     def updatedInnovations(innovationFactor: Double,
-      date: Int) = {
+                           date: Int) = {
 
       //println("I register ( " + this.id + ")  ONE original innovation at date " + date)
       val newRessources = impactResource(availableResource, innovationFactor)
@@ -149,12 +153,12 @@ object State {
      * @return A tuple whith current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
      */
     def tryToAdopt(
-      localNetwork: Iterable[DistanceNeighborhood.Neighbor[City]],
-      state: Seq[City],
-      distanceF: Double,
-      pSuccessAdoption: Double,
-      innovationFactor: Double,
-      date: Int)(implicit aprng: Random): (City, List[ExchangeLine]) = {
+                    localNetwork: Iterable[DistanceNeighborhood.Neighbor[City]],
+                    state: Seq[City],
+                    distanceF: Double,
+                    pSuccessAdoption: Double,
+                    innovationFactor: Double,
+                    date: Int)(implicit aprng: Random): (City, List[ExchangeLine]) = {
 
       // recover all neighbors cities with innovation and which success the interaction test
       val innovatingPoolByCity =
@@ -173,7 +177,7 @@ object State {
       val innovationCaptured =
         innovatingPoolByCity.flatMap {
           neighbor =>
-            // take zero random unique (after filtering by root innovation id) innovation into pool of city
+          // take zero random unique (after filtering by root innovation id) innovation into pool of city
             tradePlace.filterInnovations(state(neighbor.neighbor.id).tradePlace.innovations).randomElement
         }.groupBy(_.rootId).map {
           case (k, v) => v.toIndexedSeq.randomElement.get
@@ -196,8 +200,8 @@ object State {
      * @return
      */
     def tryToInnove(innovationFactor: Double,
-      pSucessInteraction: Double,
-      date: Int)(implicit aprng: Random) = {
+                    pSucessInteraction: Double,
+                    date: Int)(implicit aprng: Random) = {
 
       if (tradePlace.computeInteractionIntraCities(population, pSucessInteraction))
         updatedInnovations(innovationFactor, date)
@@ -220,9 +224,9 @@ object State {
   object TradePlace {
 
     def apply(
-      innovations: List[Innovation] = List.empty,
-      countCreatedInnovation: Int = 0,
-      countAcquiredInnovation: Int = 0) = new TradePlace(innovations.sorted(Innovation.orderByRootId), countCreatedInnovation, countAcquiredInnovation)
+               innovations: List[Innovation] = List.empty,
+               countCreatedInnovation: Int = 0,
+               countAcquiredInnovation: Int = 0) = new TradePlace(innovations.sorted(Innovation.orderByRootId), countCreatedInnovation, countAcquiredInnovation)
   }
 
   /**
@@ -232,14 +236,14 @@ object State {
    * @param countAcquiredInnovation
    */
   class TradePlace private (
-      val innovations: List[Innovation] = List.empty,
-      val countCreatedInnovation: Int = 0,
-      val countAcquiredInnovation: Int = 0) {
+                             val innovations: List[Innovation] = List.empty,
+                             val countCreatedInnovation: Int = 0,
+                             val countAcquiredInnovation: Int = 0) {
 
     def copy(
-      innovations: List[Innovation] = this.innovations,
-      countCreatedInnovation: Int = this.countCreatedInnovation,
-      countAcquiredInnovation: Int = this.countAcquiredInnovation) = TradePlace(innovations, countCreatedInnovation, countAcquiredInnovation)
+              innovations: List[Innovation] = this.innovations,
+              countCreatedInnovation: Int = this.countCreatedInnovation,
+              countAcquiredInnovation: Int = this.countAcquiredInnovation) = TradePlace(innovations, countCreatedInnovation, countAcquiredInnovation)
 
     /** Return the total innovation in the trade place : adopt + created **/
     def totalInnovation = countCreatedInnovation + countAcquiredInnovation
@@ -259,8 +263,8 @@ object State {
      * @return
      */
     def registerOriginalInnovation(
-      city: Int,
-      time: Int) = {
+                                    city: Int,
+                                    time: Int) = {
 
       val innovation = new Innovation(city = city, date = time)
 
@@ -283,9 +287,9 @@ object State {
      * @return
      */
     def registerCopyOfInnovations(
-      newInnovations: Iterable[Innovation],
-      city: City,
-      time: Int) = {
+                                   newInnovations: Iterable[Innovation],
+                                   city: City,
+                                   time: Int) = {
 
       // Need to recopy innovation object to store hierarchical diffusion
       // ( before, after )
@@ -323,10 +327,10 @@ object State {
      * @return
      */
     def computeInteractionInterCities(popCityStart: Double,
-      popCityEnd: Double,
-      distance: Double,
-      distanceF: Double,
-      pSuccessAdoption: Double)(implicit aprng: Random) = {
+                                      popCityEnd: Double,
+                                      distance: Double,
+                                      distanceF: Double,
+                                      pSuccessAdoption: Double)(implicit aprng: Random) = {
 
       val population = (popCityStart * popCityEnd)
       val formula = (population / math.pow(distance, distanceF))
@@ -345,7 +349,7 @@ object State {
      * @return
      */
     def computeInteractionIntraCities(popCity: Double,
-      pSuccessInteraction: Double)(implicit aprng: Random): Boolean = {
+                                      pSuccessInteraction: Double)(implicit aprng: Random): Boolean = {
 
       val formula = ((1.0 / 2.0) * (popCity * (popCity - 1.0)))
       val pCreateInnovation = aprng.nextDouble
@@ -363,16 +367,16 @@ object State {
   }
 
   class Innovation(
-      val city: Int,
-      val date: Int,
-      _rootId: Option[Int] = None,
-      val id: Int = Innovation.curId.getAndIncrement) {
+                    val city: Int,
+                    val date: Int,
+                    _rootId: Option[Int] = None,
+                    val id: Int = Innovation.curId.getAndIncrement) {
 
     val rootId = _rootId.getOrElse(id)
 
     def cloneWith(
-      city: Int = this.city,
-      date: Int = this.date) = {
+                   city: Int = this.city,
+                   date: Int = this.date) = {
 
       new Innovation(city,
         date,
@@ -385,14 +389,7 @@ object State {
 
   case class ExchangeLine(date: Int, cityStart: Int, cityEnd: Int, innovation: Innovation)
 
-  case class SimpopLocalState(date: Int, cities: Seq[City]) {
-    def step = date
-  }
-
   case class CityDist(cityId: Int, distance: Double)
 
-}
-
-trait State extends fr.geocite.simpuzzle.State {
-  type STATE = State.SimpopLocalState
+  type STATE = SimpopLocalState
 }

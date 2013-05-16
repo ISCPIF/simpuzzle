@@ -31,7 +31,7 @@ trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState {
   def cityGrowth(s: STATE)(implicit rng: Random) =
     s.cities.map {
       city =>
-        val newPopulation = city.population * (1 + (rate * rng.nextDouble + stdRate) + hydrocarbonBonus)
+        val newPopulation = city.population * (1 + (stdRate * rng.nextGaussian + rate) + hydrocarbonBonus)
         city.copy(population = newPopulation)
     }
 

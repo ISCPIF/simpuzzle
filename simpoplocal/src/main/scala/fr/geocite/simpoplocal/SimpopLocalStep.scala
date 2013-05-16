@@ -17,10 +17,9 @@
 
 package fr.geocite.simpoplocal
 
-import State._
-import util.Random
+import scala.util.Random
 
-trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
+trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState {
 
   def distanceF: Double
   def pSuccessAdoption: Double
@@ -38,7 +37,7 @@ trait Step extends fr.geocite.simpuzzle.Step with State with InitialState {
       }
 
     // 4 - take only the first object (cities) in the list "evolved"
-    State.SimpopLocalState(state.date + 1, cities = evolved.map { case (city, _) => city })
+    SimpopLocalState(state.date + 1, cities = evolved.map { case (city, _) => city })
   }
 
   //By default no deprecation

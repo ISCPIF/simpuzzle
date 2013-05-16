@@ -32,7 +32,7 @@ object SimpopLocal {
     val (_maxInnovation, _maxAbundance, _distanceF, _pSuccessInteraction, _pSuccessAdoption, _innovationFactor) =
       (maxInnovation, maxAbundance, distanceF, pSuccessInteraction, pSuccessAdoption, innovationFactor)
 
-    new StepByStep with InitialState with Step with TimeInnovationEndingCondition {
+    new StepByStep with SimpopLocalInitialState with SimpopLocalStep with SimpopLocalTimeInnovationEndingCondition {
       def maxInnovation = _maxInnovation
       def maxAbundance = _maxAbundance
       def distanceF = _distanceF

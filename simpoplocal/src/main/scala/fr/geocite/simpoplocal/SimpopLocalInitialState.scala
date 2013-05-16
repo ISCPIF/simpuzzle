@@ -18,12 +18,11 @@
 package fr.geocite.simpoplocal
 
 import java.io.File
-import io.Source
-import State._
 import fr.geocite.simpuzzle.neighborhood._
 import scala.util.Random
+import scala.io.Source
 
-trait InitialState <: fr.geocite.simpuzzle.InitialState with State with DistanceNeighborhood with EuclideanDistance {
+trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with DistanceNeighborhood with EuclideanDistance {
 
   def cityFile: Option[File] = None
 
@@ -64,7 +63,7 @@ trait InitialState <: fr.geocite.simpuzzle.InitialState with State with Distance
             tradePlace = TradePlace())
       }.toArray.sortBy((_: City).id).toIndexedSeq
 
-    State.SimpopLocalState(0, cities)
+    SimpopLocalState(0, cities)
   }
 
   lazy val territory = {

@@ -17,9 +17,7 @@
 
 package fr.geocite.simpoplocal
 
-import State._
-
-trait InnovationLife extends Step {
+trait InnovationLife extends SimpopLocalStep {
 
   def innovationLife: Int
 
