@@ -17,11 +17,15 @@
 
 package fr.geocite.marius
 
-import scala.util.Random
+import fr.geocite.simpuzzle.distribution.UniformBooleanDistribution
 
-trait UniformHydrocarbon {
+trait UniformHydrocarbonDistribution extends HydrocarbonDistribution {
   def nbCities: Int
   def hydrocarbonsRatio: Double
 
-  def hydrocarbons(implicit rng: Random) = (0 until nbCities).map(_ => rng.nextDouble <= hydrocarbonsRatio)
+  def hydrocarbonDistribution = new UniformBooleanDistribution {
+    def trueRatio = hydrocarbonsRatio
+    def size = nbCities
+  }
+
 }

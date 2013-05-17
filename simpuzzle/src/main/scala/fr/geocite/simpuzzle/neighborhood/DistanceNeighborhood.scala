@@ -17,6 +17,8 @@
 
 package fr.geocite.simpuzzle.neighborhood
 
+import fr.geocite.simpuzzle.city.{Id, Radius, Position}
+
 object DistanceNeighborhood {
   case class Neighbor[T](neighbor: T, distance: Double)
 }

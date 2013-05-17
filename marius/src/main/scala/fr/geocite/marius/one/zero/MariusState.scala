@@ -18,9 +18,10 @@
 package fr.geocite.marius.one.zero
 
 import fr.geocite.simpuzzle._
+import fr.geocite.simpuzzle.city._
 
 trait MariusState <: State {
-  case class City(population: Double, hydrocarbon: Boolean)
+  case class City(population: Double, hydrocarbon: Boolean) extends Population with Hydrocarbon
   case class MariusState(step: Int, cities: Seq[City])
   type STATE = MariusState
 }

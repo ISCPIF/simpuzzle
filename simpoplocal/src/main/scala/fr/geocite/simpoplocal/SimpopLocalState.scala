@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger
 import Util._
 import scala.annotation.tailrec
 import fr.geocite.simpuzzle.neighborhood._
+import fr.geocite.simpuzzle.city.{Id, Radius, Position}
 
 trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   case class SimpopLocalState(date: Int, cities: Seq[City]) {

@@ -19,19 +19,9 @@ package fr.geocite.gibrat
 
 import scala.util.Random
 
-trait GibratStep <: fr.geocite.simpuzzle.Step with GibratState {
-
-  /// Annual mean growth rate
-  def rate: Double
-  def stdRate: Double
-
+trait GibratStep <: fr.geocite.simpuzzle.Step with GibratState with GibratGrowth {
   def step(s: STATE)(implicit rng: Random) = MariusState(s.step + 1, cityGrowth(s))
 
   def cityGrowth(s: STATE)(implicit rng: Random) =
-    s.cities.map {
-      city =>
-        val newPopulation = city.population * (1 + (stdRate * rng.nextGaussian + rate))
-        City(newPopulation)
-    }
-
+    s.cities.map { city => city.copy(population = city.population * growthRate) }
 }

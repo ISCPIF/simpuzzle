@@ -17,6 +17,8 @@
 
 package fr.geocite.simpuzzle.neighborhood
 
+import fr.geocite.simpuzzle.city.Position
+
 trait Distance {
   def distance(p1: Position, p2: Position): Double
 }

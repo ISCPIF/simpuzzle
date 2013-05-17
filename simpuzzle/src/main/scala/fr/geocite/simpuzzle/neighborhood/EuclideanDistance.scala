@@ -18,6 +18,7 @@
 package fr.geocite.simpuzzle.neighborhood
 
 import math._
+import fr.geocite.simpuzzle.city.Position
 
 trait EuclideanDistance <: Distance {
   def distance(p1: Position, p2: Position): Double =
