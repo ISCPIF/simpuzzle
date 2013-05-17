@@ -12,7 +12,9 @@ object SimPuzzleBuild extends Build {
  
  lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle)
 
- lazy val all = Project(id = "all", base = file("")) dependsOn(simpuzzle, marius, simpoplocal)
+ lazy val schelling = Project(id = "schelling", base = file("schelling")) dependsOn(simpuzzle)
+
+ lazy val all = Project(id = "all", base = file("")) dependsOn(simpuzzle, marius, simpoplocal, schelling)
 }
 
 
