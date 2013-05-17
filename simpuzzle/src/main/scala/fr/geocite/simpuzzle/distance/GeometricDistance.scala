@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.neighbourhood
+package fr.geocite.simpuzzle.distance
 
 import fr.geocite.simpuzzle.city.Position
 
-trait Distance {
+trait GeometricDistance {
   def distance(p1: Position, p2: Position): Double
 }

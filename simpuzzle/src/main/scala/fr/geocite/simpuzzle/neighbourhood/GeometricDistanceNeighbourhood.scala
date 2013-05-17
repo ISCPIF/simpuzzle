@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 26/04/13 Romain Reuillon
+ * Copyright (C) 25/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,10 +17,18 @@
 
 package fr.geocite.simpuzzle.neighbourhood
 
-import math._
-import fr.geocite.simpuzzle.city.Position
+import fr.geocite.simpuzzle.city.{Id, Radius, Position}
+import fr.geocite.simpuzzle.distance.GeometricDistance
 
-trait EuclideanDistance <: Distance {
-  def distance(p1: Position, p2: Position): Double =
-    sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2))
+
+trait GeometricDistanceNeighbourhood <: GeometricDistance {
+  case class Neighbor[T](neighbor: T, distance: Double)
+
+  def neighbors[T <: Position with Radius with Id](all: Seq[T], center: T) =
+    all.map {
+      c => Neighbor(c, distance(center, c))
+    }.filter {
+      n => n.distance < center.radius && center.id != n.neighbor.id
+    }
+
 }

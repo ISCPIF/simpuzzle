@@ -21,8 +21,9 @@ import java.io.File
 import fr.geocite.simpuzzle.neighbourhood._
 import scala.util.Random
 import scala.io.Source
+import fr.geocite.simpuzzle.distance.EuclideanDistance
 
-trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with DistanceNeighbourhood with EuclideanDistance {
+trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
 
   def cityFile: Option[File] = None
 
