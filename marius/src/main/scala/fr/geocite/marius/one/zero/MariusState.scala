@@ -20,6 +20,7 @@ package fr.geocite.marius.one.zero
 import fr.geocite.simpuzzle._
 
 trait MariusState <: State {
+  case class City(population: Double, hydrocarbon: Boolean)
   case class MariusState(step: Int, cities: Seq[City])
   type STATE = MariusState
 }

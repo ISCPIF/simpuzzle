@@ -15,10 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.simpuzzle.distribution
 
-import fr.geocite.gibrat._
+trait UniformPopulationDistribution extends PopulationDistribution {
+  def nbCities: Int
+  def minPopulation: Int
+  def maxPopulation: Int
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+  def populationDistribution = new UniformIntDistribution {
+    def min = minPopulation
+    def max = maxPopulation
+    def size = nbCities
+  }
 }

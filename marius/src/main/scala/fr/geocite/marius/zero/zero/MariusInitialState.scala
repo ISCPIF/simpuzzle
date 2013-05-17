@@ -17,9 +17,7 @@
 
 package fr.geocite.marius.zero.zero
 
-import scala.util.Random
-import fr.geocite.marius.UniformPopulation
+import fr.geocite.gibrat._
+import fr.geocite.simpuzzle.distribution.UniformPopulationDistribution
 
-trait MariusInitialState <: fr.geocite.simpuzzle.InitialState with MariusState with UniformPopulation {
-  def initial(implicit rng: Random) = MariusState(0, populations.map(City(_)))
-}
+trait MariusInitialState <: GibratInitialState with UniformPopulationDistribution

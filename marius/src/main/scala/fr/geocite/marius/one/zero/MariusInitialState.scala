@@ -19,8 +19,9 @@ package fr.geocite.marius.one.zero
 
 import scala.util.Random
 import fr.geocite.marius._
+import fr.geocite.simpuzzle.distribution.UniformPopulationDistribution
 
-trait MariusInitialState <: MariusState with UniformPopulation with UniformHydrocarbon {
+trait MariusInitialState <: MariusState with UniformPopulationDistribution with UniformHydrocarbon {
   def initial(implicit rng: Random) = {
     val cities = (populations zip hydrocarbons).map {
       case (p, h) => City(p, h)
