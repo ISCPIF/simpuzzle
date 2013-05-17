@@ -18,6 +18,5 @@
 package fr.geocite.marius.zero.zero
 
 import fr.geocite.gibrat._
-import fr.geocite.simpuzzle.distribution.UniformPopulationDistribution
 
-trait MariusInitialState <: GibratInitialState with UniformPopulationDistribution
+trait MariusInitialState <: GibratInitialState
