@@ -18,11 +18,11 @@
 package fr.geocite.simpoplocal
 
 import java.io.File
-import fr.geocite.simpuzzle.neighborhood._
+import fr.geocite.simpuzzle.neighbourhood._
 import scala.util.Random
 import scala.io.Source
 
-trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with DistanceNeighborhood with EuclideanDistance {
+trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with DistanceNeighbourhood with EuclideanDistance {
 
   def cityFile: Option[File] = None
 

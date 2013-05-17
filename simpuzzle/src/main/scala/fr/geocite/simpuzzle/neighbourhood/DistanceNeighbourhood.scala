@@ -15,19 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.neighborhood
+package fr.geocite.simpuzzle.neighbourhood
 
 import fr.geocite.simpuzzle.city.{Id, Radius, Position}
 
-object DistanceNeighborhood {
+object DistanceNeighbourhood {
   case class Neighbor[T](neighbor: T, distance: Double)
 }
 
-trait DistanceNeighborhood <: Distance {
+trait DistanceNeighbourhood <: Distance {
 
   def neighbors[T <: Position with Radius with Id](all: Seq[T], center: T) =
     all.map {
-      c => DistanceNeighborhood.Neighbor(c, distance(center, c))
+      c => DistanceNeighbourhood.Neighbor(c, distance(center, c))
     }.filter {
       n => n.distance < center.radius && center.id != n.neighbor.id
     }

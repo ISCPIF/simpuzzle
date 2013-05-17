@@ -21,7 +21,7 @@ import util.Random
 import java.util.concurrent.atomic.AtomicInteger
 import Util._
 import scala.annotation.tailrec
-import fr.geocite.simpuzzle.neighborhood._
+import fr.geocite.simpuzzle.neighbourhood._
 import fr.geocite.simpuzzle.city.{Id, Radius, Position}
 
 trait SimpopLocalState extends fr.geocite.simpuzzle.State {
@@ -154,7 +154,7 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
      * @return A tuple whith current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
      */
     def tryToAdopt(
-                    localNetwork: Iterable[DistanceNeighborhood.Neighbor[City]],
+                    localNetwork: Iterable[DistanceNeighbourhood.Neighbor[City]],
                     state: Seq[City],
                     distanceF: Double,
                     pSuccessAdoption: Double,

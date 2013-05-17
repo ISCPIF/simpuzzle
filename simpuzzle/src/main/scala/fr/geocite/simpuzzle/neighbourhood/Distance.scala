@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 26/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.neighborhood
+package fr.geocite.simpuzzle.neighbourhood
 
-trait MatrixNeighbourhood {
-  def neighbors[T](cells: (Int, Int) => T, i: Int, j: Int): Seq[T]
+import fr.geocite.simpuzzle.city.Position
+
+trait Distance {
+  def distance(p1: Position, p2: Position): Double
 }

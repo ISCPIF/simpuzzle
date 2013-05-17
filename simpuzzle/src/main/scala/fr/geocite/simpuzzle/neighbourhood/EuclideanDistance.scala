@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 26/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,15 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.neighborhood
+package fr.geocite.simpuzzle.neighbourhood
 
-trait SquareMatrixNeighbourhood <: MatrixNeighbourhood {
-  def neighborhoodSize: Int
+import math._
+import fr.geocite.simpuzzle.city.Position
 
-  def neighbors[T](cells: (Int, Int) => T, i: Int, j: Int) =
-    for {
-      oi <- -neighborhoodSize to neighborhoodSize
-      oj <- -neighborhoodSize to neighborhoodSize
-      if(oi != 0 || oj != 0)
-    } yield cells(i + oi, j + oj)
+trait EuclideanDistance <: Distance {
+  def distance(p1: Position, p2: Position): Double =
+    sqrt(pow((p1.x - p2.x), 2) + pow((p1.y - p2.y), 2))
 }

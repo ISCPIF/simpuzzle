@@ -20,13 +20,13 @@ package fr.geocite.schelling
 import fr.geocite.simpuzzle._
 import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
-import fr.geocite.simpuzzle.neighborhood._
+import fr.geocite.simpuzzle.neighbourhood._
 
 trait SchellingStep <: Step with SchellingState with MatrixNeighbourhood {
   def side: Int
   def similarWanted: Double
 
-  // Compute the proportion of similar neighbors in a neighborhood of neighborhoodSize
+  // Compute the proportion of similar neighbors in a neighbourhood of neighborhoodSize
   def similarNeighbors(state: STATE, i: Int, j: Int): Double = {
     val n = neighbors(state.apply, i, j).filter(_ != Free)
     n.count {
