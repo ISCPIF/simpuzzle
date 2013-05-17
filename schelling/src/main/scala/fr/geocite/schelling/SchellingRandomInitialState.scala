@@ -26,9 +26,9 @@ trait SchellingRandomInitialState <: InitialState with SchellingState {
 
   def initial(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
 
-    // Randomly draw a cell type given the proportions
+  // Randomly draw a cell type given the proportions
   def randomCell(implicit rng: Random): Place =
-    if(rng.nextDouble < freeProportion) Free
-    else if(rng.nextDouble < whiteProportion) White else Black
+    if (rng.nextDouble < freeProportion) Free
+    else if (rng.nextDouble < whiteProportion) White else Black
 
 }

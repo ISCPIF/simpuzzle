@@ -21,7 +21,7 @@ import util.Random
 import java.util.concurrent.atomic.AtomicInteger
 import Util._
 import scala.annotation.tailrec
-import fr.geocite.simpuzzle.city.{Id, Radius, Position}
+import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 
 trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   case class SimpopLocalState(date: Int, cities: Seq[City]) {
@@ -29,15 +29,15 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   }
 
   case class City(
-                   id: Int,
-                   x: Double,
-                   y: Double,
-                   population: Double,
-                   availableResource: Double,
-                   resourceMax: Double,
-                   percolationIndex: Int,
-                   cityClass: Int,
-                   tradePlace: TradePlace) extends Position with Radius with Id {
+      id: Int,
+      x: Double,
+      y: Double,
+      population: Double,
+      availableResource: Double,
+      resourceMax: Double,
+      percolationIndex: Int,
+      cityClass: Int,
+      tradePlace: TradePlace) extends Position with Radius with Id {
 
     def rangeRadiusClass1 = 20.0
     def rangeRadiusClass2 = 10.0
@@ -55,9 +55,9 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   object TradePlace {
 
     def apply(
-               innovations: List[Innovation] = List.empty,
-               countCreatedInnovation: Int = 0,
-               countAcquiredInnovation: Int = 0) = new TradePlace(innovations.sorted(Innovation.orderByRootId), countCreatedInnovation, countAcquiredInnovation)
+      innovations: List[Innovation] = List.empty,
+      countCreatedInnovation: Int = 0,
+      countAcquiredInnovation: Int = 0) = new TradePlace(innovations.sorted(Innovation.orderByRootId), countCreatedInnovation, countAcquiredInnovation)
   }
 
   /**
@@ -67,14 +67,14 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
    * @param countAcquiredInnovation
    */
   class TradePlace private (
-                             val innovations: List[Innovation] = List.empty,
-                             val countCreatedInnovation: Int = 0,
-                             val countAcquiredInnovation: Int = 0) {
+      val innovations: List[Innovation] = List.empty,
+      val countCreatedInnovation: Int = 0,
+      val countAcquiredInnovation: Int = 0) {
 
     def copy(
-              innovations: List[Innovation] = this.innovations,
-              countCreatedInnovation: Int = this.countCreatedInnovation,
-              countAcquiredInnovation: Int = this.countAcquiredInnovation) = TradePlace(innovations, countCreatedInnovation, countAcquiredInnovation)
+      innovations: List[Innovation] = this.innovations,
+      countCreatedInnovation: Int = this.countCreatedInnovation,
+      countAcquiredInnovation: Int = this.countAcquiredInnovation) = TradePlace(innovations, countCreatedInnovation, countAcquiredInnovation)
 
     /** Return the total innovation in the trade place : adopt + created **/
     def totalInnovation = countCreatedInnovation + countAcquiredInnovation
@@ -118,9 +118,9 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
      * @return
      */
     def registerCopyOfInnovations(
-                                   newInnovations: Iterable[Innovation],
-                                   city: City,
-                                   time: Int) = {
+      newInnovations: Iterable[Innovation],
+      city: City,
+      time: Int) = {
 
       // Need to recopy innovation object to store hierarchical diffusion
       // ( before, after )
@@ -158,10 +158,10 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
      * @return
      */
     def computeInteractionInterCities(popCityStart: Double,
-                                      popCityEnd: Double,
-                                      distance: Double,
-                                      distanceF: Double,
-                                      pSuccessAdoption: Double)(implicit aprng: Random) = {
+      popCityEnd: Double,
+      distance: Double,
+      distanceF: Double,
+      pSuccessAdoption: Double)(implicit aprng: Random) = {
 
       val population = (popCityStart * popCityEnd)
       val formula = (population / math.pow(distance, distanceF))
@@ -180,7 +180,7 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
      * @return
      */
     def computeInteractionIntraCities(popCity: Double,
-                                      pSuccessInteraction: Double)(implicit aprng: Random): Boolean = {
+      pSuccessInteraction: Double)(implicit aprng: Random): Boolean = {
 
       val formula = ((1.0 / 2.0) * (popCity * (popCity - 1.0)))
       val pCreateInnovation = aprng.nextDouble
@@ -198,16 +198,16 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   }
 
   class Innovation(
-                    val city: Int,
-                    val date: Int,
-                    _rootId: Option[Int] = None,
-                    val id: Int = Innovation.curId.getAndIncrement) {
+      val city: Int,
+      val date: Int,
+      _rootId: Option[Int] = None,
+      val id: Int = Innovation.curId.getAndIncrement) {
 
     val rootId = _rootId.getOrElse(id)
 
     def cloneWith(
-                   city: Int = this.city,
-                   date: Int = this.date) = {
+      city: Int = this.city,
+      date: Int = this.date) = {
 
       new Innovation(city,
         date,

@@ -22,5 +22,5 @@ import scala.util.Random
 trait UniformBooleanDistribution extends Distribution[Boolean] {
   def size: Int
   def trueRatio: Double
-  def apply(implicit rng: Random): Seq[Boolean] =  (0 until size).map(_ => rng.nextDouble <= trueRatio)
+  def apply(implicit rng: Random): Seq[Boolean] = (0 until size).map(_ => rng.nextDouble <= trueRatio)
 }

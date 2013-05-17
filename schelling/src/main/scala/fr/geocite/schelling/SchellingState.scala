@@ -28,17 +28,17 @@ trait SchellingState <: State {
   case object Black extends Place
 
   case class SchellingState(step: Int, cells: Seq[Seq[Place]]) {
-          def positiveMod(i: Int, j: Int) = {
-    val m = i % j
-    if(m < 0) m + j else m
-  }
+    def positiveMod(i: Int, j: Int) = {
+      val m = i % j
+      if (m < 0) m + j else m
+    }
 
     def apply(i: Int, j: Int) = cells(positiveMod(i, side))(positiveMod(j, side))
 
     def cellsIndices =
-    cells.zipWithIndex.flatMap{
-      case(l, i) => l.zipWithIndex.map{ case(c, j) => ((i, j), c) }
-    }
+      cells.zipWithIndex.flatMap {
+        case (l, i) => l.zipWithIndex.map { case (c, j) => ((i, j), c) }
+      }
 
   }
 

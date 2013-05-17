@@ -17,9 +17,8 @@
 
 package fr.geocite.simpuzzle.neighbourhood
 
-import fr.geocite.simpuzzle.city.{Id, Radius, Position}
+import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 import fr.geocite.simpuzzle.distance.GeometricDistance
-
 
 trait GeometricDistanceNeighbourhood <: GeometricDistance {
   case class Neighbor[T](neighbor: T, distance: Double)
