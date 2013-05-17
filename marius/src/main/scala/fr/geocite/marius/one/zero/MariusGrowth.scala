@@ -20,7 +20,7 @@ package fr.geocite.marius.one.zero
 import fr.geocite.gibrat._
 import scala.util.Random
 
-trait Marius10Growth <: GibratGrowth {
+trait MariusGrowth <: GibratGrowth {
 
   /// Annual mean growth rate
   def rate: Double

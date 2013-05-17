@@ -25,3 +25,4 @@ trait MariusState <: State {
   case class MariusState(step: Int, cities: Seq[City])
   type STATE = MariusState
 }
+

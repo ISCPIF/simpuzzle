@@ -19,7 +19,7 @@ package fr.geocite.marius.one.zero
 
 import scala.util.Random
 
-trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState with Marius10Growth {
+trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState with MariusGrowth {
   /// Annual mean growth rate
   def rate: Double
   def stdRate: Double
