@@ -19,6 +19,14 @@ package fr.geocite.simpuzzle.distribution
 
 import scala.util.Random
 
+object Distribution {
+
+  def apply[T](s: Iterable[T]) = new Distribution[T] {
+    def apply(implicit rng: Random) = s.toSeq
+  }
+
+}
+
 trait Distribution[T] {
   def apply(implicit rng: Random): Seq[T]
 }

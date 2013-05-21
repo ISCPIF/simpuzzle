@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 21/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -19,7 +19,11 @@ package fr.geocite.simpuzzle.distribution
 
 import scala.util.Random
 
-trait PopulationDistribution {
-  def populationDistribution: Distribution[Double]
-  def populations(implicit rng: Random) = populationDistribution(rng)
+trait UniformDoubleDistribution <: Distribution[Double] {
+  def size: Int
+  def min: Double
+  def max: Double
+  def apply(implicit rng: Random): Seq[Double] =
+    (0 until size).map(_ => rng.nextDouble * (max - min) + min)
 }
+

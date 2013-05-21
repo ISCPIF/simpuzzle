@@ -19,10 +19,10 @@ package fr.geocite.simpuzzle.distribution
 
 trait UniformPopulationDistribution extends PopulationDistribution {
   def nbCities: Int
-  def minPopulation: Int
-  def maxPopulation: Int
+  def minPopulation: Double
+  def maxPopulation: Double
 
-  def populationDistribution = new UniformIntDistribution {
+  def populationDistribution = new UniformDoubleDistribution {
     def min = minPopulation
     def max = maxPopulation
     def size = nbCities
