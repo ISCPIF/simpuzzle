@@ -4,7 +4,7 @@ import Keys._
 
 object SimPuzzleBuild extends Build {
 
- override def settings = super.settings ++ Seq(scalaVersion := "2.10.1")
+ override def settings = super.settings ++ Seq(scalaVersion := "2.10.1", organization := "fr.geocite")
 
  lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"))
 
@@ -16,7 +16,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
- lazy val all = Project(id = "all", base = file("")) dependsOn(simpuzzle, marius, simpoplocal, schelling)
+ lazy val all = Project(id = "all", base = file(""))  settings (publish := { }) aggregate(simpuzzle, marius, simpoplocal, schelling)
 }
 
 
