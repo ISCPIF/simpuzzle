@@ -22,6 +22,6 @@ import city._
 
 trait GibratState <: State {
   case class City(population: Double) extends Population
-  case class MariusState(step: Int, cities: Seq[City])
-  type STATE = MariusState
+  case class GibratState(step: Int, cities: Seq[City])
+  type STATE = GibratState
 }
