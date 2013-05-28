@@ -16,7 +16,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
- lazy val all = Project(id = "all", base = file(""))  settings (publish := { }) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat)
+ lazy val all = Project(id = "all", base = file(""))  settings (publish := { }) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat)
 }
 
 
