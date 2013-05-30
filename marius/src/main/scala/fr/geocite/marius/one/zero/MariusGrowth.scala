@@ -29,7 +29,7 @@ trait MariusGrowth <: GibratGrowth {
 
   def growthRate(c: Hydrocarbon)(implicit rng: Random) = {
     val bonus = if (c.hydrocarbon) hydrocarbonBonus else 0.0
-    1 + (stdRate * rng.nextGaussian + rate) + bonus
+    1 + (stdRate * rng.nextGaussian + rate + bonus)
   }
 
 }
