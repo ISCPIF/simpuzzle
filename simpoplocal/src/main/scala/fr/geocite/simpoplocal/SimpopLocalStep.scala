@@ -21,7 +21,7 @@ import scala.util.Random
 import Util._
 import scala.annotation.tailrec
 
-trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState {
+trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState with NoDisaster {
 
   def distanceF: Double
   def pSuccessAdoption: Double
@@ -34,7 +34,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     // 3b - Apply on each city the function evolveCity() which contain the sequence of action for each city
     // and return a list of tuple (city, exchange) which represent a new state at time t+1 for these cities
     val evolved =
-      state.cities.map {
+      disaster(state.cities).map {
         city => evolveCity(city.id, state.cities, state.date)
       }
 
