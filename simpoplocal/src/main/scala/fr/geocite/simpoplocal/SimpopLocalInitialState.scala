@@ -27,9 +27,7 @@ trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLo
 
   def cityFile: Option[File] = None
 
-  def maxAbundance: Double
-
-  def meanPopulation: Double = 80.0
+  def rMax: Double
 
   def initial(implicit rng: Random) = initialState
 
@@ -58,7 +56,7 @@ trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLo
             y = c(2),
             population = c(3),
             availableResource = c(4),
-            resourceMax = meanPopulation * maxAbundance,
+            resourceMax = rMax,
             percolationIndex = c(6).toInt,
             cityClass = c(7).toInt,
             tradePlace = TradePlace())

@@ -23,10 +23,10 @@ import scala.annotation.tailrec
 
 trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState with NoDisaster {
 
-  def distanceF: Double
-  def pSuccessAdoption: Double
-  def pSuccessInteraction: Double
-  def innovationFactor: Double
+  def distanceDecay: Double
+  def pDiffusion: Double
+  def pCreation: Double
+  def innovationImpact: Double
 
   def ratePopulation = 0.02
 
@@ -85,9 +85,9 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
         growingCity,
         territory(cityId),
         state,
-        distanceF,
-        pSuccessAdoption,
-        innovationFactor,
+        distanceDecay,
+        pDiffusion,
+        innovationImpact,
         date
       )
 
@@ -98,8 +98,8 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     /**Return a new city and an historic of exchange if city create a new innovation **/
     val (cityAfterCreation, historyAfterCreation) =
       tryToInnove(cityAfterAdoption,
-        innovationFactor,
-        pSuccessInteraction,
+        innovationImpact,
+        pCreation,
         date
       )
 
