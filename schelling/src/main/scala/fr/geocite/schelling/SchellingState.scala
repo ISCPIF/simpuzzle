@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 17/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,14 +15,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.schelling
 
 import fr.geocite.simpuzzle._
-import fr.geocite.simpuzzle.city._
 
-trait MariusState <: State {
-  case class City(population: Double, hydrocarbon: Boolean) extends Population with Hydrocarbon
-  case class MariusState(step: Int, cities: Seq[City])
-  type STATE = MariusState
+trait SchellingState <: State {
+  def side: Int
+
+  trait Place
+  case object Free extends Place
+  case object White extends Place
+  case object Black extends Place
+
+  case class SchellingState(step: Int, cells: Seq[Seq[Place]]) {
+    def positiveMod(i: Int, j: Int) = {
+      val m = i % j
+      if (m < 0) m + j else m
+    }
+
+    def apply(i: Int, j: Int) = cells(positiveMod(i, side))(positiveMod(j, side))
+
+    def cellsIndices =
+      cells.zipWithIndex.flatMap {
+        case (l, i) => l.zipWithIndex.map { case (c, j) => ((i, j), c) }
+      }
+
+  }
+
+  type STATE = SchellingState
 }
-

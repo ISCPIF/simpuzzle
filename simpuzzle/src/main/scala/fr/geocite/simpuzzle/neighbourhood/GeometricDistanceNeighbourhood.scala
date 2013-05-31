@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 25/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.simpuzzle.neighbourhood
 
-import fr.geocite.gibrat._
+import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
+import fr.geocite.simpuzzle.distance.GeometricDistance
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait GeometricDistanceNeighbourhood <: GeometricDistance {
+  case class Neighbor[T](neighbor: T, distance: Double)
+
+  def neighbors[T <: Position with Radius with Id](all: Seq[T], center: T) =
+    all.map {
+      c => Neighbor(c, distance(center, c))
+    }.filter {
+      n => n.distance < center.radius && center.id != n.neighbor.id
+    }
+
 }

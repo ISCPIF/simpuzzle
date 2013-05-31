@@ -15,10 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.marius
 
-import fr.geocite.gibrat._
+import fr.geocite.simpuzzle.distribution.UniformBooleanDistribution
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait UniformHydrocarbonDistribution extends HydrocarbonDistribution {
+  def nbCities: Int
+  def hydrocarbonsRatio: Double
+
+  def hydrocarbonDistribution = new UniformBooleanDistribution {
+    def trueRatio = hydrocarbonsRatio
+    def size = nbCities
+  }
+
 }

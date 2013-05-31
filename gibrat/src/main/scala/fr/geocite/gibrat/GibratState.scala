@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.gibrat
 
-import fr.geocite.gibrat._
+import fr.geocite.simpuzzle._
+import city._
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait GibratState <: State {
+  case class City(population: Double) extends Population
+  case class GibratState(step: Int, cities: Seq[City])
+  type STATE = GibratState
 }

@@ -15,10 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.gibrat
 
-import fr.geocite.gibrat._
+import scala.util.Random
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait GibratStep <: fr.geocite.simpuzzle.Step with GibratState with GibratGrowth {
+  def step(s: STATE)(implicit rng: Random) = GibratState(s.step + 1, cityGrowth(s))
+
+  def cityGrowth(s: STATE)(implicit rng: Random) =
+    s.cities.map { city => city.copy(population = city.population * growthRate) }
 }

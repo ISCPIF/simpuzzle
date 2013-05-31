@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.gibrat
 
-import fr.geocite.gibrat._
+import scala.util.Random
+import fr.geocite.simpuzzle.distribution.PopulationDistribution
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait GibratInitialState <: fr.geocite.simpuzzle.InitialState with GibratState with PopulationDistribution {
+  def initial(implicit rng: Random) = GibratState(0, populations.map(City(_)))
 }

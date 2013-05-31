@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 17/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.schelling
 
-import fr.geocite.gibrat._
+import fr.geocite.simpuzzle._
+import scala.util.Random
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait SchellingRandomInitialState <: InitialState with SchellingState {
+  def freeProportion: Double
+  def whiteProportion: Double
+
+  def initial(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
+
+  // Randomly draw a cell type given the proportions
+  def randomCell(implicit rng: Random): Place =
+    if (rng.nextDouble < freeProportion) Free
+    else if (rng.nextDouble < whiteProportion) White else Black
+
 }

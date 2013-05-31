@@ -19,20 +19,14 @@ package fr.geocite.marius.one.zero
 
 import scala.util.Random
 
-trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState {
-
+trait MariusStep <: fr.geocite.simpuzzle.Step with MariusState with MariusGrowth {
   /// Annual mean growth rate
   def rate: Double
   def stdRate: Double
-  def hydrocarbonBonus: Double
 
   def step(s: STATE)(implicit rng: Random) = MariusState(s.step + 1, cityGrowth(s))
 
   def cityGrowth(s: STATE)(implicit rng: Random) =
-    s.cities.map {
-      city =>
-        val newPopulation = city.population * (1 + (rate * rng.nextDouble + stdRate) + hydrocarbonBonus)
-        city.copy(population = newPopulation)
-    }
+    s.cities.map { city => city.copy(population = city.population * growthRate(city)) }
 
 }

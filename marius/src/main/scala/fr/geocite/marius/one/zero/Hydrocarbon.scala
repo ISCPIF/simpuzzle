@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 17/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.marius.one.zero
 
-import fr.geocite.gibrat._
-
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait Hydrocarbon {
+  def hydrocarbon: Boolean
 }

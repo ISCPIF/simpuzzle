@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 30/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.simpoplocal
 
-import fr.geocite.gibrat._
+import scala.util.Random
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait RandomDisaster <: Disaster {
+
+  def disasterProbability: Double
+
+  override def disaster(cities: Seq[City])(implicit rng: Random) =
+    cities.map {
+      c =>
+        if (rng.nextDouble < disasterProbability) c.copy(population = 1)
+        else c
+    }
+
 }
