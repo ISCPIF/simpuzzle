@@ -126,7 +126,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
 
   /** Formula to compute a new ressource based on the innovation factor **/
   def impactResource(city: City, resourceAvailable: Double, innovationFactor: Double): Double =
-    resourceAvailable * (1 + innovationFactor * (1 - resourceAvailable / city.resourceMax))
+    resourceAvailable * (1 + innovationFactor * (1 - resourceAvailable / rMax))
 
   /**
    * Returns a new city after computing the ressources and registering all new innovations in the trade place of the city

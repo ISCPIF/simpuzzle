@@ -34,7 +34,7 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
       y: Double,
       population: Double,
       availableResource: Double,
-      resourceMax: Double,
+      //resourceMax: Double,
       percolationIndex: Int,
       cityClass: Int,
       tradePlace: TradePlace) extends Position with Radius with Id {
