@@ -24,5 +24,5 @@ trait UniformPopulation {
   def popMin: Int
   def popMax: Int
 
-  def populations(implicit rng: Random) = (0 until nbCities).map(_ => rng.nextInt(popMax) + popMin)
+  def populations(implicit rng: Random) = (0 until nbCities).map(_ => rng.nextInt(popMax - popMin) + popMin)
 }
