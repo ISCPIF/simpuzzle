@@ -20,9 +20,10 @@ package fr.geocite.simpoplocal
 import fr.geocite.simpuzzle.neighbourhood._
 import scala.util.Random
 import scala.io.Source
-import fr.geocite.simpuzzle.distance.EuclideanDistance
+import fr.geocite.simpuzzle.distance._
+import fr.geocite.simpuzzle._
 
-trait SimpopLocalInitialState <: fr.geocite.simpuzzle.InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
+trait SimpopLocalInitialState <: InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
 
   def rMax: Double
 

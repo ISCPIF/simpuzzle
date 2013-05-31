@@ -22,11 +22,13 @@ import scala.util.Random
 trait RandomDisaster <: Disaster {
 
   def disasterProbability: Double
+  def disasterPopulation: Double = 30.0
+  def disasterResource: Double = 30.0
 
   override def disaster(cities: Seq[City])(implicit rng: Random) =
     cities.map {
       c =>
-        if (rng.nextDouble < disasterProbability) c.copy(population = 1)
+        if (rng.nextDouble < disasterProbability) c.copy(population = disasterPopulation, availableResource = disasterResource)
         else c
     }
 
