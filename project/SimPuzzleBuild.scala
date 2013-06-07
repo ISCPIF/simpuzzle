@@ -1,6 +1,8 @@
 
 import sbt._
 import Keys._
+import com.typesafe.sbt.osgi.OsgiKeys._
+import com.typesafe.sbt.osgi.SbtOsgi._
 
 object SimPuzzleBuild extends Build {
 
@@ -16,7 +18,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
- lazy val all = Project(id = "all", base = file(""))  settings (publish := { }) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat)
+ lazy val all = Project(id = "all", base = file("."), settings = Project.defaultSettings ++ osgiSettings)  settings (publish := { }, bundleSymbolicName := "fr.geocite.simpuzzle", bundleVersion := "1.0", exportPackage := Seq("fr.geocite.*")) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat)
 }
 
 
