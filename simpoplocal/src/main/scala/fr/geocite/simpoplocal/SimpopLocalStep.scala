@@ -18,7 +18,6 @@
 package fr.geocite.simpoplocal
 
 import scala.util.Random
-import Util._
 import scala.annotation.tailrec
 
 trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState with RandomDisaster {

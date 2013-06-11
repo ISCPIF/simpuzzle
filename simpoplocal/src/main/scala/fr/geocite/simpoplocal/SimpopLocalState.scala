@@ -19,7 +19,6 @@ package fr.geocite.simpoplocal
 
 import util.Random
 import java.util.concurrent.atomic.AtomicInteger
-import Util._
 import scala.annotation.tailrec
 import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 
@@ -191,6 +190,32 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
     }
 
   }
+
+  def binomial(pool: Double, p: Double): Double = (1.0 - (math.pow((1 - p), pool)))
+
+  implicit def indexedSeq2IndexedSeqDecorator[T](elts: IndexedSeq[T]) = new {
+    def randomElement(implicit prng: Random) = if (elts.isEmpty) None else Some(elts(prng.nextInt(elts.size)))
+  }
+
+  def diffNonSorted[A](l: List[A], r: List[A])(implicit order: Ordering[A]) =
+    diff(l.sorted(order), r.sorted(order))
+
+  @tailrec final def diff[A](l: List[A], r: List[A], acc: List[A] = List.empty)(implicit order: Ordering[A]): List[A] = {
+    (l.headOption, r.headOption) match {
+      case (None, None) => acc.reverse
+      case (_, None) => l ::: (acc.reverse)
+      case (None, _) => acc.reverse
+      case (Some(el), Some(er)) =>
+        if (order.equiv(el, er)) diff(l.tail, r, acc)
+        else if (order.lt(el, er)) diff(l.tail, r, el :: acc)
+        else diff(l, r.tail, acc)
+    }
+  }
+
+  def dist(x: Double,
+    y: Double,
+    xOut: Double,
+    yOut: Double): Double = math.sqrt(math.pow((x - xOut), 2) + math.pow((y - yOut), 2))
 
   object Innovation {
     implicit val orderByRootId = Ordering.by((_: Innovation).rootId)
