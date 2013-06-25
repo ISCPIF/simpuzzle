@@ -26,8 +26,8 @@ trait InnovationLife extends SimpopLocalStep {
       tradePlace =
         city.tradePlace.copy(
           innovations =
-            city.tradePlace.innovations.filter {
-              innovation => ((date - innovation.date) <= innovationLife)
+            city.tradePlace.sortedInnovations.filter {
+              innovation => date - innovation.date <= innovationLife
             }
         )
     )
