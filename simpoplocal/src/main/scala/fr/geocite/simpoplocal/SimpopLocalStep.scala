@@ -87,14 +87,16 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
           city.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
       }
 
+    def exchangeableInnovations(from: City, to: City) = to.innovations &~ from.innovations
+
     val innovationsFromNeighbours =
       innovatingPoolByCity.flatMap {
-        neighbor => exchangeableInnovations(city, state(neighbor.neighbor.id)).randomElement
+        neighbor => randomElement(exchangeableInnovations(city, state(neighbor.neighbor.id)).toSeq)
       }
 
     val capturedInnovations =
       innovationsFromNeighbours.groupBy(_.rootId).map {
-        case (k, v) => v.randomElement.get
+        case (k, v) => randomElement(v).get
       }.toList
 
     val copyOfInnovation =
@@ -145,7 +147,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    *
    */
   def addInnovations(city: City, date: Int, innovations: List[Innovation]) =
-    city.copy(availableResource = impactResource(city, innovations), innovations = innovations ::: city.sortedInnovations)
+    city.copy(availableResource = impactResource(city, innovations), innovations = city.innovations ++ innovations)
 
   def impactResource(city: City, innovations: List[Innovation]): Double =
     innovations.foldLeft(city.availableResource) {
@@ -156,24 +158,8 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
   def impactResource(city: City, resourceAvailable: Double): Double =
     resourceAvailable * (1 + innovationImpact * (1 - resourceAvailable / rMax))
 
-  def exchangeableInnovations(from: City, to: City) = diff(from.sortedInnovations, to.sortedInnovations)
-
   def binomial(pool: Double, p: Double): Double = 1.0 - math.pow(1 - p, pool)
 
-  implicit class IndexedSeqDecorator[T](elts: Seq[T]) {
-    def randomElement(implicit prng: Random) = if (elts.isEmpty) None else Some(elts(prng.nextInt(elts.size)))
-  }
-
-  @tailrec final def diff[A](l: List[A], r: List[A], acc: List[A] = List.empty)(implicit order: Ordering[A]): List[A] = {
-    (l.headOption, r.headOption) match {
-      case (None, None) => acc.reverse
-      case (_, None) => l ::: acc.reverse
-      case (None, _) => acc.reverse
-      case (Some(el), Some(er)) =>
-        if (order.equiv(el, er)) diff(l.tail, r, acc)
-        else if (order.lt(el, er)) diff(l.tail, r, el :: acc)
-        else diff(l, r.tail, acc)
-    }
-  }
+  def randomElement[T](seq: Seq[T])(implicit prng: Random) = if (seq.isEmpty) None else Some(seq(prng.nextInt(seq.size)))
 
 }

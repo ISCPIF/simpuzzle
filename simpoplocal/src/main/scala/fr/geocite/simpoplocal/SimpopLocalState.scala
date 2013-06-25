@@ -18,6 +18,7 @@
 package fr.geocite.simpoplocal
 
 import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
+import scala.collection.immutable.{ TreeSet, TreeMap }
 
 trait SimpopLocalState extends fr.geocite.simpuzzle.State {
 
@@ -37,7 +38,7 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
       availableResource: Double,
       percolationIndex: Int,
       cityClass: Int,
-      innovations: List[Innovation]) extends Position with Radius with Id {
+      innovations: TreeSet[Innovation]) extends Position with Radius with Id {
 
     def rangeRadiusClass1 = 20.0
     def rangeRadiusClass2 = 10.0
@@ -50,8 +51,6 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
         case 3 => rangeRadiusClass3
         case _ => sys.error(s"Invalid city class $cityClass")
       }
-
-    lazy val sortedInnovations = innovations.sorted
   }
 
   class Innovation(

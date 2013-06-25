@@ -22,6 +22,7 @@ import scala.util.Random
 import scala.io.Source
 import fr.geocite.simpuzzle.distance._
 import fr.geocite.simpuzzle._
+import scala.collection.immutable.TreeSet
 
 trait SimpopLocalInitialState <: InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
 
@@ -56,7 +57,7 @@ trait SimpopLocalInitialState <: InitialState with SimpopLocalState with Geometr
             availableResource = c(4),
             percolationIndex = c(6).toInt,
             cityClass = c(7).toInt,
-            innovations = List.empty)
+            innovations = TreeSet.empty)
       }.toArray.sortBy((_: City).id).toIndexedSeq
 
     SimpopLocalState(0, cities)
