@@ -24,16 +24,7 @@ trait SimpopLocalTimeInnovationEndingCondition extends EndingCondition with Simp
   def maxDate = 4000
   def maxInnovation: Double
 
-  /**
-   * @param cities list of cities used to compute this indicator
-   * @return sum of all innovation stored in multiple tradeplaces/cities
-   */
-  def totalInnovations(state: STATE): Double =
-    state.cities.map {
-      _.tradePlace.totalInnovations
-    }.sum
-
   def ended(state: STATE) =
-    state.date >= 4000 || totalInnovations(state) > maxInnovation
+    state.date >= 4000 || state.currentInnovationId > maxInnovation
 
 }

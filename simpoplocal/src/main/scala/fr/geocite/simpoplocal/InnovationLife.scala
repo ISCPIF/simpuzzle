@@ -23,12 +23,9 @@ trait InnovationLife extends SimpopLocalStep {
 
   override def deprecateInnovations(city: City, date: Int) =
     city.copy(
-      tradePlace =
-        city.tradePlace.copy(
-          innovations =
-            city.tradePlace.sortedInnovations.filter {
-              innovation => date - innovation.date <= innovationLife
-            }
-        )
+      innovations =
+        city.sortedInnovations.filter {
+          innovation => date - innovation.date <= innovationLife
+        }
     )
 }

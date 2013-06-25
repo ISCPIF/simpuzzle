@@ -56,7 +56,7 @@ trait SimpopLocalInitialState <: InitialState with SimpopLocalState with Geometr
             availableResource = c(4),
             percolationIndex = c(6).toInt,
             cityClass = c(7).toInt,
-            tradePlace = TradePlace())
+            innovations = List.empty)
       }.toArray.sortBy((_: City).id).toIndexedSeq
 
     SimpopLocalState(0, cities)

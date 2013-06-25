@@ -17,16 +17,17 @@
 
 package fr.geocite.simpoplocal
 
-import java.util.concurrent.atomic.AtomicInteger
 import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 
 trait SimpopLocalState extends fr.geocite.simpuzzle.State {
 
   type STATE = SimpopLocalState
 
-  case class SimpopLocalState(date: Int, cities: Seq[City]) {
+  case class SimpopLocalState(date: Int, cities: Seq[City], currentInnovationId: Int = 0) {
     def step = date
   }
+
+  implicit lazy val innovationOrdering = Ordering.by((_: Innovation).rootId)
 
   case class City(
       id: Int,
@@ -36,7 +37,7 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
       availableResource: Double,
       percolationIndex: Int,
       cityClass: Int,
-      tradePlace: TradePlace) extends Position with Radius with Id {
+      innovations: List[Innovation]) extends Position with Radius with Id {
 
     def rangeRadiusClass1 = 20.0
     def rangeRadiusClass2 = 10.0
@@ -49,36 +50,15 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
         case 3 => rangeRadiusClass3
         case _ => sys.error(s"Invalid city class $cityClass")
       }
-  }
 
-  case class TradePlace(
-      innovations: List[Innovation] = List.empty,
-      totalInnovations: Int = 0) {
-    lazy val sortedInnovations = innovations.sorted(Innovation.orderByRootId)
-  }
-
-  object Innovation {
-    implicit val orderByRootId = Ordering.by((_: Innovation).rootId)
-    val curId = new AtomicInteger
+    lazy val sortedInnovations = innovations.sorted
   }
 
   class Innovation(
       val city: Int,
       val date: Int,
-      _rootId: Option[Int] = None,
-      val id: Int = Innovation.curId.getAndIncrement) {
-
-    val rootId = _rootId.getOrElse(id)
-
-    def copy(
-      city: Int = this.city,
-      date: Int = this.date) = {
-
-      new Innovation(city,
-        date,
-        Some(rootId)
-      )
-    }
+      val rootId: Int,
+      val id: Int) {
 
     override def toString = "Id=" + id + ", RootId=" + rootId
   }

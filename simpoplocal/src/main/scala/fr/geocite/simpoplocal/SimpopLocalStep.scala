@@ -35,12 +35,15 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
   def step(state: STATE)(implicit rng: Random) = {
     val disasteredCities = disaster(state.cities)
 
-    def evolved =
-      disasteredCities.map {
-        city => evolveCity(city.id, disasteredCities, state.date)
+    val (newCities, newId) =
+      disasteredCities.foldLeft(List.empty[City] -> state.currentInnovationId) {
+        (acc, city) =>
+          val (newCities, id) = acc
+          val (newCity, newId) = evolveCity(city.id, disasteredCities, state.date, id)
+          (newCity :: newCities, newId)
       }
 
-    SimpopLocalState(state.date + 1, cities = evolved)
+    SimpopLocalState(state.date + 1, cities = newCities.reverse, newId)
   }
 
   /**
@@ -50,7 +53,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    * @param date date of evolution
    * @return a list of tuple which associate a city with a list of ExchangeLine (history of exchange).
    */
-  def evolveCity(cityId: Int, state: Seq[City], date: Int)(implicit rng: Random): City = {
+  def evolveCity(cityId: Int, state: Seq[City], date: Int, currentInnovationId: Int)(implicit rng: Random) = {
     val city = state(cityId)
     val filteredCity = deprecateInnovations(city, date)
 
@@ -58,12 +61,10 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     val growingCity = growPopulation(filteredCity)
 
     /** Return a new city after the diffusion **/
-    val cityAfterDiffusion = diffuse(growingCity, state, date)
+    val (cityAfterDiffusion, newInnovationId) = diffuse(growingCity, state, date, currentInnovationId)
 
     /** Return a new city and an historic of exchange if city create a new innovation **/
-    val cityAfterCreation = create(cityAfterDiffusion, date)
-
-    cityAfterCreation
+    create(cityAfterDiffusion, date, newInnovationId)
   }
 
   //By default no deprecation
@@ -76,19 +77,19 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    * @param rng The random number generator object
    * @return A tuple with current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
    */
-  def diffuse(city: City, state: Seq[City], date: Int)(implicit rng: Random): City = {
+  def diffuse(city: City, state: Seq[City], date: Int, currentInnovationId: Int)(implicit rng: Random) = {
     val localNetwork = territory(city.id)
 
     // recover all neighbors cities with innovation and which success the interaction test
     val innovatingPoolByCity =
       localNetwork.filter {
         neighbor =>
-          city.tradePlace.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
+          city.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
       }
 
     val innovationsFromNeighbours =
       innovatingPoolByCity.flatMap {
-        neighbor => exchangeableInnovations(city.tradePlace, state(neighbor.neighbor.id).tradePlace).randomElement
+        neighbor => exchangeableInnovations(city, state(neighbor.neighbor.id)).randomElement
       }
 
     val capturedInnovations =
@@ -97,18 +98,18 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
       }.toList
 
     val copyOfInnovation =
-      capturedInnovations.map {
-        innovation => innovation.copy(city = city.id, date = date)
+      capturedInnovations.zipWithIndex.map {
+        case (innovation, index) => new Innovation(city = city.id, date = date, rootId = innovation.id, id = currentInnovationId + index)
       }
 
-    addInnovations(city, date, copyOfInnovation)
+    (addInnovations(city, date, copyOfInnovation), currentInnovationId + copyOfInnovation.size)
   }
 
-  def create(city: City, date: Int)(implicit rng: Random) =
+  def create(city: City, date: Int, currentInnovationId: Int)(implicit rng: Random) =
     if (creation(city.population)) {
-      val innovation = new Innovation(city = city.id, date = date)
-      addInnovations(city, date, List(innovation))
-    } else city
+      val innovation = new Innovation(city = city.id, date = date, rootId = currentInnovationId, id = currentInnovationId)
+      (addInnovations(city, date, List(innovation)), currentInnovationId + 1)
+    } else (city, currentInnovationId)
 
   def diffusion(popCityStart: Double, popCityEnd: Double, distance: Double)(implicit rng: Random) = {
     val population = popCityStart * popCityEnd
@@ -143,14 +144,8 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    * Returns a new city after computing the resources and registering all new innovations in the trade place of the city
    *
    */
-  def addInnovations(city: City, date: Int, innovations: List[Innovation]) = {
-    val newTradePlace = city.tradePlace.copy(
-      innovations ::: city.tradePlace.sortedInnovations,
-      city.tradePlace.totalInnovations + innovations.size
-    )
-
-    city.copy(availableResource = impactResource(city, innovations), tradePlace = newTradePlace)
-  }
+  def addInnovations(city: City, date: Int, innovations: List[Innovation]) =
+    city.copy(availableResource = impactResource(city, innovations), innovations = innovations ::: city.sortedInnovations)
 
   def impactResource(city: City, innovations: List[Innovation]): Double =
     innovations.foldLeft(city.availableResource) {
@@ -161,7 +156,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
   def impactResource(city: City, resourceAvailable: Double): Double =
     resourceAvailable * (1 + innovationImpact * (1 - resourceAvailable / rMax))
 
-  def exchangeableInnovations(from: TradePlace, to: TradePlace) = diff(from.sortedInnovations, to.sortedInnovations)
+  def exchangeableInnovations(from: City, to: City) = diff(from.sortedInnovations, to.sortedInnovations)
 
   def binomial(pool: Double, p: Double): Double = 1.0 - math.pow(1 - p, pool)
 
