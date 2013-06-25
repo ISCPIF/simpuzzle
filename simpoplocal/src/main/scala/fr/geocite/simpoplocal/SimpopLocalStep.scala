@@ -86,15 +86,18 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
           city.tradePlace.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
       }
 
-    val innovationCaptured =
+    val innovationsFromNeighbours =
       innovatingPoolByCity.flatMap {
         neighbor => exchangeableInnovations(city.tradePlace, state(neighbor.neighbor.id).tradePlace).randomElement
-      }.groupBy(_.rootId).map {
+      }
+
+    val capturedInnovations =
+      innovationsFromNeighbours.groupBy(_.rootId).map {
         case (k, v) => v.randomElement.get
       }.toList
 
     val copyOfInnovation =
-      innovationCaptured.map {
+      capturedInnovations.map {
         innovation => innovation.copy(city = city.id, date = date)
       }
 
