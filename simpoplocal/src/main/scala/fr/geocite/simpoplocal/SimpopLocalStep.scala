@@ -30,7 +30,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
 
   def innovationImpact: Double
 
-  def ratePopulation = 0.02
+  def populationRate = 0.02
 
   def step(state: STATE)(implicit rng: Random) = {
     val disasteredCities = disaster(state.cities)
@@ -55,7 +55,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     val filteredCity = deprecateInnovations(city, date)
 
     /** Return a new city after evolution of it's population  **/
-    val growingCity = updatedPopulation(filteredCity)
+    val growingCity = growPopulation(filteredCity)
 
     /** Return a new city after the diffusion **/
     val cityAfterDiffusion = diffuse(growingCity, state, date)
@@ -129,17 +129,14 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    * Return a new city with updated population, based on the grow rate
    * @return A new city, with an updated population
    */
-  def updatedPopulation(city: City) = city.copy(population = growPopulation(city, ratePopulation))
+  def growPopulation(city: City) =
+    city.copy(
+      population =
+        math.max(
+          0.0,
+          city.population + city.population * populationRate * (1.0 - city.population / city.availableResource)
 
-  /**
-   * Compute a new population based on the previous population and the actual grow rate
-   * @param rate The grow rate to apply on this population
-   * @return A new population value
-   */
-  def growPopulation(city: City, rate: Double) =
-    math.max(
-      0.0,
-      city.population + city.population * rate * (1.0 - city.population / city.availableResource)
+        )
     )
 
   /**
