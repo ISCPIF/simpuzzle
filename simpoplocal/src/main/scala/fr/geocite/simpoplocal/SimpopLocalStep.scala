@@ -18,7 +18,6 @@
 package fr.geocite.simpoplocal
 
 import scala.util.Random
-import scala.annotation.tailrec
 
 trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState with NoDisaster {
 
@@ -81,7 +80,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     val localNetwork = territory(city.id)
 
     // recover all neighbors cities with innovation and which success the interaction test
-    val innovatingPoolByCity =
+    val innovationPoolByCity =
       localNetwork.filter {
         neighbor =>
           city.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
@@ -90,7 +89,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
     def exchangeableInnovations(from: City, to: City) = to.innovations &~ from.innovations
 
     val innovationsFromNeighbours =
-      innovatingPoolByCity.flatMap {
+      innovationPoolByCity.flatMap {
         neighbor => randomElement(exchangeableInnovations(city, state(neighbor.neighbor.id)).toSeq)
       }
 
@@ -99,12 +98,12 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
         case (k, v) => randomElement(v).get
       }.toList
 
-    val copyOfInnovation =
+    val copyOfInnovations =
       capturedInnovations.zipWithIndex.map {
         case (innovation, index) => new Innovation(city = city.id, date = date, rootId = innovation.id, id = currentInnovationId + index)
       }
 
-    (addInnovations(city, date, copyOfInnovation), currentInnovationId + copyOfInnovation.size)
+    (addInnovations(city, date, copyOfInnovations), currentInnovationId + copyOfInnovations.size)
   }
 
   def create(city: City, date: Int, currentInnovationId: Int)(implicit rng: Random) =
@@ -138,14 +137,9 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
         math.max(
           0.0,
           city.population + city.population * populationRate * (1.0 - city.population / city.availableResource)
-
         )
     )
 
-  /**
-   * Returns a new city after computing the resources and registering all new innovations in the trade place of the city
-   *
-   */
   def addInnovations(city: City, date: Int, innovations: List[Innovation]) =
     city.copy(availableResource = impactResource(city, innovations), innovations = city.innovations ++ innovations)
 
