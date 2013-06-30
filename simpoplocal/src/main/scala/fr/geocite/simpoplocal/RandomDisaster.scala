@@ -25,7 +25,7 @@ trait RandomDisaster <: Disaster {
   def disasterPopulation: Double = 30.0
   def disasterResource: Double = 30.0
 
-  override def disaster(cities: Seq[City])(implicit rng: Random) =
+  override def disaster(cities: Seq[Settlement])(implicit rng: Random) =
     cities.map {
       c =>
         if (rng.nextDouble < disasterProbability) c.copy(population = disasterPopulation, availableResource = disasterResource)

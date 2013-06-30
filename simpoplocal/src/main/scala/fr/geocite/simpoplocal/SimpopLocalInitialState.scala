@@ -26,8 +26,6 @@ import scala.collection.immutable.TreeSet
 
 trait SimpopLocalInitialState <: InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
 
-  def rMax: Double
-
   def initial(implicit rng: Random) = initialState
 
   lazy val initialState = {
@@ -35,67 +33,61 @@ trait SimpopLocalInitialState <: InitialState with SimpopLocalState with Geometr
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("init-situation.txt"))
 
-    /* Read File to create city, zero line by city
-     * 0 > id
-     * 1 > x
-     * 2 > y
-     * 3 > population
-     * 4 > own-resource-available
-     * 6 > percolation-index
-     * 7 > class of city
-     */
-    val cities =
+    /* Read File to create settlements with the matching attributes */
+    val settlements =
       input.getLines.map {
-        line => line.slice(1, line.size - 1).split("\\s").map(_.toDouble)
-      }.map {
-        c =>
-          new City(
-            id = c(0).toInt,
-            x = c(1),
-            y = c(2),
-            population = c(3),
-            availableResource = c(4),
-            percolationIndex = c(6).toInt,
-            cityClass = c(7).toInt,
+        line =>
+          val parsed = line.split(",")
+          Settlement(
+            id = parsed(0).toInt,
+            x = parsed(1).toDouble,
+            y = parsed(2).toDouble,
+            population = parsed(3).toDouble,
+            availableResource = parsed(4).toDouble,
+            settlementClass = parsed(5).toInt,
             innovations = TreeSet.empty)
-      }.toArray.sortBy((_: City).id).toIndexedSeq
+      }.toArray.sortBy(_.id).toIndexedSeq
 
-    SimpopLocalState(0, cities)
+    /* Create the initial state for the simulation */
+    SimpopLocalState(0, settlements)
   }
 
-  lazy val territory = {
-    val cities = initialState.cities
+  /**
+   * Settlements interaction network definition.
+   */
+  lazy val network = {
+    import initialState.settlements
 
-    // Store Cities into IndexedSeq[City]
-    // create link 1, radius limit = true
-    val citiesClass1 = cities.filter {
-      _.cityClass == 1
+    val settlementsClass1 = settlements.filter {
+      _.settlementClass == 1
     }
-    val citiesClass2 = cities.filter {
-      _.cityClass == 2
+    val settlementsClass2 = settlements.filter {
+      _.settlementClass == 2
     }
-    val citiesClass3 = cities.filter {
-      _.cityClass == 3
+    val settlementsClass3 = settlements.filter {
+      _.settlementClass == 3
     }
 
-    // return city and theirs cities neighbor's  and distance
-    // It's a precomputed network which contain also precomputed distance
-    cities.map {
-      city =>
-        city.cityClass match {
+    /*
+     * Compute the network of settlement possible interactions:
+     * for each settlement it computes a list of all the settlements it can interact with and the distance to this settlement
+     */
+    settlements.map {
+      settlement =>
+        settlement.settlementClass match {
           case 1 =>
-            //All city of class 1 connected to all city of class 1
-            neighbors(citiesClass1, city)
+            //All settlements of class 1 are connected to all neighbouring settlements of class 1
+            neighbors(settlementsClass1, settlement)
           case 2 =>
-            //All city of class 2 connected to all other cities (class 3 to 1) in porteRadiusClass2
-            neighbors(citiesClass1, city) ++
-              neighbors(citiesClass2, city) ++
-              neighbors(citiesClass3, city)
+            //All settlements of class 2 are connected to all neighbouring settlements (class 3 to 1)
+            neighbors(settlementsClass1, settlement) ++
+              neighbors(settlementsClass2, settlement) ++
+              neighbors(settlementsClass3, settlement)
           case 3 =>
-            //All city of class 3 connected to all other cities (class 3 to 1) in porteRadiusClass3
-            neighbors(citiesClass1, city) ++
-              neighbors(citiesClass2, city) ++
-              neighbors(citiesClass3, city)
+            //All settlements of class 3 are connected to all neighbouring settlements (class 3 to 1)
+            neighbors(settlementsClass1, settlement) ++
+              neighbors(settlementsClass2, settlement) ++
+              neighbors(settlementsClass3, settlement)
         }
     }.toIndexedSeq
   }

@@ -20,5 +20,5 @@ package fr.geocite.simpoplocal
 import scala.util.Random
 
 trait Disaster <: SimpopLocalState {
-  def disaster(cities: Seq[City])(implicit rng: Random): Seq[City]
+  def disaster(cities: Seq[Settlement])(implicit rng: Random): Seq[Settlement]
 }

@@ -20,5 +20,5 @@ package fr.geocite.simpoplocal
 import scala.util.Random
 
 trait NoDisaster <: Disaster {
-  override def disaster(cities: Seq[City])(implicit rng: Random) = cities
+  override def disaster(settlements: Seq[Settlement])(implicit rng: Random) = settlements
 }

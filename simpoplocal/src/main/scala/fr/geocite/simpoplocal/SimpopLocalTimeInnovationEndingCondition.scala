@@ -25,6 +25,6 @@ trait SimpopLocalTimeInnovationEndingCondition extends EndingCondition with Simp
   def maxInnovation: Double
 
   def ended(state: STATE) =
-    state.date >= 4000 || state.currentInnovationId > maxInnovation
+    state.step >= 4000 || state.currentInnovationId > maxInnovation
 
 }
