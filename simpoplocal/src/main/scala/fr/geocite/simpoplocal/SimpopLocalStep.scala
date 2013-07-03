@@ -56,10 +56,9 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
    */
   def evolveCity(cityId: Int, state: Seq[Settlement], date: Int, currentInnovationId: Int)(implicit rng: Random) = {
     val city = state(cityId)
-    val filteredCity = deprecateInnovations(city, date)
 
     /** Return a new city after evolution of it's population  **/
-    val growingCity = growPopulation(filteredCity)
+    val growingCity = growPopulation(city)
 
     /** Return a new city after the diffusion **/
     val (cityAfterDiffusion, newInnovationId) = diffuse(growingCity, state, date, currentInnovationId)
@@ -69,7 +68,7 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
   }
 
   //By default no deprecation
-  def deprecateInnovations(city: Settlement, date: Int): Settlement = city
+  def filterObsolete(innovations: Iterable[Innovation], date: Int) = innovations
 
   /**
    *
@@ -88,11 +87,14 @@ trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState wi
           city.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
       }
 
-    def exchangeableInnovations(from: Settlement, to: Settlement) = to.innovations &~ from.innovations
+    def exchangeableInnovations(from: Settlement, to: Settlement, date: Int) =
+      filterObsolete(to.innovations &~ from.innovations, date)
 
     val innovationsFromNeighbours =
       innovationPoolByCity.flatMap {
-        neighbor => randomElement(exchangeableInnovations(city, state(neighbor.neighbor.id)).toSeq)
+        neighbor =>
+          val exchangeable = exchangeableInnovations(city, state(neighbor.neighbor.id), date)
+          randomElement(exchangeable.toSeq)
       }
 
     val capturedInnovations =

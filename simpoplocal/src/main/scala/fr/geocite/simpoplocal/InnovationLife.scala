@@ -21,11 +21,7 @@ trait InnovationLife extends SimpopLocalStep {
 
   def innovationLife: Int
 
-  override def deprecateInnovations(settlements: Settlement, date: Int) =
-    settlements.copy(
-      innovations =
-        settlements.innovations.filter {
-          innovation => date - innovation.date <= innovationLife
-        }
-    )
+  override def filterObsolete(innovations: Iterable[Innovation], date: Int) =
+    innovations.filter(date - _.date <= innovationLife)
+
 }
