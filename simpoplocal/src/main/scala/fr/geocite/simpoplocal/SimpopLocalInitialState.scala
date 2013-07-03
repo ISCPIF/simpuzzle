@@ -23,50 +23,75 @@ import scala.io.Source
 import fr.geocite.simpuzzle.distance._
 import fr.geocite.simpuzzle._
 import scala.collection.immutable.TreeSet
+import fr.geocite.simpuzzle.city._
 
-trait SimpopLocalInitialState <: InitialState with SimpopLocalState with GeometricDistanceNeighbourhood with EuclideanDistance {
+trait SimpopLocalInitialState <: InitialState
+    with SimpopLocalState
+    with InnovationRootIdOrdering
+    with GeometricDistanceNeighbourhood
+    with EuclideanDistance {
 
-  def initial(implicit rng: Random) = initialState
+  def initial(implicit rng: Random) =
+    SimpopLocalState(0, readSettlements.map(_.toSettlement))
 
-  lazy val initialState = {
+  /**
+   *
+   * A settlement as described in the initialisation file.
+   *
+   * For attributes documentation see @Settlement class.
+   *
+   *  @param settlementClass Settlements are distributed in 3 classes depending on their population size: 1 bigger, 2 medium, 3 smaller.
+   */
+  case class ReadSettlement(
+      id: Int,
+      x: Double,
+      y: Double,
+      population: Double,
+      availableResource: Double,
+      settlementClass: Int) extends Position with Radius with Id {
 
+    /// @return the range of interaction of this settlement.
+    def radius =
+      settlementClass match {
+        case 1 => 20.0
+        case 2 => 10.0
+        case 3 => 5.0
+        case _ => sys.error(s"Invalid settlement class $settlementClass")
+      }
+
+    /// @return an initial settlement for the simulation state
+    def toSettlement = Settlement(id, x, y, population, availableResource, TreeSet.empty)
+  }
+
+  /// Read settlements from the file
+  lazy val readSettlements = {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("init-situation.txt"))
 
     /* Read File to create settlements with the matching attributes */
-    val settlements =
-      input.getLines.map {
-        line =>
-          val parsed = line.split(",")
-          Settlement(
-            id = parsed(0).toInt,
-            x = parsed(1).toDouble,
-            y = parsed(2).toDouble,
-            population = parsed(3).toDouble,
-            availableResource = parsed(4).toDouble,
-            settlementClass = parsed(5).toInt,
-            innovations = TreeSet.empty)
-      }.toArray.sortBy(_.id).toIndexedSeq
-
-    /* Create the initial state for the simulation */
-    SimpopLocalState(0, settlements)
+    input.getLines.map {
+      line =>
+        val parsed = line.split(",")
+        ReadSettlement(
+          id = parsed(0).toInt,
+          x = parsed(1).toDouble,
+          y = parsed(2).toDouble,
+          population = parsed(3).toDouble,
+          availableResource = parsed(4).toDouble,
+          settlementClass = parsed(5).toInt)
+    }.toArray.sortBy(_.id).toIndexedSeq
   }
 
   /**
    * Settlements interaction network definition.
    */
   lazy val network = {
-    import initialState.settlements
+    val settlements = readSettlements
 
-    val settlementsClass1 = settlements.filter {
-      _.settlementClass == 1
-    }
-    val settlementsClass2 = settlements.filter {
-      _.settlementClass == 2
-    }
-    val settlementsClass3 = settlements.filter {
-      _.settlementClass == 3
-    }
+    // Partition settlements by class
+    val settlementsClass1 = settlements.filter { _.settlementClass == 1 }
+    val settlementsClass2 = settlements.filter { _.settlementClass == 2 }
+    val settlementsClass3 = settlements.filter { _.settlementClass == 3 }
 
     /*
      * Compute the network of settlement possible interactions:
@@ -89,7 +114,7 @@ trait SimpopLocalInitialState <: InitialState with SimpopLocalState with Geometr
               neighbors(settlementsClass2, settlement) ++
               neighbors(settlementsClass3, settlement)
         }
-    }.toIndexedSeq
+    }
   }
 
 }

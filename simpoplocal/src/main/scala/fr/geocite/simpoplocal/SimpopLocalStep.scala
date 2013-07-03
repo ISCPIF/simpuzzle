@@ -18,146 +18,232 @@
 package fr.geocite.simpoplocal
 
 import scala.util.Random
+import scala.collection.mutable.ListBuffer
 
-trait SimpopLocalStep extends fr.geocite.simpuzzle.Step with SimpopLocalState with SimpopLocalInitialState with NoDisaster {
+trait SimpopLocalStep
+    extends fr.geocite.simpuzzle.Step
+    with SimpopLocalState
+    with SimpopLocalInitialState
+    with NoDisaster
+    with InnovationRootIdOrdering {
 
-  def distanceDecay: Double
-
-  def pDiffusion: Double
-
-  def pCreation: Double
-
-  def innovationImpact: Double
-
-  def rMax: Double
-
+  /// The average annual growth on the settlements in inhabitants per step
   def populationRate = 0.02
 
+  /// The probability that an innovation emerges from the interaction between two individuals of the same settlement
+  def pCreation: Double
+
+  /// The probability that an innovation is transmitted between two individuals of different settlements
+  def pDiffusion: Double
+
+  /// The deterrent effect of the of distance on diffusion
+  def distanceDecay: Double
+
+  /// The impact of the acquisition of an innovation on the growth of a settlement
+  def innovationImpact: Double
+
+  /// The maximum carrying capacity of the landscape of each settlement (measured in number of inhabitants)
+  def rMax: Double
+
   def step(state: STATE)(implicit rng: Random) = {
-    val disasteredCities = disaster(state.settlements)
+    val disasteredSettlements = disaster(state.settlements)
 
-    val (newCities, newId) =
-      disasteredCities.foldLeft(List.empty[Settlement] -> state.currentInnovationId) {
-        (acc, city) =>
-          val (newCities, id) = acc
-          val (newCity, newId) = evolveCity(city.id, disasteredCities, state.step, id)
-          (newCity :: newCities, newId)
-      }
+    var currentInnovationId = state.currentInnovationId
+    val newSettlements = ListBuffer[Settlement]()
 
-    SimpopLocalState(state.step + 1, settlements = newCities.reverse, newId)
+    for {
+      settlement <- disasteredSettlements
+    } {
+      val (newSettlement, newId) = evolveSettlement(settlement, disasteredSettlements, state.step, currentInnovationId)
+      currentInnovationId = newId
+      newSettlements += newSettlement
+    }
+
+    SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId)
   }
 
   /**
    *
-   * @param cityId Id of city
-   * @param state Indexed List of city object, position of city is based on the cityId parameter
-   * @param date date of evolution
-   * @return a list of tuple which associate a city with a list of ExchangeLine (history of exchange).
+   * Evolve a settlement (compute its new state).
+   *
+   * @param settlement The concerned settlement.
+   * @param state Current state of the simulation.
+   * @param step Current step of the simulation.
+   * @return The new state of the settlement and the new value for next innovation id.
    */
-  def evolveCity(cityId: Int, state: Seq[Settlement], date: Int, currentInnovationId: Int)(implicit rng: Random) = {
-    val city = state(cityId)
-
-    /** Return a new city after evolution of it's population  **/
-    val growingCity = growPopulation(city)
-
-    /** Return a new city after the diffusion **/
-    val (cityAfterDiffusion, newInnovationId) = diffuse(growingCity, state, date, currentInnovationId)
-
-    /** Return a new city and an historic of exchange if city create a new innovation **/
-    create(cityAfterDiffusion, date, newInnovationId)
+  def evolveSettlement(settlement: Settlement, state: Seq[Settlement], step: Int, currentInnovationId: Int)(implicit rng: Random) = {
+    val grownSettlement = growPopulation(settlement)
+    val (settlementAfterDiffusion, newInnovationId) = diffusion(grownSettlement, state, step, currentInnovationId)
+    creation(settlementAfterDiffusion, state, step, newInnovationId)
   }
 
   //By default no deprecation
   def filterObsolete(innovations: Iterable[Innovation], date: Int) = innovations
 
+
   /**
    *
-   * @param state The current list of cities
-   * @param date The time in simulation
-   * @param rng The random number generator object
-   * @return A tuple with current tested city, and the list of Exchange object ( an object which concretize the sucess of an adoption between two cities )
+   * Computes the process of diffusion of innovations for a settlement.
+   *
+   * @param settlement The concerned settlement.
+   * @param state The current state of the simulation.
+   * @param step The current step of the simulation.
+   * @param nextInnovationId Next id available for innovation creation.
+   * @param rng The random number generator.
+   * @return The new state of the settlement after the diffusion process and the new value for next innovation id.
    */
-  def diffuse(city: Settlement, state: Seq[Settlement], date: Int, currentInnovationId: Int)(implicit rng: Random) = {
-    val localNetwork = network(city.id)
+  def diffusion(settlement: Settlement, state: Seq[Settlement], step: Int, nextInnovationId: Int)(implicit rng: Random) = {
+    val localNetwork = network(settlement.id)
 
-    // recover all neighbors cities with innovation and which success the interaction test
+    // Recovers all neighbours settlements (and their innovations) which succeed in the diffusion process test.
     val innovationPoolByCity =
       localNetwork.filter {
-        neighbor =>
-          city.innovations.size > 0 && diffusion(city.population, state(neighbor.neighbor.id).population, neighbor.distance)
+        neighbour =>
+          settlement.innovations.size > 0 && diffuse(state(settlement.id).population, state(neighbour.neighbour.id).population, neighbour.distance)
       }
 
-    def exchangeableInnovations(from: Settlement, to: Settlement, date: Int) =
-      filterObsolete(to.innovations &~ from.innovations, date)
+    /**
+     *
+     * Filters the set of exchangeable innovations: the set of innovations from a neighbour that are not already present in the concerned settlement and not obsolete.
+     *
+     * @param from The settlement from which the innovation are diffused.
+     * @return The set of exchangeable innovations.
+     */
+    def exchangeableInnovations(from: Settlement) = filterObsolete(from.innovations &~ settlement.innovations, step)
 
+    // Randomly draws an innovation for each the neighbour selected for diffusion.
     val innovationsFromNeighbours =
       innovationPoolByCity.flatMap {
-        neighbor =>
-          val exchangeable = exchangeableInnovations(city, state(neighbor.neighbor.id), date)
-          randomElement(exchangeable.toSeq)
+        neighbour => randomElement(exchangeableInnovations(state(neighbour.neighbour.id)).toSeq)
       }
 
-    val capturedInnovations =
+    // Randomly draws an innovation in case the same innovation (same rootId) is proposed by different neighbours.
+    val distinctInnovations =
       innovationsFromNeighbours.groupBy(_.rootId).map {
         case (k, v) => randomElement(v).get
       }.toList
 
+    // Copy the innovations acquired by diffusion.
     val copyOfInnovations =
-      capturedInnovations.zipWithIndex.map {
-        case (innovation, index) => new Innovation(date = date, rootId = innovation.id, id = currentInnovationId + index)
+      distinctInnovations.zipWithIndex.map {
+        case (innovation, index) => Innovation(step = step, rootId = innovation.id, id = nextInnovationId + index)
       }
 
-    (addInnovations(city, date, copyOfInnovations), currentInnovationId + copyOfInnovations.size)
-  }
-
-  def create(city: Settlement, date: Int, currentInnovationId: Int)(implicit rng: Random) =
-    if (creation(city.population)) {
-      val innovation = new Innovation(date = date, rootId = currentInnovationId, id = currentInnovationId)
-      (addInnovations(city, date, List(innovation)), currentInnovationId + 1)
-    } else (city, currentInnovationId)
-
-  def diffusion(popCityStart: Double, popCityEnd: Double, distance: Double)(implicit rng: Random) = {
-    val population = popCityStart * popCityEnd
-    val formula = population / math.pow(distance, distanceDecay)
-    val pCopyInnovation = rng.nextDouble
-    val pBinomial = binomial(formula, pDiffusion)
-    pCopyInnovation <= pBinomial
-  }
-
-  def creation(popCity: Double)(implicit aprng: Random): Boolean = {
-    val formula = (1.0 / 2.0) * (popCity * (popCity - 1.0))
-    val pCreateInnovation = aprng.nextDouble
-    val pBinomial = binomial(formula, pCreation)
-    pCreateInnovation <= pBinomial
+    (acquireInnovations(settlement, step, copyOfInnovations), nextInnovationId + copyOfInnovations.size)
   }
 
   /**
-   * Return a new city with updated population, based on the grow rate
-   * @return A new city, with an updated population
+   *
+   * Computes the process of creation of innovations for a settlement.
+   *
+   * @param settlement The concerned settlement.
+   * @param state The current state of simulation.
+   * @param step The current step of the simulation.
+   * @param nextInnovationId Next id available for innovation creation.
+   * @param rng The random number generator.
+   * @return The new state of the settlement after the creation process and the new value for next innovation id.
    */
-  def growPopulation(city: Settlement) =
-    city.copy(
+  def creation(settlement: Settlement, state: Seq[Settlement], step: Int, nextInnovationId: Int)(implicit rng: Random) =
+    if (create(state(settlement.id).population)) {
+      val innovation = Innovation(step = step, rootId = nextInnovationId, id = nextInnovationId)
+      (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1)
+    } else (settlement, nextInnovationId)
+
+
+  /**
+   *
+   * Randomly draws whether a creation of innovation occurs between two settlements.
+   *
+   * @param population1 The population of the first interacting settlement.
+   * @param population2 The population of the second interacting settlement.
+   * @param distance The distance between the two settlements.
+   * @param rng The random number generator.
+   * @return true if the diffusion occurs.
+   */
+  def diffuse(population1: Double, population2: Double, distance: Double)(implicit rng: Random) = {
+    val population = population1 * population2
+    val numberOfDistantInteractions = population / math.pow(distance, distanceDecay)
+    val pBinomial = binomial(numberOfDistantInteractions, pDiffusion)
+    rng.nextDouble <= pBinomial
+  }
+
+  /**
+   *
+   * Randomly draws whether a creation of innovation occurs in a settlement of a given population.
+   *
+   * @param population The population the settlement.
+   * @param rng The random number generator.
+   * @return true if the creation occurs.
+   */
+  def create(population: Double)(implicit rng: Random): Boolean = {
+    val numberOfLocalInteractions = (1.0 / 2.0) * (population * (population - 1.0))
+    val pBinomial = binomial(numberOfLocalInteractions, pCreation)
+    rng.nextDouble <= pBinomial
+  }
+
+  /**
+   *
+   * Compute
+   *
+   * @param settlement The concerned settlement.
+   * @return A new settlement state after evolution of it's population.
+   */
+  def growPopulation(settlement: Settlement) =
+    settlement.copy(
       population =
         math.max(
           0.0,
-          city.population + city.population * populationRate * (1.0 - city.population / city.availableResource)
+          settlement.population + settlement.population * populationRate * (1.0 - settlement.population / settlement.availableResource)
         )
     )
 
-  def addInnovations(city: Settlement, date: Int, innovations: List[Innovation]) =
-    city.copy(availableResource = impactResource(city, innovations), innovations = city.innovations ++ innovations)
+  /**
+   *
+   * Computes the new state of a settlement after the acquisition of innovations. This method also impact the available resource of the settlement.
+   *
+   * @param settlement The concerned settlement.
+   * @param step The current step of the simulation.
+   * @param innovations The acquired innovations during the step.
+   * @return The new state of the settlement
+   */
+  def acquireInnovations(settlement: Settlement, step: Int, innovations: Seq[Innovation]) =
+    settlement.copy(
+      availableResource = impactResource(settlement, innovations),
+      innovations = settlement.innovations ++ innovations
+    )
 
-  def impactResource(city: Settlement, innovations: List[Innovation]): Double =
-    innovations.foldLeft(city.availableResource) {
-      (resource, _) => impactResource(city, resource)
+  /**
+   *
+   * Computes the effect of the acquisition of innovations on the available resource.
+   *
+   * @param settlement The concerned settlement.
+   * @param innovations The acquired innovations.
+   * @return The new amount of the available resource.
+   */
+  def impactResource(settlement: Settlement, innovations: Seq[Innovation]): Double =
+    innovations.foldLeft(settlement.availableResource) {
+      (resource, _) => resource  * (1 + innovationImpact * (1 - resource / rMax))
     }
 
-  /** Formula to compute a new resource based on the innovation factor **/
-  def impactResource(city: Settlement, resourceAvailable: Double): Double =
-    resourceAvailable * (1 + innovationImpact * (1 - resourceAvailable / rMax))
+  /**
+   *
+   * Compute the probability of at least one success of a boolean random draw of probability of success p after n draws.
+   *
+   * @param n Number of draws.
+   * @param p Probability of success of a single draw.
+   * @return The probability of at least one success after n draws.
+   */
+  def binomial(n: Double, p: Double): Double = 1.0 - math.pow(1 - p, n)
 
-  def binomial(pool: Double, p: Double): Double = 1.0 - math.pow(1 - p, pool)
-
-  def randomElement[T](seq: Seq[T])(implicit prng: Random) = if (seq.isEmpty) None else Some(seq(prng.nextInt(seq.size)))
+  /**
+   *
+   * Draw a random element in a sequence.
+   *
+   * @param seq A sequence of elements.
+   * @param rng The random number generator.
+   * @tparam T The type of the elements.
+   * @return A randomly drawn element.
+   */
+  def randomElement[T](seq: Seq[T])(implicit rng: Random) = if (seq.isEmpty) None else Some(seq(rng.nextInt(seq.size)))
 
 }

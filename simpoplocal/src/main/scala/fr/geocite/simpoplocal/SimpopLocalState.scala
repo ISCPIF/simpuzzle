@@ -33,14 +33,6 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
   case class SimpopLocalState(step: Int, settlements: Seq[Settlement], currentInnovationId: Int = 0)
 
   /**
-   * Order function of innovation. In each settlement innovations are kept ordered by rootId to speed
-   * up the computation of the differences between sets of innovations acquired by 2 settlements.
-   *
-   * By design, each settlements cannot acquire innovations with the same rootId.
-   */
-  implicit lazy val innovationOrdering = Ordering.by((_: Innovation).rootId)
-
-  /**
    *
    * Class representing a settlement
    *
@@ -49,42 +41,23 @@ trait SimpopLocalState extends fr.geocite.simpuzzle.State {
    * @param y Vertical coordinate.
    * @param population Population of the settlement.
    * @param availableResource Amount of available resource: counted in number of inhabitants that this amount can sustain.
-   * @param settlementClass Settlements are distributed in 3 classes depending on their population size: 1 bigger, 2 medium, 3 smaller.
    * @param innovations Set of innovation entities acquired by the city.
    */
   case class Settlement(
-      id: Int,
-      x: Double,
-      y: Double,
-      population: Double,
-      availableResource: Double,
-      settlementClass: Int,
-      innovations: Set[Innovation]) extends Position with Radius with Id {
-
-    def rangeRadiusClass1 = 20.0
-    def rangeRadiusClass2 = 10.0
-    def rangeRadiusClass3 = 5.0
-
-    /**
-     *
-     * @return the radius of interaction of this settlement.
-     */
-    def radius =
-      settlementClass match {
-        case 1 => rangeRadiusClass1
-        case 2 => rangeRadiusClass2
-        case 3 => rangeRadiusClass3
-        case _ => sys.error(s"Invalid settlement class $settlementClass")
-      }
-  }
+    id: Int,
+    x: Double,
+    y: Double,
+    population: Double,
+    availableResource: Double,
+    innovations: Set[Innovation])
 
   /**
    * Class representing innovations
    *
-   * @param date Date of acquisition
+   * @param step Date of acquisition
    * @param rootId Id of the original created innovation from which this is copied.
    * @param id Id of the innovation. Equal to id if this innovation if it is a created (root) innovation.
    */
-  case class Innovation(date: Int, rootId: Int, id: Int)
+  case class Innovation(step: Int, rootId: Int, id: Int)
 
 }

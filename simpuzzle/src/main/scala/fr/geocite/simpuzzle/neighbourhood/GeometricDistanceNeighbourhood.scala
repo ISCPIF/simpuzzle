@@ -21,13 +21,13 @@ import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 import fr.geocite.simpuzzle.distance.GeometricDistance
 
 trait GeometricDistanceNeighbourhood <: GeometricDistance {
-  case class Neighbor[T](neighbor: T, distance: Double)
+  case class Neighbor[T](neighbour: T, distance: Double)
 
   def neighbors[T <: Position with Radius with Id](all: Seq[T], center: T) =
     all.map {
       c => Neighbor(c, distance(center, c))
     }.filter {
-      n => n.distance < center.radius && center.id != n.neighbor.id
+      n => n.distance < center.radius && center.id != n.neighbour.id
     }
 
 }

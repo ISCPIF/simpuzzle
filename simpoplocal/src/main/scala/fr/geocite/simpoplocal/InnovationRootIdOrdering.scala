@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 28/04/13 Romain Reuillon
+ * Copyright (C) 03/07/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,18 +17,14 @@
 
 package fr.geocite.simpoplocal
 
-trait InnovationLife extends SimpopLocalStep {
-
-  /// Length of time during which an innovation can be diffused from a settlement: passed this length of time this innovation becomes obsolete.
-  def innovationLife: Int
+trait InnovationRootIdOrdering <: SimpopLocalState {
 
   /**
-   * Filters obsolete innovations from a set of innovations.
-   * @param innovations The set innovations.
-   * @param step The current step of the simulation.
-   * @return The set of filtered innovations.
+   * Order function of innovation. In each settlement innovations are kept ordered by rootId to speed
+   * up the computation of the differences between sets of innovations acquired by 2 settlements.
+   *
+   * By design, each settlements cannot acquire innovations with the same rootId.
    */
-  override def filterObsolete(innovations: Iterable[Innovation], step: Int) =
-    innovations.filter(step - _.step <= innovationLife)
+  implicit lazy val innovationOrdering = Ordering.by((_: Innovation).rootId)
 
 }
