@@ -80,7 +80,6 @@ trait SimpopLocalStep
   //By default no deprecation
   def filterObsolete(innovations: Iterable[Innovation], date: Int) = innovations
 
-
   /**
    *
    * Computes the process of diffusion of innovations for a settlement.
@@ -148,7 +147,6 @@ trait SimpopLocalStep
       val innovation = Innovation(step = step, rootId = nextInnovationId, id = nextInnovationId)
       (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1)
     } else (settlement, nextInnovationId)
-
 
   /**
    *
@@ -222,7 +220,7 @@ trait SimpopLocalStep
    */
   def impactResource(settlement: Settlement, innovations: Seq[Innovation]): Double =
     innovations.foldLeft(settlement.availableResource) {
-      (resource, _) => resource  * (1 + innovationImpact * (1 - resource / rMax))
+      (resource, _) => resource * (1 + innovationImpact * (1 - resource / rMax))
     }
 
   /**

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 27/06/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,12 +17,12 @@
 
 package fr.geocite.marius.one.zero
 
-import fr.geocite.simpuzzle._
-import fr.geocite.simpuzzle.city._
+import fr.geocite.simpuzzle.State
+import fr.geocite.simpuzzle.city.Population
 
 trait MariusState <: State {
-  case class City(population: Double, hydrocarbon: Boolean) extends Population with Hydrocarbon
-  case class MariusState(step: Int, cities: Seq[City])
+  case class City(population: Double, wealth: Double, region: String, capital: Boolean) extends Population
+  type DistanceMatrix = Seq[Seq[Double]]
+  case class MariusState(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
   type STATE = MariusState
 }
-

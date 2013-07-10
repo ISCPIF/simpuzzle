@@ -17,6 +17,18 @@
 
 package fr.geocite.simpuzzle.city
 
+object Position {
+
+  def apply(x: Double, y: Double) = {
+    val (_x, _y) = (x, y)
+    new Position {
+      val y = _y
+      val x = _x
+    }
+  }
+
+}
+
 trait Position {
   def x: Double
   def y: Double

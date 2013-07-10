@@ -9,18 +9,22 @@ object SimPuzzleBuild extends Build {
  override def settings = 
    super.settings ++ Seq(
      scalaVersion := "2.10.1",
-     organization := "fr.geocite"
+     organization := "fr.geocite",
+     resolvers ++= Seq("ISC-PIF Public" at "http://maven.iscpif.fr/public")
    )
 
-  lazy val globalSettings = Seq(
+  lazy val globalSettings = Project.defaultSettings ++ Seq(
      publishTo <<= isSnapshot(if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")),
      credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials")
    )
 
+ lazy val geotools = libraryDependencies += "org.geotools" % "gt-referencing" % "9.3"
 
  lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle")) settings (globalSettings: _*)
 
- lazy val marius = Project(id = "marius", base = file("marius")) dependsOn (simpuzzle, gibrat) settings (globalSettings: _*)
+ lazy val gis = Project(id = "gis", base = file("gis"), settings = globalSettings ++ Seq(geotools)) dependsOn(simpuzzle)
+
+ lazy val marius = Project(id = "marius", base = file("marius")) dependsOn (simpuzzle, gibrat, gis) settings (globalSettings: _*)
  
  lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
@@ -28,7 +32,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
- lazy val all = Project(id = "all", base = file("."), settings = Project.defaultSettings ++ osgiSettings ++ globalSettings)  settings (publish := { }, bundleSymbolicName := "fr.geocite.simpuzzle", bundleVersion := "1.0", exportPackage := Seq("fr.geocite.*")) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat)
+ lazy val all = Project(id = "all", base = file("."), settings = Project.defaultSettings ++ osgiSettings ++ globalSettings ++ Seq(geotools))  settings (publish := { }, bundleSymbolicName := "fr.geocite.simpuzzle", bundleVersion := "1.0", exportPackage := Seq("fr.geocite.*")) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat, gis)
 }
 
 

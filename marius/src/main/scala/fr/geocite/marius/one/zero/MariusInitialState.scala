@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 27/06/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,15 +17,42 @@
 
 package fr.geocite.marius.one.zero
 
+import fr.geocite.simpuzzle.InitialState
+import fr.geocite.simpuzzle.distribution.{ PositionDistribution, PopulationDistribution }
+import fr.geocite.marius.{ CapitalDistribution, RegionDistribution }
 import scala.util.Random
-import fr.geocite.marius._
-import fr.geocite.simpuzzle.distribution._
+import fr.geocite.gis.distance.GeodeticDistance
 
-trait MariusInitialState <: MariusState with PopulationDistribution with HydrocarbonDistribution {
-  def initial(implicit rng: Random) = {
-    val cities = (populations zip hydrocarbons).map {
-      case (p, h) => City(p, h)
+trait MariusInitialState <: InitialState
+    with MariusState
+    with PopulationDistribution
+    with RegionDistribution
+    with CapitalDistribution
+    with PositionDistribution
+    with InitialWealth
+    with GeodeticDistance {
+
+  def initial(implicit rng: Random) = MariusState(0, cities, distances)
+
+  def cities(implicit rng: Random) =
+    for {
+      ((p, r), c) <- populations zip regions zip capitals
+    } yield {
+      City(
+        population = p,
+        region = r,
+        capital = c,
+        wealth = initialWealth(p)
+      )
     }
-    MariusState(0, cities)
+
+  def distances(implicit rng: Random) = {
+    val positions = positionDistribution(rng).toIndexedSeq
+
+    positions.zipWithIndex.map {
+      case (c1, i) =>
+        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
+    }
   }
+
 }

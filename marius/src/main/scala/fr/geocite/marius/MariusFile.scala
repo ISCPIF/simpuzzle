@@ -19,23 +19,32 @@ package fr.geocite.marius
 
 import scala.io.Source
 import fr.geocite.simpuzzle.distribution._
+import fr.geocite.simpuzzle.city.{ Position, Population }
+import fr.geocite.gis.distance.GeodeticDistance
+import fr.geocite.simpuzzle.distance.GeometricDistance
+import fr.geocite.simpuzzle.neighbourhood.GeometricDistanceNeighbourhood
 
-trait MariusFile <: PopulationDistribution with HydrocarbonDistribution {
+trait MariusFile <: PopulationDistribution
+    with HydrocarbonDistribution
+    with RegionDistribution
+    with CapitalDistribution
+    with PositionDistribution {
 
   def startingCities =
-    content.filterNot(_(13).isEmpty)
+    content.filterNot(l => l(13).isEmpty || l(8).isEmpty)
 
   def populationDistribution = Distribution(startingCities.map(_(13).toDouble))
 
-  def hydrocarbonDistribution = {
-    def toBoolean(s: String) =
-      s match {
-        case "1" => true
-        case _ => false
-      }
+  def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 
-    Distribution(startingCities.map(l => toBoolean(l(8))))
-  }
+  def positionDistribution =
+    Distribution(startingCities.map {
+      l => Position(l(5).toDouble, l(4).toDouble)
+    })
+
+  def regions = startingCities.map(_(2))
+
+  def capitals = startingCities.map(l => toBoolean(l(7)))
 
   lazy val content = {
     val input =
@@ -46,5 +55,11 @@ trait MariusFile <: PopulationDistribution with HydrocarbonDistribution {
     }.toList
     finally input.close
   }
+
+  def toBoolean(s: String) =
+    s match {
+      case "1" => true
+      case _ => false
+    }
 
 }
