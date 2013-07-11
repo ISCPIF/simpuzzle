@@ -8,14 +8,15 @@ object SimPuzzleBuild extends Build {
 
  override def settings = 
    super.settings ++ Seq(
-     scalaVersion := "2.10.1",
+     scalaVersion := "2.10.2",
      organization := "fr.geocite",
      resolvers ++= Seq("ISC-PIF Public" at "http://maven.iscpif.fr/public")
    )
 
   lazy val globalSettings = Project.defaultSettings ++ Seq(
      publishTo <<= isSnapshot(if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")),
-     credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials")
+     credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
+     libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2"
    )
 
  lazy val geotools = libraryDependencies += "org.geotools" % "gt-referencing" % "9.3"
