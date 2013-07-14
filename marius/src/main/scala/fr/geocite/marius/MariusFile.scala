@@ -31,9 +31,9 @@ trait MariusFile <: PopulationDistribution
     with PositionDistribution {
 
   def startingCities =
-    content.filterNot(l => l(13).isEmpty || l(8).isEmpty)
+    content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
 
-  def populationDistribution = Distribution(startingCities.map(_(13).toDouble))
+  def populationDistribution = Distribution(startingCities.map(_(12).toDouble))
 
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 

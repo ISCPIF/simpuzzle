@@ -47,7 +47,6 @@ trait MariusStep <: Step with MariusState {
   def conversionFactor: Double
 
   def step(s: STATE)(implicit rng: Random) = {
-
     //TODO update wealth (budget supply)
     val supplies = s.cities.map(c => supply(c.population, c.wealth))
     val demands = s.cities.map(c => demand(c.population))
@@ -59,23 +58,26 @@ trait MariusStep <: Step with MariusState {
 
     val propositionToSell: Seq[Map[Int, Double]] =
       (sellContracts zip supplies).map {
-        case (buyers, supply) => reservations(buyers.toSeq, demands, supply)
+        case (buyers, supply) =>
+          reservations(buyers.toSeq, demands, supply)
       }
 
     val propositionToBuy: Seq[Map[Int, Double]] =
       (buyContract zip demands).map {
-        case (sellers, demand) => reservations(sellers.toSeq, supplies, demand)
+        case (sellers, demand) =>
+          reservations(sellers.toSeq, supplies, demand)
       }
 
     case class Transaction(from: Int, to: Int, pps: Double, ppb: Double) {
       def transacted = math.min(pps, ppb)
-      def delta = ppb - pps
     }
 
     def computeTransactions(from: Int, ppss: Map[Int, Double]): Seq[Transaction] =
       ppss.toSeq.map {
         case (to, pps) =>
           val ppb = propositionToBuy(to).getOrElse(from, sys.error(s"Transaction is empty $from to $to"))
+          assert(!ppb.isNaN)
+          assert(!pps.isNaN)
           Transaction(from, to, pps, ppb)
       }
 
@@ -84,19 +86,26 @@ trait MariusStep <: Step with MariusState {
         case (ppss, city) => computeTransactions(city, ppss)
       }
 
-    val transactedFrom =
-      transactionsForCities.groupBy(_.from).map {
-        case (f, transactions) => f -> (transactions.map(_.transacted).sum, transactions.map(_.delta).sum)
-      }.withDefaultValue((0.0, 0.0))
+    val transactedFrom: Map[Int, Seq[Transaction]] =
+      transactionsForCities.groupBy(_.from).withDefaultValue(Seq.empty)
 
-    val transactedTo =
-      transactionsForCities.groupBy(_.to).map {
-        case (t, transactions) => t -> (transactions.map(_.transacted).sum, transactions.map(_.delta).sum)
-      }.withDefaultValue((0.0, 0.0))
+    val transactedTo: Map[Int, Seq[Transaction]] =
+      transactionsForCities.groupBy(_.to).withDefaultValue(Seq.empty)
 
     val commercialBalance =
       s.cities.zipWithIndex.map {
-        case (c, i) => transactedFrom(i)._1 - transactedTo(i)._1
+        case (c, i) =>
+          transactedFrom(i).map(_.transacted).sum -
+            transactedTo(i).map(_.transacted).sum
+      }
+
+    val productionIncitation =
+      s.cities.zipWithIndex.map {
+        case (c, i) =>
+          val tto = transactedTo(i)
+          val tfrom = transactedFrom(i)
+          if (!tto.isEmpty && !tfrom.isEmpty) tto.map(_.ppb).sum / tfrom.map(_.pps).sum
+          else 1.0
       }
 
     val tBalance = territoryBalance(s.cities)
@@ -106,28 +115,37 @@ trait MariusStep <: Step with MariusState {
     val wealths =
       (s.cities.map(_.wealth) zip commercialBalance zip tBalance).map {
         case ((wealth, cb), tb) =>
+          assert(!wealth.isNaN)
+          assert(!cb.isNaN)
+          assert(!tb.isNaN)
           wealth + cb + tb
       }
 
-    val opportunities =
-      (s.cities.zipWithIndex zip commercialBalance zip tBalance).map {
-        case (((c, i), cb), tb) => transactedFrom(i)._2 + tb + cb
+    val wealthAdjustement =
+      (commercialBalance zip tBalance zip productionIncitation).map {
+        case ((cb, tb), pi) =>
+          assert(!tb.isNaN)
+          (tb + cb) * pi
       }
 
     val populations =
-      (s.cities.map(_.population) zip opportunities).map {
-        case (p, op) =>
-          op match {
+      (s.cities.map(_.population) zip wealthAdjustement).map {
+        case (p, wa) =>
+          assert(!p.isNaN)
+          assert(!wa.isNaN)
+          wa match {
             case 0 => p
-            case x if x > 0 => p + math.log(op / conversionFactor)
-            case x if x < 0 => p - math.log(math.abs(op) / conversionFactor)
+            case x if x > 0 => p + math.log(wa / conversionFactor)
+            case x if x < 0 => p - math.log(math.abs(wa) / conversionFactor)
           }
       }
 
     val newCities =
-      (s.cities zip populations zip wealths).map {
-        case ((c, p), w) =>
-          c.copy(population = aboveOne(p), wealth = aboveOne(w))
+      (s.cities zip populations zip wealths).zipWithIndex.map {
+        case (((c, p), w), i) =>
+          assert(p >= 0)
+          assert(w > 0, s"The city $i too poor for the model $w, ${demands(i)}, ${supplies(i)}, $p")
+          c.copy(population = p, wealth = aboveOne(w))
       }
 
     s.copy(step = s.step + 1, cities = newCities)
@@ -139,11 +157,14 @@ trait MariusStep <: Step with MariusState {
         pTo.filter { to(_).contains(city) }
     }
 
-  def reservations(requester: Seq[Int], requested: Seq[Double], toShare: Double) = {
+  def reservations(requester: Seq[Int], requested: Seq[Double], toShare: Double): Map[Int, Double] = {
     val effectiveRequests = requester.map(requested)
     val totalRequest = effectiveRequests.sum
-    val fractions = effectiveRequests.map(_ / totalRequest)
-    (requester zip fractions.map(_ * toShare)).toMap
+    if (totalRequest <= 0) Map.empty
+    else {
+      val fractions = effectiveRequests.map(_ / totalRequest)
+      (requester zip fractions.map(_ * toShare)).toMap
+    }
   }
 
   def matchNetwork(potentialBuyers: Seq[Int], potentialSellers: Seq[Int]) =
@@ -162,10 +183,10 @@ trait MariusStep <: Step with MariusState {
     distances: DistanceMatrix,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    val acquaintance = acquaintanceNetwork(s, supplies, distances, distanceOrderBuy)
+    val interactionPotentials = interactionPotentialNetwork(s, supplies, distances, distanceOrderBuy)
     (s zip demands).zipWithIndex.map {
       case ((c1, d1), i) =>
-        drawCandidates(acquaintance(i), distances, supplies, s => s >= partnerMultiplier * d1)
+        drawCandidates(interactionPotentials(i), distances, supplies, s => s >= partnerMultiplier * d1)
     }
   }
 
@@ -174,7 +195,7 @@ trait MariusStep <: Step with MariusState {
     distances: DistanceMatrix,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    val acquaintance = acquaintanceNetwork(s, supplies, distances, distanceOrderSell)
+    val acquaintance = interactionPotentialNetwork(s, supplies, distances, distanceOrderSell)
     (s zip supplies).zipWithIndex.map {
       case ((c1, s1), i) =>
         drawCandidates(acquaintance(i), distances, supplies, s => s >= partnerMultiplier * s1)
@@ -192,10 +213,10 @@ trait MariusStep <: Step with MariusState {
         val (s, remaining) = multinomialDraw(candidates)
         drawOneCandidate(remaining, s :: selected, totalQuantity + otherQuantity(s))
       }
-    drawOneCandidate(weighted.toList).toSet
+    drawOneCandidate(weighted.toList)
   }
 
-  def acquaintanceNetwork(s: Seq[City], supplies: Seq[Double], distances: DistanceMatrix, beta: Double) = {
+  def interactionPotentialNetwork(s: Seq[City], supplies: Seq[Double], distances: DistanceMatrix, beta: Double) = {
     val citiesWithSupply = s zip supplies
     citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>
