@@ -3,6 +3,7 @@ import sbt._
 import Keys._
 import com.typesafe.sbt.osgi.OsgiKeys._
 import com.typesafe.sbt.osgi.SbtOsgi._
+import sbtrelease.ReleasePlugin._
 
 object SimPuzzleBuild extends Build {
 
@@ -11,13 +12,13 @@ object SimPuzzleBuild extends Build {
      scalaVersion := "2.10.2",
      organization := "fr.geocite",
      resolvers ++= Seq("ISC-PIF Public" at "http://maven.iscpif.fr/public")
-   )
+   ) 
 
   lazy val globalSettings = Project.defaultSettings ++ Seq(
      publishTo <<= isSnapshot(if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")),
      credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2"
-   )
+   ) ++ releaseSettings
 
  lazy val geotools = libraryDependencies += "org.geotools" % "gt-referencing" % "9.3"
 
