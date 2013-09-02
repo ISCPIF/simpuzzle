@@ -24,6 +24,6 @@ trait SquareMatrixNeighbourhood <: MatrixNeighbourhood {
     for {
       oi <- -neighborhoodSize to neighborhoodSize
       oj <- -neighborhoodSize to neighborhoodSize
-      if (oi != 0 || oj != 0)
+      if oi != 0 || oj != 0
     } yield cells(i + oi, j + oj)
 }
