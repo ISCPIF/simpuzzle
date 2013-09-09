@@ -31,6 +31,8 @@ object SimPuzzleBuild extends Build {
  lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
  lazy val schelling = Project(id = "schelling", base = file("schelling")) dependsOn(simpuzzle) settings (globalSettings: _*)
+ 
+ lazy val sugarscape = Project(id = "sugarscape", base = file("sugarscape")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
