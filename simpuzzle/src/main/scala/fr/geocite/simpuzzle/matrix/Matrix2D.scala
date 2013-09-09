@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 09/09/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,20 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.schelling
+package fr.geocite.simpuzzle.matrix
 
-import fr.geocite.simpuzzle._
-import fr.geocite.simpuzzle.matrix.Torus2D
-
-trait SchellingState <: State {
-  trait Place
-  case object Free extends Place
-  case object White extends Place
-  case object Black extends Place
-
-  case class SchellingState(step: Int, cells: Seq[Seq[Place]]) extends Torus2D {
-    type CELL = Place
-  }
-
-  type STATE = SchellingState
+trait Matrix2D {
+  type CELL
+  def cells: Seq[Seq[CELL]]
+  def cell(x: Int, y: Int) = cells(x)(y)
 }

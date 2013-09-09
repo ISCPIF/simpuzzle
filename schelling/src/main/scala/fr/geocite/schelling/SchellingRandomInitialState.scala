@@ -23,6 +23,7 @@ import scala.util.Random
 trait SchellingRandomInitialState <: InitialState with SchellingState {
   def freeProportion: Double
   def whiteProportion: Double
+  def side: Int
 
   def initial(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
 

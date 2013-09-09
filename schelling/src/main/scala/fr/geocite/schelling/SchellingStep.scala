@@ -28,7 +28,7 @@ trait SchellingStep <: Step with SchellingState with MatrixNeighbourhood {
 
   // Compute the proportion of similar neighbors in a neighbourhood of neighborhoodSize
   def similarNeighbors(state: STATE, i: Int, j: Int): Double = {
-    val n = neighbors(state.apply, i, j).filter(_ != Free)
+    val n = neighbors(state.cell(_, _), i, j).filter(_ != Free)
     n.count {
       _ == state.cells(i)(j)
     } / n.size.toDouble
