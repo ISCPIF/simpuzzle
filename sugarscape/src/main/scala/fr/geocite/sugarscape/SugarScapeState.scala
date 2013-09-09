@@ -21,6 +21,9 @@ import fr.geocite.simpuzzle._
 import fr.geocite.simpuzzle.matrix.Torus2D
 
 trait SugarScapeState <: State {
+
+  def maxSugarCells: Seq[Seq[Int]]
+
   case class SugarScapeState(step: Int, cells: Seq[Seq[Int]]) extends Torus2D {
     type CELL = Int
   }

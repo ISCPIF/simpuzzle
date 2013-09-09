@@ -22,7 +22,9 @@ import scala.util.Random
 
 trait SugarScapeInitialState <: SugarScapeState {
 
-  def initial(implicit rng: Random) = SugarScapeState(0, readLandscape)
+  lazy val maxSugarCells = readLandscape
+
+  def initial(implicit rng: Random) = SugarScapeState(0, maxSugarCells)
 
   def readLandscape = {
     val input =
