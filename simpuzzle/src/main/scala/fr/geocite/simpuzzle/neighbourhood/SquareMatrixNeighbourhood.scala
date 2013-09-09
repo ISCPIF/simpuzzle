@@ -18,9 +18,12 @@
 package fr.geocite.simpuzzle.neighbourhood
 
 trait SquareMatrixNeighbourhood <: MatrixNeighbourhood {
-  def neighborhoodSize: Int
 
-  def neighbors[T](cells: (Int, Int) => T, i: Int, j: Int) =
+  def neighbors[T](
+    cells: (Int, Int) => T,
+    i: Int,
+    j: Int,
+    neighborhoodSize: Int) =
     for {
       oi <- -neighborhoodSize to neighborhoodSize
       oj <- -neighborhoodSize to neighborhoodSize

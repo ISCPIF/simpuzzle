@@ -25,10 +25,11 @@ import fr.geocite.simpuzzle.neighbourhood._
 trait SchellingStep <: Step with SchellingState with MatrixNeighbourhood {
   def side: Int
   def similarWanted: Double
+  def neighbourhoodSize: Int
 
   // Compute the proportion of similar neighbors in a neighbourhood of neighborhoodSize
-  def similarNeighbors(state: STATE, i: Int, j: Int): Double = {
-    val n = neighbors(state.cell(_, _), i, j).filter(_ != Free)
+  def similarNeighbours(state: STATE, i: Int, j: Int): Double = {
+    val n = neighbors(state.cell(_, _), i, j, neighbourhoodSize).filter(_ != Free)
     n.count {
       _ == state.cells(i)(j)
     } / n.size.toDouble
@@ -39,7 +40,7 @@ trait SchellingStep <: Step with SchellingState with MatrixNeighbourhood {
     state.cellsIndices.filter {
       case ((i, j), c) =>
         if (c == Free) false
-        else similarNeighbors(state, i, j) < similarWanted
+        else similarNeighbours(state, i, j) < similarWanted
     }.unzip._1
 
   def freeCells(state: STATE) = state.cellsIndices.filter {

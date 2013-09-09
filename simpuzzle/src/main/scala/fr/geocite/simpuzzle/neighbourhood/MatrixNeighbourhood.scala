@@ -18,5 +18,9 @@
 package fr.geocite.simpuzzle.neighbourhood
 
 trait MatrixNeighbourhood {
-  def neighbors[T](cells: (Int, Int) => T, i: Int, j: Int): Seq[T]
+  def neighbors[T](
+    cells: (Int, Int) => T,
+    i: Int,
+    j: Int,
+    neighborhoodSize: Int): Seq[T]
 }
