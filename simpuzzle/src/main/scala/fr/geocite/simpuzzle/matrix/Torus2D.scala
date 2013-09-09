@@ -24,8 +24,7 @@ trait Torus2D extends Matrix2D {
   }
 
   override def cell(x: Int, y: Int) = {
-    val xSize = cells.size
-    val row = cells(positiveMod(x, xSize))
+    val row = cells(positiveMod(x, cells.size))
     row(positiveMod(y, row.size))
   }
 
