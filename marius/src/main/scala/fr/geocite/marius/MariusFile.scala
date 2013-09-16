@@ -30,6 +30,8 @@ trait MariusFile <: PopulationDistribution
     with CapitalDistribution
     with PositionDistribution {
 
+  def nbCities = startingCities.size
+
   def startingCities =
     content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
 
@@ -42,9 +44,9 @@ trait MariusFile <: PopulationDistribution
       l => Position(l(5).toDouble, l(4).toDouble)
     })
 
-  def regions = startingCities.map(_(2))
+  def regions = startingCities.map(_(2)).toIterator
 
-  def capitals = startingCities.map(l => toBoolean(l(7)))
+  def capitals = startingCities.map(l => toBoolean(l(7))).toIterator
 
   lazy val content = {
     val input =

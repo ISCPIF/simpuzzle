@@ -32,7 +32,9 @@ trait MariusInitialState <: InitialState
     with InitialWealth
     with GeodeticDistance {
 
-  def initial(implicit rng: Random) = MariusState(0, cities, distances)
+  def nbCities: Int
+
+  def initial(implicit rng: Random) = MariusState(0, cities.take(nbCities).toSeq, distances)
 
   def cities(implicit rng: Random) =
     for {

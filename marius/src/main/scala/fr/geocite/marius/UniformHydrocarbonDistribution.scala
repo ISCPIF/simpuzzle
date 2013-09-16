@@ -17,15 +17,12 @@
 
 package fr.geocite.marius
 
-import fr.geocite.simpuzzle.distribution.UniformBooleanDistribution
+import fr.geocite.simpuzzle.distribution._
 
 trait UniformHydrocarbonDistribution extends HydrocarbonDistribution {
-  def nbCities: Int
   def hydrocarbonsRatio: Double
 
   def hydrocarbonDistribution = new UniformBooleanDistribution {
     def trueRatio = hydrocarbonsRatio
-    def size = nbCities
   }
-
 }

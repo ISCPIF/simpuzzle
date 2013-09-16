@@ -24,7 +24,34 @@ trait SugarScapeState <: State {
 
   def maxSugarCells: Seq[Seq[Int]]
 
-  case class SugarScapeState(step: Int, cells: Seq[Seq[Int]]) extends Torus2D {
-    type CELL = Int
+  case class SugarScapeState(
+      step: Int,
+      agents: Seq[(Position, Agent)],
+      sugar: Seq[Seq[Sugar]]) extends Torus2D {
+
+    type CELL = Cell
+
+    def cells: Seq[Seq[Cell]] = {
+      val cells =
+        sugar.map(_.map {
+          case Sugar(s, ms) => Cell(s, ms, None)
+        }.toArray)
+
+      for {
+        ((x, y), agent) <- agents
+      } {
+        val c = cells(x)(y)
+        cells(x)(y) = c.copy(agent = Some(agent))
+      }
+      cells.map(_.toSeq)
+    }
+
   }
+
+  type Position = (Int, Int)
+  case class Sugar(sugar: Double, maxSugar: Double)
+
+  case class Cell(sugar: Double, maxSugar: Double, agent: Option[Agent])
+
+  case class Agent(sugar: Double, metabolism: Double, vision: Int)
 }

@@ -22,5 +22,5 @@ import fr.geocite.simpuzzle.distribution._
 
 trait HydrocarbonDistribution {
   def hydrocarbonDistribution: Distribution[Boolean]
-  def hydrocarbons(implicit rng: Random): Seq[Boolean] = hydrocarbonDistribution.apply
+  def hydrocarbons(implicit rng: Random): Iterator[Boolean] = hydrocarbonDistribution(rng)
 }

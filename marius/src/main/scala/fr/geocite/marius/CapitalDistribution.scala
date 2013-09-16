@@ -18,5 +18,5 @@
 package fr.geocite.marius
 
 trait CapitalDistribution {
-  def capitals: Seq[Boolean]
+  def capitals: Iterator[Boolean]
 }

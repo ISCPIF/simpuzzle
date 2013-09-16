@@ -19,12 +19,48 @@ package fr.geocite.sugarscape
 
 import scala.io.Source
 import scala.util.Random
+import fr.geocite.simpuzzle.distribution._
 
 trait SugarScapeInitialState <: SugarScapeState {
 
-  lazy val maxSugarCells = readLandscape
+  def nbAgents: Int
 
-  def initial(implicit rng: Random) = SugarScapeState(0, maxSugarCells)
+  def initialSugarDistribution = new UniformDoubleDistribution {
+    def max = 25
+    def min = 5
+  }
+
+  def initialMetabolismDistribution = new UniformDoubleDistribution {
+    def max = 4
+    def min = 1
+  }
+
+  def initialVisionDistribution = new UniformIntDistribution {
+    def max = 6
+    def min = 1
+  }
+
+  def initialAgents(implicit rng: Random) =
+    (initialSugarDistribution.iterator zip
+      initialMetabolismDistribution.iterator zip
+      initialVisionDistribution.iterator) map {
+        case ((s, m), v) => Agent(s, m, v)
+      }
+
+  def initial(implicit rng: Random) = {
+    val cells =
+      readLandscape.map { l => l.map { sugar => Sugar(sugar, sugar) } }
+
+    val positions =
+      maxSugarCells.zipWithIndex.flatMap {
+        case (l, i) => l.zipWithIndex.map {
+          case (_, j) => i -> j
+        }
+      }
+
+    val agentPositions = rng.shuffle(positions) zip initialAgents.toSeq
+    SugarScapeState(0, agentPositions, cells)
+  }
 
   def readLandscape = {
     val input =

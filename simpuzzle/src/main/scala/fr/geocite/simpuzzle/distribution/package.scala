@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 15/09/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,28 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle.distribution
+package fr.geocite.simpuzzle
 
-import scala.util.Random
+package object distribution {
 
-object Distribution {
-
-  def apply[T](s: Iterator[T]) = new Distribution[T] {
-    def apply(implicit rng: Random) = s
-  }
-
-  trait IterableDistribution[T] extends Distribution[T] {
-    def iterable: Iterable[T]
-    def size = iterable.size
-    def apply(implicit rng: Random) = iterable.toIterator
-  }
-
-  def apply[T](s: Iterable[T]) = new IterableDistribution[T] with Finite[T] {
-    def iterable = s
-  }
-}
-
-trait Distribution[T] {
-  def apply(implicit rng: Random): Iterator[T]
-  def iterator(implicit rng: Random) = apply
 }

@@ -22,10 +22,12 @@ import fr.geocite.marius._
 import fr.geocite.simpuzzle.distribution._
 
 trait MariusInitialState <: MariusState with PopulationDistribution with HydrocarbonDistribution {
+  def nbCities: Int
+
   def initial(implicit rng: Random) = {
     val cities = (populations zip hydrocarbons).map {
       case (p, h) => City(p, h)
     }
-    MariusState(0, cities)
+    MariusState(0, cities.take(nbCities).toSeq)
   }
 }

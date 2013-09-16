@@ -20,10 +20,9 @@ package fr.geocite.simpuzzle.distribution
 import scala.util.Random
 
 trait UniformDoubleDistribution <: Distribution[Double] {
-  def size: Int
   def min: Double
   def max: Double
-  def apply(implicit rng: Random): Seq[Double] =
-    (0 until size).map(_ => rng.nextDouble * (max - min) + min)
+  def apply(implicit rng: Random) =
+    Iterator.continually(rng.nextDouble * (max - min) + min)
 }
 

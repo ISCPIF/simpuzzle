@@ -20,8 +20,7 @@ package fr.geocite.simpuzzle.distribution
 import scala.util.Random
 
 trait UniformIntDistribution extends Distribution[Int] {
-  def size: Int
   def min: Int
   def max: Int
-  def apply(implicit rng: Random): Seq[Int] = (0 until size).map(_ => rng.nextInt(max - min) + min)
+  def apply(implicit rng: Random) = Iterator.continually(rng.nextInt(max - min) + min)
 }

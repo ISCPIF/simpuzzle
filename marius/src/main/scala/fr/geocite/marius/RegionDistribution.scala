@@ -18,5 +18,5 @@
 package fr.geocite.marius
 
 trait RegionDistribution {
-  def regions: Seq[String]
+  def regions: Iterator[String]
 }
