@@ -17,7 +17,8 @@ object SimPuzzleBuild extends Build {
   lazy val globalSettings = Project.defaultSettings ++ Seq(
      publishTo <<= isSnapshot(if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")),
      credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
-     libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2"
+     libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
+     libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.3"
    ) ++ releaseSettings
 
  lazy val geotools = libraryDependencies += "org.geotools" % "gt-referencing" % "9.3"

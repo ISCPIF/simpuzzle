@@ -18,14 +18,17 @@
 package fr.geocite.simpuzzle
 
 import scala.util.Random
+import scalaz.Writer
 
 trait StepByStep <: State with InitialState with Step with EndingCondition {
 
-  def states(implicit rng: Random) =
-    Iterator.iterate(initial)(step).takeWhile(!ended(_))
+  def states(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
+    Iterator.iterate(initial) {
+      s => step(s.value)
+    }.takeWhile(s => !ended(s.value))
 
   def run(implicit rng: Random) = {
-    def last(i: Iterator[STATE]): STATE = {
+    def last[T](i: Iterator[T]): T = {
       val e = i.next
       if (i.hasNext) last(i)
       else e

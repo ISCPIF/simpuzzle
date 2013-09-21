@@ -20,7 +20,9 @@ package fr.geocite.marius.one.zero
 import fr.geocite.simpuzzle._
 import scala.util.Random
 
-trait MariusStep <: Step with MariusState {
+trait MariusStep <: Step
+    with MariusState
+    with NoLogging {
 
   def adjustConsumption: Double
 

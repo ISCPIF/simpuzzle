@@ -19,13 +19,16 @@ package fr.geocite.simpoplocal
 
 import scala.util.Random
 import scala.collection.mutable.ListBuffer
+import scalaz._
+import Scalaz._
 
 trait SimpopLocalStep
     extends fr.geocite.simpuzzle.Step
     with SimpopLocalState
     with SimpopLocalInitialState
     with NoDisaster
-    with InnovationRootIdOrdering {
+    with InnovationRootIdOrdering
+    with SimpopLocalLogging {
 
   /// The average annual growth on the settlements in inhabitants per step
   def populationRate = 0.02
@@ -50,16 +53,19 @@ trait SimpopLocalStep
 
     var currentInnovationId = state.currentInnovationId
     val newSettlements = ListBuffer[Settlement]()
+    val logs = ListBuffer[LOGGING]()
 
     for {
       settlement <- disasteredSettlements
     } {
-      val (newSettlement, newId) = evolveSettlement(settlement, disasteredSettlements, state.step, currentInnovationId)
+      val evolved = evolveSettlement(settlement, disasteredSettlements, state.step, currentInnovationId)
+      val (newSettlement, newId) = evolved.value
       currentInnovationId = newId
       newSettlements += newSettlement
+      logs ++= evolved.written
     }
 
-    SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId)
+    (logs, SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId))
   }
 
   /**
@@ -73,8 +79,9 @@ trait SimpopLocalStep
    */
   def evolveSettlement(settlement: Settlement, state: Seq[Settlement], step: Int, currentInnovationId: Int)(implicit rng: Random) = {
     val grownSettlement = growPopulation(settlement)
-    val (settlementAfterDiffusion, newInnovationId) = diffusion(grownSettlement, state, step, currentInnovationId)
-    creation(settlementAfterDiffusion, state, step, newInnovationId)
+    diffusion(grownSettlement, state, step, currentInnovationId) flatMap {
+      case (settlementAfterDiffusion, newInnovationId) => creation(settlementAfterDiffusion, state, step, newInnovationId)
+    }
   }
 
   //By default no deprecation
@@ -110,25 +117,32 @@ trait SimpopLocalStep
      */
     def exchangeableInnovations(from: Settlement) = filterObsolete(from.innovations &~ settlement.innovations, step)
 
+    case class ProposedExchange(neighbourId: Int, innovation: Innovation)
+
     // Randomly draws an innovation for each the neighbour selected for diffusion.
     val innovationsFromNeighbours =
       innovationPoolByCity.flatMap {
-        neighbour => randomElement(exchangeableInnovations(state(neighbour.neighbour.id)).toSeq)
+        neighbour =>
+          val neighbourId = neighbour.neighbour.id
+          val neighbourState = state(neighbourId)
+          randomElement(exchangeableInnovations(neighbourState).toSeq).map(ProposedExchange(neighbourId, _))
       }
 
     // Randomly draws an innovation in case the same innovation (same rootId) is proposed by different neighbours.
     val distinctInnovations =
-      innovationsFromNeighbours.groupBy(_.rootId).map {
+      innovationsFromNeighbours.groupBy(_.innovation.rootId).map {
         case (k, v) => randomElement(v).get
       }.toList
 
     // Copy the innovations acquired by diffusion.
     val copyOfInnovations =
       distinctInnovations.zipWithIndex.map {
-        case (innovation, index) => Innovation(step = step, rootId = innovation.id, id = nextInnovationId + index)
+        case (exchange, index) => Innovation(step = step, rootId = exchange.innovation.id, id = nextInnovationId + index)
       }
 
-    (acquireInnovations(settlement, step, copyOfInnovations), nextInnovationId + copyOfInnovations.size)
+    val exchanges: List[LogInfo] = distinctInnovations.map { case ProposedExchange(n, i) => Diffused(n, settlement.id, i.rootId) }
+
+    Writer(exchanges, (acquireInnovations(settlement, step, copyOfInnovations), nextInnovationId + copyOfInnovations.size))
   }
 
   /**
@@ -145,8 +159,11 @@ trait SimpopLocalStep
   def creation(settlement: Settlement, state: Seq[Settlement], step: Int, nextInnovationId: Int)(implicit rng: Random) =
     if (create(state(settlement.id).population)) {
       val innovation = Innovation(step = step, rootId = nextInnovationId, id = nextInnovationId)
-      (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1)
-    } else (settlement, nextInnovationId)
+      Writer(
+        List[LogInfo](Created(settlement.id, innovation.rootId)),
+        (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1)
+      )
+    } else Writer(List.empty, (settlement, nextInnovationId))
 
   /**
    *

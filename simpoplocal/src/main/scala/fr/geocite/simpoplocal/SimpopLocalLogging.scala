@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 16/09/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,24 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.one
+package fr.geocite.simpoplocal
 
-import scala.util.Random
-import fr.geocite.marius._
-import fr.geocite.simpuzzle.distribution._
-import fr.geocite.simpuzzle.NoLogging
+import fr.geocite.simpuzzle.Logging
 
-trait MariusInitialState <: MariusState
-    with PopulationDistribution
-    with HydrocarbonDistribution
-    with NoLogging {
+trait SimpopLocalLogging <: Logging {
 
-  def nbCities: Int
+  type LOGGING = LogInfo
 
-  def initial(implicit rng: Random) = {
-    val cities = (populations zip hydrocarbons).map {
-      case (p, h) => City(p, h)
-    }
-    MariusState(0, cities.take(nbCities).toSeq)
-  }
+  sealed trait LogInfo
+  case class Diffused(from: Int, to: Int, rootId: Int) extends LogInfo
+  case class Created(in: Int, rootId: Int) extends LogInfo
 }

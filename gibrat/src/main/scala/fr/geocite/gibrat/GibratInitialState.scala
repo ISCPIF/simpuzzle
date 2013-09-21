@@ -19,8 +19,14 @@ package fr.geocite.gibrat
 
 import scala.util.Random
 import fr.geocite.simpuzzle.distribution.PopulationDistribution
+import fr.geocite.simpuzzle.NoLogging
 
-trait GibratInitialState <: fr.geocite.simpuzzle.InitialState with GibratState with PopulationDistribution {
+trait GibratInitialState <: fr.geocite.simpuzzle.InitialState
+    with GibratState
+    with PopulationDistribution
+    with NoLogging {
+
   def nbCities: Int
   def initial(implicit rng: Random) = GibratState(0, populations.take(nbCities).map(City(_)).toSeq)
+
 }

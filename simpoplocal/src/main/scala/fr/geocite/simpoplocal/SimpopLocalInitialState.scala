@@ -29,10 +29,10 @@ trait SimpopLocalInitialState <: InitialState
     with SimpopLocalState
     with InnovationRootIdOrdering
     with GeometricDistanceNeighbourhood
-    with EuclideanDistance {
+    with EuclideanDistance
+    with SimpopLocalLogging {
 
-  def initial(implicit rng: Random) =
-    SimpopLocalState(0, readSettlements.map(_.toSettlement))
+  def initial(implicit rng: Random) = (Seq.empty, SimpopLocalState(0, readSettlements.map(_.toSettlement)))
 
   /**
    *

@@ -20,7 +20,10 @@ package fr.geocite.schelling
 import fr.geocite.simpuzzle._
 import scala.util.Random
 
-trait SchellingRandomInitialState <: InitialState with SchellingState {
+trait SchellingRandomInitialState <: InitialState
+    with SchellingState
+    with NoLogging {
+
   def freeProportion: Double
   def whiteProportion: Double
   def side: Int

@@ -18,7 +18,8 @@
 package fr.geocite.simpuzzle
 
 import scala.util.Random
+import scalaz.Writer
 
-trait InitialState extends State {
-  def initial(implicit rng: Random): STATE
+trait InitialState <: State with Logging {
+  def initial(implicit rng: Random): Writer[Seq[LOGGING], STATE]
 }

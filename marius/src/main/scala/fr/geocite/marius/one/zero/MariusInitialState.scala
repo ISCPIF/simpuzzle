@@ -17,7 +17,7 @@
 
 package fr.geocite.marius.one.zero
 
-import fr.geocite.simpuzzle.InitialState
+import fr.geocite.simpuzzle.{ NoLogging, InitialState }
 import fr.geocite.simpuzzle.distribution.{ PositionDistribution, PopulationDistribution }
 import fr.geocite.marius.{ CapitalDistribution, RegionDistribution }
 import scala.util.Random
@@ -30,7 +30,8 @@ trait MariusInitialState <: InitialState
     with CapitalDistribution
     with PositionDistribution
     with InitialWealth
-    with GeodeticDistance {
+    with GeodeticDistance
+    with NoLogging {
 
   def nbCities: Int
 

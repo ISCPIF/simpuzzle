@@ -18,8 +18,13 @@
 package fr.geocite.gibrat
 
 import scala.util.Random
+import fr.geocite.simpuzzle.NoLogging
 
-trait GibratStep <: fr.geocite.simpuzzle.Step with GibratState with GibratGrowth {
+trait GibratStep <: fr.geocite.simpuzzle.Step
+    with GibratState
+    with GibratGrowth
+    with NoLogging {
+
   def step(s: STATE)(implicit rng: Random) = GibratState(s.step + 1, cityGrowth(s))
 
   def cityGrowth(s: STATE)(implicit rng: Random) =

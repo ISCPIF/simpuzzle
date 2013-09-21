@@ -22,7 +22,11 @@ import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
 import fr.geocite.simpuzzle.neighbourhood._
 
-trait SchellingStep <: Step with SchellingState with MatrixNeighbourhood {
+trait SchellingStep <: Step
+    with SchellingState
+    with MatrixNeighbourhood
+    with NoLogging {
+
   def side: Int
   def similarWanted: Double
   def neighbourhoodSize: Int
