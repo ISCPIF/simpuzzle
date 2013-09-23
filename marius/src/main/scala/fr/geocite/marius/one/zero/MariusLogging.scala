@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 16/09/13 Romain Reuillon
+ * Copyright (C) 23/09/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.marius.one.zero
 
-import scalaz._
-import Scalaz._
+import fr.geocite.simpuzzle._
 
-trait NoLogging <: Logging with State {
-  type LOGGING = None.type
+trait MariusLogging <: Logging {
+
+  type LOGGING = Transaction
+
+  case class Transaction(from: Int, to: Int, pps: Double, ppb: Double) {
+    def transacted = math.min(pps, ppb)
+  }
+
 }

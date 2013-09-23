@@ -20,9 +20,12 @@ package fr.geocite.marius.one.zero
 import fr.geocite.simpuzzle._
 import scala.util.Random
 
+import scalaz._
+import Scalaz._
+
 trait MariusStep <: Step
     with MariusState
-    with NoLogging {
+    with MariusLogging {
 
   def adjustConsumption: Double
 
@@ -69,10 +72,6 @@ trait MariusStep <: Step
         case (sellers, demand) =>
           reservations(sellers.toSeq, supplies, demand)
       }
-
-    case class Transaction(from: Int, to: Int, pps: Double, ppb: Double) {
-      def transacted = math.min(pps, ppb)
-    }
 
     def computeTransactions(from: Int, ppss: Map[Int, Double]): Seq[Transaction] =
       ppss.toSeq.map {
@@ -150,7 +149,7 @@ trait MariusStep <: Step
           c.copy(population = p, wealth = aboveOne(w))
       }
 
-    s.copy(step = s.step + 1, cities = newCities)
+    s.copy(step = s.step + 1, cities = newCities).set(transactionsForCities)
   }
 
   def contracts(from: Seq[Set[Int]], to: Seq[Set[Int]]) =

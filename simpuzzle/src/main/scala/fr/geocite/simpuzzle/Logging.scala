@@ -17,9 +17,11 @@
 
 package fr.geocite.simpuzzle
 
-import scalaz.Writer
+import scalaz._
+import Scalaz._
 
-trait Logging {
+trait Logging <: State {
   type LOGGING
   protected implicit def tupleToWriter[T](t: (Seq[LOGGING], T)) = Writer(t._1, t._2)
+  protected implicit def stateToWriter(s: STATE): Writer[Seq[LOGGING], STATE] = s.set(Seq.empty)
 }

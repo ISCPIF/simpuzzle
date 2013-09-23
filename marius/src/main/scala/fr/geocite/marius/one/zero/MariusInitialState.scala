@@ -31,7 +31,7 @@ trait MariusInitialState <: InitialState
     with PositionDistribution
     with InitialWealth
     with GeodeticDistance
-    with NoLogging {
+    with MariusLogging {
 
   def nbCities: Int
 
