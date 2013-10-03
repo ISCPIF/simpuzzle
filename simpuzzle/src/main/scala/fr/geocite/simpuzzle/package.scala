@@ -21,4 +21,18 @@ import scala.util.Random
 
 package object simpuzzle {
   object rng { implicit lazy val defaultRng = new Random }
+
+  // Extends iterator :
+  // based on answer here http://stackoverflow.com/questions/9329876/scala-extending-the-iterator
+  class IteratorExtension[A](i : Iterator[A]) {
+    def takeWhileInclusive(p: A => Boolean) = {
+      val (a, b) = i.span(p)
+      a ++ (if (b.hasNext) Some(b.next) else None)
+    }
+  }
+
+  implicit def extendIterator[A](i : Iterator[A]) = new IteratorExtension(i)
+
 }
+
+
