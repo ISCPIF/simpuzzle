@@ -24,15 +24,27 @@ package object simpuzzle {
 
   // Extends iterator :
   // based on answer here http://stackoverflow.com/questions/9329876/scala-extending-the-iterator
-  class IteratorExtension[A](i : Iterator[A]) {
+  class IteratorExtension[A](i: Iterator[A]) {
     def takeWhileInclusive(p: A => Boolean) = {
       val (a, b) = i.span(p)
       a ++ (if (b.hasNext) Some(b.next) else None)
     }
   }
 
-  implicit def extendIterator[A](i : Iterator[A]) = new IteratorExtension(i)
+  implicit def extendIterator[A](i: Iterator[A]) = new IteratorExtension(i)
 
+  import shapeless._
+  import ops.tuple.FlatMapper
+  import syntax.std.tuple._
+
+  def typed[T](t: => T) {}
+
+  trait LowPriorityFlatten extends Poly1 {
+    implicit def default[T] = at[T](Tuple1(_))
+  }
+  object flatten extends LowPriorityFlatten {
+    implicit def caseTuple[P <: Product](implicit fm: FlatMapper[P, flatten.type]) =
+      at[P](_.flatMap(flatten))
+  }
 }
-
 

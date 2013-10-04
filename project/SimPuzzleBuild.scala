@@ -11,15 +11,21 @@ object SimPuzzleBuild extends Build {
    super.settings ++ Seq(
      scalaVersion := "2.10.2",
      organization := "fr.geocite",
-     resolvers ++= Seq("ISC-PIF Public" at "http://maven.iscpif.fr/public")
+     resolvers ++= Seq(
+       "ISC-PIF Public" at "http://maven.iscpif.fr/public"
+//       "Sonatype OSS Releases"  at "http://oss.sonatype.org/content/repositories/releases/",
+//       "Sonatype OSS Snapshots" at "http://oss.sonatype.org/content/repositories/snapshots/"
+     )
    ) 
 
   lazy val globalSettings = Project.defaultSettings ++ Seq(
      publishTo <<= isSnapshot(if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")),
      credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
-     libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.3"
+     libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.3",
+     libraryDependencies += "com.chuusai" % "shapeless" % "2.0.0-M1" cross CrossVersion.full 
    ) ++ releaseSettings
+
 
  lazy val geotools = libraryDependencies += "org.geotools" % "gt-referencing" % "9.3"
 

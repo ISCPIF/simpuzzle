@@ -21,7 +21,7 @@ import fr.geocite.simpuzzle.State
 import fr.geocite.simpuzzle.city.Population
 
 trait MariusState <: State {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean) extends Population
+  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends Population
   type DistanceMatrix = Seq[Seq[Double]]
   case class MariusState(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
   type STATE = MariusState

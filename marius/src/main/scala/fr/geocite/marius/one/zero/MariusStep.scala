@@ -18,6 +18,7 @@
 package fr.geocite.marius.one.zero
 
 import fr.geocite.simpuzzle._
+import distribution._
 import scala.util.Random
 
 import scalaz._
@@ -50,6 +51,12 @@ trait MariusStep <: Step
   def partnerMultiplier: Double
 
   def conversionFactor: Double
+
+  def wealthSavingRate: Double = 0.15
+
+  def fixedCost: Double = 42
+
+  def internalShare: Double = 0.20
 
   def step(s: STATE)(implicit rng: Random) = {
     //TODO update wealth (budget supply)
@@ -93,43 +100,57 @@ trait MariusStep <: Step
     val transactedTo: Map[Int, Seq[Transaction]] =
       transactionsForCities.groupBy(_.to).withDefaultValue(Seq.empty)
 
-    val commercialBalance =
-      s.cities.zipWithIndex.map {
-        case (c, i) =>
-          transactedFrom(i).map(_.transacted).sum -
-            transactedTo(i).map(_.transacted).sum
-      }
-
-    val productionIncitation =
-      s.cities.zipWithIndex.map {
-        case (c, i) =>
-          val tto = transactedTo(i)
-          val tfrom = transactedFrom(i)
-          if (!tto.isEmpty && !tfrom.isEmpty) tto.map(_.ppb).sum / tfrom.map(_.pps).sum
-          else 1.0
-      }
-
     val tBalance = territoryBalance(s.cities)
 
     def aboveOne(v: Double) = if (v <= 1) 1.0 else v
 
-    val wealths =
-      (s.cities.map(_.wealth) zip commercialBalance zip tBalance).map {
-        case ((wealth, cb), tb) =>
-          assert(!wealth.isNaN)
-          assert(!cb.isNaN)
-          assert(!tb.isNaN)
-          wealth + cb + tb
+    def wealths: Seq[Double] = {
+      def bonuses = {
+        val allTransactionsDist =
+          for {
+            cid <- 0 until s.cities.size
+            tfrom = transactedFrom(cid)
+            tto = transactedTo(cid)
+          } yield tfrom ++ tto
+
+        def nbDist = allTransactionsDist.map(_.size.toDouble).centered.reduced
+        def nbTotal = allTransactionsDist.map(_.map(_.transacted).sum).centered.reduced
+        (nbDist zip nbTotal).map { case (x, y) => x + y }
       }
 
-    val wealthAdjustement =
-      (commercialBalance zip tBalance zip productionIncitation).map {
-        case ((cb, tb), pi) =>
-          assert(!tb.isNaN)
-          (tb + cb) * pi
-      }
+      def unsolds =
+        for {
+          cid <- 0 until s.cities.size
+          transaction = transactedFrom(cid)
+        } yield transaction.map(_.pps).sum - transaction.map(_.transacted).sum
 
-    val populations =
+      def unsatisfieds =
+        for {
+          cid <- 0 until s.cities.size
+          transaction = transactedTo(cid)
+        } yield transaction.map(_.ppb).sum - transaction.map(_.transacted).sum
+
+      (s.cities zip supplies zip demands zip unsolds zip unsatisfieds zip bonuses zip tBalance).map(flatten).map {
+        case (city, supply, demand, unsold, unsatified, bonus, tb) =>
+          city.wealth + supply - internalShare * demand * 2 + demand - fixedCost + bonus - unsold + unsatified
+      }
+    }
+
+    def populations = {
+      /*val commercialBalance =
+   s.cities.zipWithIndex.map {
+     case (c, i) =>
+       transactedFrom(i).map(_.transacted).sum -
+         transactedTo(i).map(_.transacted).sum
+   }*/
+
+      val wealthAdjustement =
+        (wealths, tBalance).zipped.map {
+          case (newWealth, tb) =>
+            assert(!tb.isNaN)
+            tb + newWealth
+        }
+
       (s.cities.map(_.population) zip wealthAdjustement).map {
         case (p, wa) =>
           assert(!p.isNaN)
@@ -140,13 +161,17 @@ trait MariusStep <: Step
             case x if x < 0 => p - math.log(math.abs(wa) / conversionFactor)
           }
       }
+    }
+
+    def savings =
+      s.cities.map(_.wealth * wealthSavingRate)
 
     val newCities =
-      (s.cities zip populations zip wealths).zipWithIndex.map {
-        case (((c, p), w), i) =>
+      (s.cities zip populations zip wealths zip savings).map(flatten).map {
+        case (c, p, w, s) =>
           assert(p >= 0)
-          assert(w > 0, s"The city $i too poor for the model $w, ${demands(i)}, ${supplies(i)}, $p")
-          c.copy(population = p, wealth = aboveOne(w))
+          assert(w > 0, s"The city too poor for the model $w, $p")
+          c.copy(population = p, wealth = aboveOne(w), saving = s)
       }
 
     s.copy(step = s.step + 1, cities = newCities).set(transactionsForCities)
@@ -261,19 +286,6 @@ trait MariusStep <: Step
     deltas.flatten.toSeq.sortBy {
       case (i, _) => i
     }.unzip._2
-  }
-
-  def multinomialDraw[T](s: Seq[(T, Double)])(implicit rng: Random) = {
-    assert(!s.isEmpty, "Input sequence should not be empty")
-    def select(remaining: List[(T, Double)], value: Double, begin: List[(T, Double)] = List.empty): (T, List[(T, Double)]) =
-      remaining match {
-        case (e, weight) :: tail =>
-          if (value <= weight) (e, begin.reverse ::: tail)
-          else select(tail, value - weight, (e, weight) :: begin)
-        case _ => sys.error(s"Bug $remaining $value $begin")
-      }
-    val totalWeight = s.unzip._2.sum
-    select(s.toList, rng.nextDouble * totalWeight)
   }
 
 }

@@ -45,7 +45,8 @@ trait MariusInitialState <: InitialState
         population = p,
         region = r,
         capital = c,
-        wealth = initialWealth(p)
+        wealth = initialWealth(p),
+        saving = 0
       )
     }
 

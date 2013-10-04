@@ -17,6 +17,43 @@
 
 package fr.geocite.simpuzzle
 
+import scala.util.Random
+
 package object distribution {
 
+  implicit class StatisticDecorator[T <: Iterable[Double]](sequence: T) {
+
+    def average = sequence.sum / sequence.size
+
+    def mse = {
+      val avg = sequence.average
+      sequence.map { v ⇒ math.pow(v - avg, 2) }.average
+    }
+
+    def rmse = math.sqrt(sequence.mse)
+
+    def centered = {
+      val avg = sequence.average
+      sequence.map(_ / avg)
+    }
+
+    def reduced = {
+      val r = sequence.rmse
+      sequence.map(_ / r)
+    }
+
+  }
+
+  def multinomialDraw[T](s: Seq[(T, Double)])(implicit rng: Random) = {
+    assert(!s.isEmpty, "Input sequence should not be empty")
+    def select(remaining: List[(T, Double)], value: Double, begin: List[(T, Double)] = List.empty): (T, List[(T, Double)]) =
+      remaining match {
+        case (e, weight) :: tail =>
+          if (value <= weight) (e, begin.reverse ::: tail)
+          else select(tail, value - weight, (e, weight) :: begin)
+        case _ => sys.error(s"Bug $remaining $value $begin")
+      }
+    val totalWeight = s.unzip._2.sum
+    select(s.toList, rng.nextDouble * totalWeight)
+  }
 }
