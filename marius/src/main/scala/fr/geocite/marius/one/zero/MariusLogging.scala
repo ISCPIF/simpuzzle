@@ -19,12 +19,8 @@ package fr.geocite.marius.one.zero
 
 import fr.geocite.simpuzzle._
 
-trait MariusLogging <: Logging {
+trait MariusLogging <: Logging with MariusState {
 
   type LOGGING = Transaction
-
-  case class Transaction(from: Int, to: Int, pps: Double, ppb: Double) {
-    def transacted = math.min(pps, ppb)
-  }
 
 }

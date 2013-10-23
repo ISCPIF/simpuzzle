@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 23/10/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,15 +17,15 @@
 
 package fr.geocite.marius.one.zero
 
-import fr.geocite.simpuzzle.State
-import fr.geocite.simpuzzle.city.Population
+import scala.util.Random
 
-trait MariusState <: State {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends Population
-  type DistanceMatrix = Seq[Seq[Double]]
-  case class MariusState(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
-  type STATE = MariusState
+trait Matching <: MariusState with MariusLogging {
 
-  case class Transaction(from: Int, to: Int, transacted: Double)
+  case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
+
+  def matchCities(
+    s: STATE,
+    supplies: Seq[Double],
+    demands: Seq[Double])(implicit rng: Random): Matched
 
 }

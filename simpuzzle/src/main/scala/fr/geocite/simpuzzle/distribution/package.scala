@@ -42,18 +42,24 @@ package object distribution {
       sequence.map(_ / r)
     }
 
+    def normalise = {
+      val max = sequence.max
+      val min = sequence.min
+      sequence.map(v => (v - min) / (max - min))
+    }
+
   }
 
-  def multinomialDraw[T](s: Seq[(T, Double)])(implicit rng: Random) = {
+  def multinomialDraw[T](s: Seq[(Double, T)])(implicit rng: Random) = {
     assert(!s.isEmpty, "Input sequence should not be empty")
-    def select(remaining: List[(T, Double)], value: Double, begin: List[(T, Double)] = List.empty): (T, List[(T, Double)]) =
+    def select(remaining: List[(Double, T)], value: Double, begin: List[(Double, T)] = List.empty): (T, List[(Double, T)]) =
       remaining match {
-        case (e, weight) :: tail =>
+        case (weight, e) :: tail =>
           if (value <= weight) (e, begin.reverse ::: tail)
-          else select(tail, value - weight, (e, weight) :: begin)
+          else select(tail, value - weight, (weight, e) :: begin)
         case _ => sys.error(s"Bug $remaining $value $begin")
       }
-    val totalWeight = s.unzip._2.sum
+    val totalWeight = s.unzip._1.sum
     select(s.toList, rng.nextDouble * totalWeight)
   }
 }
