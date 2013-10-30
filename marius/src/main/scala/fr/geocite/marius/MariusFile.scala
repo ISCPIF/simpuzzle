@@ -35,7 +35,7 @@ trait MariusFile <: PopulationDistribution
   def startingCities =
     content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
 
-  def okato = startingCities.map(_(0))
+  def rokato = startingCities.map(_(0))
 
   def populationDistribution = Distribution(startingCities.map(_(12).toDouble))
 

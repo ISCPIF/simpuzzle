@@ -83,13 +83,6 @@ trait MariusStep <: Step
     }
 
     def populations = {
-      /*val commercialBalance =
-   s.cities.zipWithIndex.map {
-     case (c, i) =>
-       transactedFrom(i).map(_.transacted).sum -
-         transactedTo(i).map(_.transacted).sum
-   }*/
-
       val wealthAdjustement =
         (wealths, tBalance).zipped.map {
           case (newWealth, tb) =>
