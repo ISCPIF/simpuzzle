@@ -48,7 +48,43 @@ trait MariusStep <: Step
   def internalShare: Double = 0.20
 
   def step(s: STATE)(implicit rng: Random) = {
-    //TODO update wealth (budget supply)
+
+    def aboveOne(v: Double) = if (v <= 1) 1.0 else v
+    val tBalance = territoryBalance(s.cities)
+
+    wealths(s, tBalance).map {
+      wealths =>
+
+        def populations /*(wealths: Seq[Double], tBalance: Seq[Double])*/ = {
+
+          (s.cities.map(_.population) zip wealths).map {
+            case (p, wa) =>
+              assert(!p.isNaN)
+              assert(!wa.isNaN)
+              wa match {
+                case 0 => p
+                case x if x > 0 => p + math.log(wa / conversionFactor)
+                case x if x < 0 => p - math.log(math.abs(wa) / conversionFactor)
+              }
+          }
+        }
+
+        def savings =
+          s.cities.map(_.wealth * wealthSavingRate)
+
+        val newCities =
+          (s.cities zip populations zip wealths zip savings).map(flatten).map {
+            case (c, p, w, s) =>
+              assert(p >= 0)
+              assert(w > 0, s"The city too poor for the model $w, $p")
+              c.copy(population = p, wealth = aboveOne(w), saving = s)
+          }
+
+        s.copy(step = s.step + 1, cities = newCities)
+    }
+  }
+
+  def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random): Writer[Seq[LOGGING], Seq[Double]] = {
     val supplies = s.cities.map(c => supply(c.population, c.wealth))
     val demands = s.cities.map(c => demand(c.population))
 
@@ -60,62 +96,23 @@ trait MariusStep <: Step
     val transactedTo: Map[Int, Seq[Transaction]] =
       transactions.groupBy(_.to).withDefaultValue(Seq.empty)
 
-    val tBalance = territoryBalance(s.cities)
+    def bonuses = {
+      val allTransactionsDist =
+        for {
+          cid <- 0 until s.cities.size
+          tfrom = transactedFrom(cid)
+          tto = transactedTo(cid)
+        } yield tfrom ++ tto
 
-    def aboveOne(v: Double) = if (v <= 1) 1.0 else v
-
-    def wealths: Seq[Double] = {
-      def bonuses = {
-        val allTransactionsDist =
-          for {
-            cid <- 0 until s.cities.size
-            tfrom = transactedFrom(cid)
-            tto = transactedTo(cid)
-          } yield tfrom ++ tto
-
-        def nbDist = allTransactionsDist.map(_.size.toDouble).centered.reduced
-        def nbTotal = allTransactionsDist.map(_.map(_.transacted).sum).centered.reduced
-        (nbDist zip nbTotal).map { case (x, y) => x + y }
-      }
-
-      (s.cities zip supplies zip demands zip unsolds zip unsatisfieds zip bonuses zip tBalance).map(flatten).map {
-        case (city, supply, demand, unsold, unsatified, bonus, tb) =>
-          city.wealth + supply - internalShare * demand * 2 + demand - fixedCost + bonus - unsold + unsatified
-      }
+      def nbDist = allTransactionsDist.map(_.size.toDouble).centered.reduced
+      def nbTotal = allTransactionsDist.map(_.map(_.transacted).sum).centered.reduced
+      (nbDist zip nbTotal).map { case (x, y) => x + y }
     }
 
-    def populations = {
-      val wealthAdjustement =
-        (wealths, tBalance).zipped.map {
-          case (newWealth, tb) =>
-            assert(!tb.isNaN)
-            tb + newWealth
-        }
-
-      (s.cities.map(_.population) zip wealthAdjustement).map {
-        case (p, wa) =>
-          assert(!p.isNaN)
-          assert(!wa.isNaN)
-          wa match {
-            case 0 => p
-            case x if x > 0 => p + math.log(wa / conversionFactor)
-            case x if x < 0 => p - math.log(math.abs(wa) / conversionFactor)
-          }
-      }
-    }
-
-    def savings =
-      s.cities.map(_.wealth * wealthSavingRate)
-
-    val newCities =
-      (s.cities zip populations zip wealths zip savings).map(flatten).map {
-        case (c, p, w, s) =>
-          assert(p >= 0)
-          assert(w > 0, s"The city too poor for the model $w, $p")
-          c.copy(population = p, wealth = aboveOne(w), saving = s)
-      }
-
-    s.copy(step = s.step + 1, cities = newCities).set(transactions)
+    (s.cities zip supplies zip demands zip unsolds zip unsatisfieds zip bonuses zip tbs).map(flatten).map {
+      case (city, supply, demand, unsold, unsatified, bonus, tb) =>
+        city.wealth + supply - internalShare * demand * 2 + demand - fixedCost + bonus - unsold + unsatified + tb
+    }.set(transactions)
   }
 
   def consumption(population: Double) = adjustConsumption * math.log(population)
