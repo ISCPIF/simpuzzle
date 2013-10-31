@@ -15,10 +15,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
 import fr.geocite.simpuzzle._
-import fr.geocite.marius.one.Transaction
 
 trait MariusLogging <: Logging {
   type LOGGING = Transaction

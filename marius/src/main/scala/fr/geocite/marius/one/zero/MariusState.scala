@@ -20,7 +20,7 @@ package fr.geocite.marius.one.zero
 import fr.geocite.simpuzzle.State
 import fr.geocite.marius.one
 
-trait MariusState <: State with one.DistanceMatrix {
+trait MariusState <: State {
   case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
   case class MariusState(step: Int, cities: Seq[City], distanceMatrix: Seq[Seq[Double]]) extends one.DistanceMatrix with one.Cities[City]
   type STATE = MariusState
