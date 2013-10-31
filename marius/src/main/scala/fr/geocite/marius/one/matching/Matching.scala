@@ -15,11 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one.matching
 
 import scala.util.Random
+import fr.geocite.marius.one.Transaction
+import fr.geocite.simpuzzle.State
 
-trait Matching <: MariusState with MariusLogging {
+trait Matching <: State {
 
   case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
 

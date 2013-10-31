@@ -23,6 +23,8 @@ import scala.util.Random
 
 import scalaz._
 import Scalaz._
+import fr.geocite.marius.one._
+import fr.geocite.marius.one.matching._
 
 trait MariusStep <: Step
     with MariusState

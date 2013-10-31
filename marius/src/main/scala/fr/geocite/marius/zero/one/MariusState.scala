@@ -19,6 +19,7 @@ package fr.geocite.marius.zero.one
 
 import fr.geocite.simpuzzle._
 import fr.geocite.simpuzzle.city._
+import fr.geocite.marius.Hydrocarbon
 
 trait MariusState <: State {
   case class City(population: Double, hydrocarbon: Boolean) extends Population with Hydrocarbon

@@ -19,6 +19,7 @@ package fr.geocite.marius.zero.one
 
 import fr.geocite.gibrat._
 import scala.util.Random
+import fr.geocite.marius.Hydrocarbon
 
 trait MariusGrowth <: GibratGrowth {
 

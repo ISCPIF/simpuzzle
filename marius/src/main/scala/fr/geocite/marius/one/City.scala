@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 31/10/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
-import fr.geocite.simpuzzle.State
-import fr.geocite.marius.one
+import fr.geocite.simpuzzle.city.Population
 
-trait MariusState <: State with one.DistanceMatrix {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
-  case class MariusState(step: Int, cities: Seq[City], distanceMatrix: Seq[Seq[Double]]) extends one.DistanceMatrix with one.Cities[City]
-  type STATE = MariusState
+trait City <: Population {
+  def wealth: Double
+  def region: String
+  def capital: Boolean
+  def saving: Double
 }

@@ -31,7 +31,7 @@ trait SimpopLocalStep
     with SimpopLocalLogging {
 
   /// The average annual growth on the settlements in inhabitants per step
-  def populationRate = 0.02
+  def populationRate: Double
 
   /// The probability that an innovation emerges from the interaction between two individuals of the same settlement
   def pCreation: Double

@@ -18,9 +18,8 @@
 package fr.geocite.marius.one.zero
 
 import fr.geocite.simpuzzle._
+import fr.geocite.marius.one.Transaction
 
-trait MariusLogging <: Logging with MariusState {
-
+trait MariusLogging <: Logging {
   type LOGGING = Transaction
-
 }

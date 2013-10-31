@@ -15,18 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one.matching
 
 import scala.util.Random
 
+import fr.geocite.marius.one._
 import fr.geocite.simpuzzle.distribution._
-import scala.Some
+import fr.geocite.simpuzzle.State
 
 //FIXME city too poor assertion fail after 2 steps
-trait MatchComMatching <: Matching
-    with MariusState
-    with InteractionPotential
-    with MariusLogging {
+trait MatchComMatching <: Matching with InteractionPotential with State {
+
+  type STATE <: Cities[City] with DistanceMatrix
 
   /**
    * Relative importance of distance in the choice of partners in according to the interaction potential
@@ -119,7 +119,7 @@ trait MatchComMatching <: Matching
 
   def potentialBuyerNetwork(
     s: Seq[City],
-    distances: DistanceMatrix,
+    distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
     val interactionPotentials = interactionPotentialMatrix(s, supplies, distances, distanceOrderBuy)
@@ -131,7 +131,7 @@ trait MatchComMatching <: Matching
 
   def potentialSellerNetwork(
     s: Seq[City],
-    distances: DistanceMatrix,
+    distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
     val acquaintance = interactionPotentialMatrix(s, supplies, distances, distanceOrderSell)
@@ -143,7 +143,7 @@ trait MatchComMatching <: Matching
 
   def drawCandidates(
     weighted: Seq[(Double, Int)],
-    distances: DistanceMatrix,
+    distances: Seq[Seq[Double]],
     otherQuantity: Seq[Double],
     satisfied: Double => Boolean)(implicit rng: Random) = {
     def drawOneCandidate(candidates: List[(Double, Int)], selected: List[Int] = List.empty, totalQuantity: Double = 0): Set[Int] =

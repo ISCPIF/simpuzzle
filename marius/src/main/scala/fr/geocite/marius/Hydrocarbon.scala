@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.one
+package fr.geocite.marius
 
 trait Hydrocarbon {
   def hydrocarbon: Boolean

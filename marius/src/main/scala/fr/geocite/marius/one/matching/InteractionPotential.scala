@@ -15,13 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one.matching
+
+import fr.geocite.marius.one.zero.MariusState
 
 trait InteractionPotential <: MariusState {
 
   def distanceDecay: Double
 
-  def interactionPotentialMatrix(s: Seq[City], masses: Seq[Double], distances: DistanceMatrix, beta: Double) = {
+  def interactionPotentialMatrix(s: Seq[City], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
     val citiesWithSupply = s zip masses
     citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>
