@@ -30,8 +30,8 @@ trait SimpopLocalStep
     with InnovationRootIdOrdering
     with SimpopLocalLogging {
 
-  /// The average annual growth on the settlements in inhabitants per step
-  def populationRate: Double
+  /// The maximal annual growth on the settlements in inhabitants per step
+  def populationRate: Double = 0.02
 
   /// The probability that an innovation emerges from the interaction between two individuals of the same settlement
   def pCreation: Double
