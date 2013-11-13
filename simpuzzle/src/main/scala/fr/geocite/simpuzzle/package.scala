@@ -18,8 +18,12 @@
 package fr.geocite
 
 import scala.util.Random
+import org.apache.commons.math3.random.{Well44497a, RandomAdaptor}
 
 package object simpuzzle {
+
+  def random(seed: Long) = new RandomAdaptor(new Well44497a(seed))
+
   object rng { implicit lazy val defaultRng = new Random }
 
   // Extends iterator :
