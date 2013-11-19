@@ -22,7 +22,7 @@ import org.apache.commons.math3.random.{ Well44497a, RandomAdaptor }
 
 package object simpuzzle {
 
-  def random(seed: Long) = new RandomAdaptor(new Well44497a(seed))
+  def random(seed: Long) = new util.Random(new RandomAdaptor(new Well44497a(seed)))
 
   object rng { implicit lazy val defaultRng = new Random }
 
