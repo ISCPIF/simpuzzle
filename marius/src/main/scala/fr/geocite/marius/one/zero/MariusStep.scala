@@ -52,37 +52,27 @@ trait MariusStep <: Step
     def aboveOne(v: Double) = if (v <= 1) 1.0 else v
     val tBalance = territoryBalance(s.cities)
 
-    wealths(s, tBalance).map {
-      wealths =>
+    for {
+      wealths <- wealths(s, tBalance)
+    } yield {
+      def populations = wealths.map { wealthToPopulation }
 
-        def populations /*(wealths: Seq[Double], tBalance: Seq[Double])*/ = {
+      def savings =
+        s.cities.map(_.wealth * wealthSavingRate)
 
-          (s.cities.map(_.population) zip wealths).map {
-            case (p, wa) =>
-              assert(!p.isNaN)
-              assert(!wa.isNaN)
-              wa match {
-                case 0 => p
-                case x if x > 0 => p + math.log(wa / conversionFactor)
-                case x if x < 0 => p - math.log(math.abs(wa) / conversionFactor)
-              }
-          }
+      val newCities =
+        (s.cities zip populations zip wealths zip savings).map(flatten).map {
+          case (c, p, w, s) =>
+            assert(p >= 0)
+            assert(w > 0, s"The city too poor for the model $w, $p")
+            c.copy(population = p, wealth = aboveOne(w), saving = s)
         }
 
-        def savings =
-          s.cities.map(_.wealth * wealthSavingRate)
-
-        val newCities =
-          (s.cities zip populations zip wealths zip savings).map(flatten).map {
-            case (c, p, w, s) =>
-              assert(p >= 0)
-              assert(w > 0, s"The city too poor for the model $w, $p")
-              c.copy(population = p, wealth = aboveOne(w), saving = s)
-          }
-
-        s.copy(step = s.step + 1, cities = newCities)
+      s.copy(step = s.step + 1, cities = newCities)
     }
   }
+
+  def wealthToPopulation(wealth: Double) = math.log(wealth / conversionFactor)
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random): Writer[Seq[LOGGING], Seq[Double]] = {
     val supplies = s.cities.map(c => supply(c.population, c.wealth))

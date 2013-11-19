@@ -18,7 +18,7 @@
 package fr.geocite
 
 import scala.util.Random
-import org.apache.commons.math3.random.{Well44497a, RandomAdaptor}
+import org.apache.commons.math3.random.{ Well44497a, RandomAdaptor }
 
 package object simpuzzle {
 
