@@ -72,7 +72,7 @@ trait MariusStep <: Step
     }
   }
 
-  def wealthToPopulation(wealth: Double) = math.log(wealth / conversionFactor)
+  def wealthToPopulation(wealth: Double) = math.log(1 + wealth / conversionFactor)
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random): Writer[Seq[LOGGING], Seq[Double]] = {
     val supplies = s.cities.map(c => supply(c.population, c.wealth))
