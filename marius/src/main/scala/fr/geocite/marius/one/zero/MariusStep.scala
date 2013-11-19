@@ -72,7 +72,7 @@ trait MariusStep <: Step
     }
   }
 
-  def wealthToPopulation(wealth: Double) = math.log(1 + wealth / conversionFactor)
+  def wealthToPopulation(wealth: Double) = math.log(1 + wealth) / conversionFactor
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random): Writer[Seq[LOGGING], Seq[Double]] = {
     val supplies = s.cities.map(c => supply(c.population, c.wealth))
@@ -105,9 +105,9 @@ trait MariusStep <: Step
     }.set(transactions)
   }
 
-  def consumption(population: Double) = adjustConsumption * math.log(population)
+  def consumption(population: Double) = adjustConsumption * math.log(population + 1)
 
-  def productivity(wealth: Double) = adjustProductivity * math.log(wealth)
+  def productivity(wealth: Double) = adjustProductivity * math.log(wealth + 1)
 
   def demand(population: Double) = consumption(population) * population
 

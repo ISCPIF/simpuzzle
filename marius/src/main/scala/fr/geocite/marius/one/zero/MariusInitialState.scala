@@ -22,7 +22,7 @@ import fr.geocite.simpuzzle.distribution.{ PositionDistribution, PopulationDistr
 import fr.geocite.marius.{ CapitalDistribution, RegionDistribution }
 import scala.util.Random
 import fr.geocite.gis.distance.GeodeticDistance
-import fr.geocite.marius.one.MariusLogging
+import fr.geocite.marius.one.{InitialWealth, MariusLogging}
 
 trait MariusInitialState <: InitialState
     with MariusState

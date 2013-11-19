@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 19/11/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
-import scala.util.Random
+import util.Random
 
-trait PowerInitialWealth extends InitialWealth {
-  def wealthExponent: Double
-  def initialWealth(population: Double)(implicit rng: Random): Double = math.pow(population, wealthExponent)
+trait ProportionalInitialWealth {
+  def conversionFactor: Double
+  def initialWealth(population: Double)(implicit rng: Random): Double = math.exp(population * conversionFactor) - 1
 }
