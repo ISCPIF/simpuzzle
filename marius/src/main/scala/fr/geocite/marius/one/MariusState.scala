@@ -15,13 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
-import fr.geocite.simpuzzle.State
-import fr.geocite.marius.one
-
-trait MariusState <: State {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
-  case class MariusState(step: Int, cities: Seq[City], distanceMatrix: Seq[Seq[Double]]) extends one.DistanceMatrix with one.Cities[City]
-  type STATE = MariusState
+trait MariusState {
+  type CITY <: City
+  case class MariusState(step: Int, cities: Seq[CITY], distanceMatrix: Seq[Seq[Double]]) extends DistanceMatrix with Cities[CITY]
+  def copy(c: CITY)(population: Double = c.population, wealth: Double = c.wealth, saving: Double = c.saving): CITY
 }

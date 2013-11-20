@@ -17,9 +17,9 @@
 
 package fr.geocite.marius.one.matching
 
-import fr.geocite.marius.one.zero.MariusState
+import fr.geocite.marius.one.City
 
-trait InteractionPotential <: MariusState {
+trait InteractionPotential {
 
   def distanceDecay: Double
 

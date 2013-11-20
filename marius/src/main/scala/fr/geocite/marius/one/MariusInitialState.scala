@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 20/11/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,42 +15,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
-import fr.geocite.simpuzzle.{ NoLogging, InitialState }
-import fr.geocite.simpuzzle.distribution.{ PositionDistribution, PopulationDistribution }
-import fr.geocite.marius.{ CapitalDistribution, RegionDistribution }
 import scala.util.Random
-import fr.geocite.gis.distance.GeodeticDistance
-import fr.geocite.marius.one.{InitialWealth, MariusLogging}
+import fr.geocite.simpuzzle._
+import fr.geocite.simpuzzle.distribution._
+import fr.geocite.gis.distance._
+import fr.geocite.marius._
 
 trait MariusInitialState <: InitialState
-    with MariusState
     with PopulationDistribution
+    with PositionDistribution
+    with GeodeticDistance
     with RegionDistribution
     with CapitalDistribution
-    with PositionDistribution
-    with InitialWealth
-    with GeodeticDistance
-    with MariusLogging {
-
-  def nbCities: Int
-
-  def initial(implicit rng: Random) = MariusState(0, cities.take(nbCities).toSeq, distances)
-
-  def cities(implicit rng: Random) =
-    for {
-      ((p, r), c) <- populations zip regions zip capitals
-    } yield {
-      City(
-        population = p,
-        region = r,
-        capital = c,
-        wealth = initialWealth(p),
-        saving = 0
-      )
-    }
-
+    with InitialWealth {
   def distances(implicit rng: Random) = {
     val positions = positionDistribution(rng).toIndexedSeq
 
@@ -59,5 +38,4 @@ trait MariusInitialState <: InitialState
         positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
     }
   }
-
 }

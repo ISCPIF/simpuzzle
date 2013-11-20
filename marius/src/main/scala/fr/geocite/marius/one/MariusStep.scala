@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 20/11/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,21 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.zero
+package fr.geocite.marius.one
 
-import fr.geocite.simpuzzle._
-import distribution._
 import scala.util.Random
-
 import scalaz._
 import Scalaz._
-import fr.geocite.marius.one._
-import fr.geocite.marius.one.matching._
+import fr.geocite.simpuzzle._
+import distribution._
+import fr.geocite.marius.one.matching.Matching
 
-trait MariusStep <: Step
-    with MariusState
-    with MariusLogging
-    with Matching {
+trait MariusStep <: Step with MariusLogging with Matching with MariusState {
+
+  type CITY <: City
+  type STATE = MariusState
 
   def adjustConsumption: Double
 
@@ -65,7 +63,7 @@ trait MariusStep <: Step
           case (c, p, w, s) =>
             assert(p >= 0)
             assert(w > 0, s"The city too poor for the model $w, $p")
-            c.copy(population = p, wealth = aboveOne(w), saving = s)
+            copy(c)(population = p, wealth = aboveOne(w), saving = s)
         }
 
       s.copy(step = s.step + 1, cities = newCities)

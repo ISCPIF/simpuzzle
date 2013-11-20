@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 20/11/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,9 +17,7 @@
 
 package fr.geocite.marius.one
 
-import scala.util.Random
+import fr.geocite.simpuzzle.{ TimeEndingCondition, StepByStep }
+import fr.geocite.marius.MariusFile
 
-trait PowerInitialWealth extends InitialWealth {
-  def wealthExponent: Double
-  def initialWealth(population: Double)(implicit rng: Random): Double = math.pow(population, wealthExponent)
-}
+trait Marius extends StepByStep with MariusInitialState with MariusStep with TimeEndingCondition with MariusFile
