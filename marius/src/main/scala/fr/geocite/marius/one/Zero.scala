@@ -20,7 +20,7 @@ package fr.geocite.marius.one
 import fr.geocite.marius.one
 import scala.util.Random
 
-trait Zero <: one.MariusStep with one.MariusInitialState {
+trait Zero <: MariusStep with MariusInitialState {
 
   case class ZeroCity(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
   type CITY = ZeroCity

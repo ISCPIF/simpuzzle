@@ -37,8 +37,6 @@ trait MariusStep <: Step with MariusLogging with Matching with MariusState {
 
   def capitalShareOfTaxes: Double
 
-  def conversionFactor: Double
-
   def wealthSavingRate: Double = 0.15
 
   def fixedCost: Double = 42
@@ -70,7 +68,7 @@ trait MariusStep <: Step with MariusLogging with Matching with MariusState {
     }
   }
 
-  def wealthToPopulation(wealth: Double) = math.log(1 + wealth) / conversionFactor
+  def wealthToPopulation(wealth: Double): Double
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random): Writer[Seq[LOGGING], Seq[Double]] = {
     val supplies = s.cities.map(c => supply(c.population, c.wealth))
