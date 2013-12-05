@@ -27,6 +27,7 @@ import fr.geocite.marius._
 import fr.geocite.gis.distance.GeodeticDistance
 
 trait Marius <: StepByStep
+    with TimeEndingCondition
     with MariusLogging
     with Matching
     with MariusState
