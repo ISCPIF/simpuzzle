@@ -20,13 +20,18 @@ package fr.geocite.marius.one
 import fr.geocite.marius.one
 import scala.util.Random
 
-trait Zero <: MariusStep with MariusInitialState {
+trait Basic <: Marius {
 
   case class ZeroCity(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
   type CITY = ZeroCity
 
+  case class MariusState(step: Int, cities: Seq[CITY], distanceMatrix: Seq[Seq[Double]]) extends DistanceMatrix
+  type STATE = MariusState
+
   def copy(c: CITY)(population: Double = c.population, wealth: Double = c.wealth, saving: Double = c.saving): CITY =
     c.copy(population = population, wealth = wealth, saving = saving)
+
+  def copy(s: STATE)(step: Int, cities: Seq[CITY]) = s.copy(step, cities)
 
   def nbCities: Int
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 14/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,11 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.marius.zero
 
+import fr.geocite.simpuzzle.city.Population
 import scala.util.Random
+import fr.geocite.simpuzzle.distribution.PopulationDistribution
 
-trait PowerInitialWealth extends InitialWealth {
-  def wealthExponent: Double
-  def initialWealth(population: Double)(implicit rng: Random): Double = math.pow(population, wealthExponent)
+trait Basic <: Marius with PopulationDistribution {
+  case class City(population: Double) extends Population
+  case class GibratState(step: Int, cities: Seq[City])
+
+  type CITY = City
+  type STATE = GibratState
+
+  def initial(implicit rng: Random) = GibratState(0, populations.take(nbCities).map(City(_)).toSeq)
+  def copy(c: CITY)(p: Double) = c.copy(p)
+  def copy(s: STATE)(step: Int, cities: Seq[City]) = s.copy(step, cities)
 }

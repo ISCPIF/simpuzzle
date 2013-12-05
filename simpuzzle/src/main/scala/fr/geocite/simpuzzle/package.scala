@@ -33,6 +33,14 @@ package object simpuzzle {
       val (a, b) = i.span(p)
       a ++ (if (b.hasNext) Some(b.next) else None)
     }
+    def last = {
+      def last[T](i: Iterator[T]): T = {
+        val e = i.next()
+        if (i.hasNext) last(i)
+        else e
+      }
+      last(i)
+    }
   }
 
   implicit def extendIterator[A](i: Iterator[A]) = new IteratorExtension(i)

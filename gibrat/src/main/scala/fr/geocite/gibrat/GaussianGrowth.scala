@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 14/05/13 Romain Reuillon
+ * Copyright (C) 17/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.zero
+package fr.geocite.gibrat
 
-import fr.geocite.gibrat._
+import scala.util.Random
 
-trait MariusState <: GibratState {
-  type MariusState = GibratState
+trait GaussianGrowth {
+  /// Annual mean growth rate
+  def rate: Double
+  def stdRate: Double
+
+  def growthRate(implicit rng: Random) = 1 + (stdRate * rng.nextGaussian + rate)
 }

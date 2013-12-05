@@ -20,11 +20,14 @@ package fr.geocite.marius.one.matching
 import scala.util.Random
 import fr.geocite.simpuzzle.distribution._
 import fr.geocite.marius.one._
+import fr.geocite.marius._
 
 trait ProportionalMatching <: Matching
-    with InteractionPotential {
+    with InteractionPotential
+    with MariusState {
 
-  type STATE <: Cities[City] with DistanceMatrix
+  type STATE <: State with DistanceMatrix
+  type CITY <: one.City
 
   def distanceOrderSell: Double
 

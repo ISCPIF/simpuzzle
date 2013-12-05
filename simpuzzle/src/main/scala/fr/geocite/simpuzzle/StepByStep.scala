@@ -27,13 +27,6 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
       s => step(s.value)
     }.takeWhileInclusive(s => !ended(s.value))
 
-  def run(implicit rng: Random) = {
-    def last[T](i: Iterator[T]): T = {
-      val e = i.next
-      if (i.hasNext) last(i)
-      else e
-    }
-    last(states)
-  }
+  def run(implicit rng: Random) = states.last
 
 }

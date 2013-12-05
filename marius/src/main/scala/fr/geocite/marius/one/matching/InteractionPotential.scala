@@ -17,13 +17,13 @@
 
 package fr.geocite.marius.one.matching
 
-import fr.geocite.marius.one.City
+import fr.geocite.marius._
 
-trait InteractionPotential {
+trait InteractionPotential <: MariusState {
 
   def distanceDecay: Double
 
-  def interactionPotentialMatrix(s: Seq[City], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
+  def interactionPotentialMatrix(s: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
     val citiesWithSupply = s zip masses
     citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>

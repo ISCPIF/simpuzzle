@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 20/11/13 Romain Reuillon
+ * Copyright (C) 05/12/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,27 +15,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.marius.zero
 
+import fr.geocite.marius.{ MariusFile, MariusState }
+import fr.geocite.gibrat.GaussianGrowth
 import scala.util.Random
-import fr.geocite.simpuzzle._
-import fr.geocite.simpuzzle.distribution._
-import fr.geocite.gis.distance._
-import fr.geocite.marius._
 
-trait MariusInitialState <: InitialState
-    with PopulationDistribution
-    with PositionDistribution
-    with GeodeticDistance
-    with RegionDistribution
-    with CapitalDistribution
-    with InitialWealth {
-  def distances(implicit rng: Random) = {
-    val positions = positionDistribution(rng).toIndexedSeq
+trait Marius <: MariusState with GaussianGrowth with MariusFile {
+  def copy(c: CITY)(population: Double): CITY
 
-    positions.zipWithIndex.map {
-      case (c1, i) =>
-        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
-  }
+  def step(s: STATE)(implicit rng: Random) = copy(s)(s.step + 1, cityGrowth(s))
+
+  def cityGrowth(s: STATE)(implicit rng: Random) =
+    s.cities.map { city => copy(city)(population = city.population * growthRate) }
+
+  def nbCities: Int
+
 }

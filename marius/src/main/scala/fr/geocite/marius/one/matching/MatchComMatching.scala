@@ -18,15 +18,14 @@
 package fr.geocite.marius.one.matching
 
 import scala.util.Random
-
+import fr.geocite.marius._
 import fr.geocite.marius.one._
 import fr.geocite.simpuzzle.distribution._
-import fr.geocite.simpuzzle.State
 
 //FIXME city too poor assertion fail after 2 steps
-trait MatchComMatching <: Matching with InteractionPotential with State {
+trait MatchComMatching <: Matching with InteractionPotential with MariusState {
 
-  type STATE <: Cities[City] with DistanceMatrix
+  type STATE <: State with DistanceMatrix
 
   /**
    * Relative importance of distance in the choice of partners in according to the interaction potential
@@ -118,7 +117,7 @@ trait MatchComMatching <: Matching with InteractionPotential with State {
   }
 
   def potentialBuyerNetwork(
-    s: Seq[City],
+    s: Seq[CITY],
     distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
@@ -130,7 +129,7 @@ trait MatchComMatching <: Matching with InteractionPotential with State {
   }
 
   def potentialSellerNetwork(
-    s: Seq[City],
+    s: Seq[CITY],
     distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {

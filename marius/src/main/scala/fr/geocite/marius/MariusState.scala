@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 17/05/13 Romain Reuillon
+ * Copyright (C) 04/12/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,22 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero.one
+package fr.geocite.marius
 
-import fr.geocite.gibrat._
-import scala.util.Random
-import fr.geocite.marius.Hydrocarbon
+import fr.geocite.simpuzzle.city.Population
 
-trait MariusGrowth <: GibratGrowth {
-
-  /// Annual mean growth rate
-  def rate: Double
-  def stdRate: Double
-  def hydrocarbonBonus: Double
-
-  def growthRate(c: Hydrocarbon)(implicit rng: Random) = {
-    val bonus = if (c.hydrocarbon) hydrocarbonBonus else 0.0
-    1 + (stdRate * rng.nextGaussian + rate + bonus)
+trait MariusState <: fr.geocite.simpuzzle.State {
+  type STATE <: State
+  type State = {
+    def step: Int
+    def cities: Seq[CITY]
   }
 
+  type CITY <: Population
+
+  def copy(s: STATE)(step: Int, cities: Seq[CITY]): STATE
 }
