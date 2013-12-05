@@ -26,7 +26,7 @@ import fr.geocite.marius.one.matching.Matching
 import fr.geocite.marius._
 import fr.geocite.gis.distance.GeodeticDistance
 
-trait Marius <: Step
+trait Marius <: StepByStep
     with MariusLogging
     with Matching
     with MariusState
