@@ -22,15 +22,9 @@ import scalaz._
 import Scalaz._
 import fr.geocite.simpuzzle._
 import distribution._
-import fr.geocite.marius.one.matching.{ProportionalMatching, Matching}
+import fr.geocite.marius.one.matching.Matching
 import fr.geocite.marius._
 import fr.geocite.gis.distance.GeodeticDistance
-
-object Test {
-
-
-}
-
 
 trait Marius <: Step
     with MariusLogging
