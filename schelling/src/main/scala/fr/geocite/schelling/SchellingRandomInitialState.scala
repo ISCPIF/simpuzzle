@@ -28,7 +28,7 @@ trait SchellingRandomInitialState <: InitialState
   def whiteProportion: Double
   def side: Int
 
-  def initial(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
+  def initialState(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
 
   // Randomly draw a cell type given the proportions
   def randomCell(implicit rng: Random): Place =

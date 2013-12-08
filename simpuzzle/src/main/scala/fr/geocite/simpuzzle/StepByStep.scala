@@ -23,8 +23,8 @@ import scalaz.Writer
 trait StepByStep <: State with InitialState with Step with EndingCondition {
 
   def states(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
-    Iterator.iterate(initial) {
-      s => step(s.value)
+    Iterator.iterate(initialState) {
+      s => nextState(s.value)
     }.takeWhileInclusive(s => !ended(s.value))
 
   def run(implicit rng: Random) = states.last

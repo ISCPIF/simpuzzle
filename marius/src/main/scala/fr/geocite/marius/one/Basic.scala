@@ -17,27 +17,32 @@
 
 package fr.geocite.marius.one
 
-import fr.geocite.marius.one
 import scala.util.Random
+import scalaz._
 
 trait Basic <: Marius {
 
-  case class ZeroCity(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double) extends one.City
+  case class ZeroCity(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
   type CITY = ZeroCity
 
-  case class MariusState(step: Int, cities: Seq[CITY], distanceMatrix: Seq[Seq[Double]]) extends DistanceMatrix
+  def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
+  def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
+  def capital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(capital = v), _.capital)
+  def saving = Lens.lensu[CITY, Double]((c, v) => c.copy(saving = v), _.saving)
+  def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
+
+  case class MariusState(step: Int, cities: Seq[CITY], distanceMatrix: DistanceMatrix)
   type STATE = MariusState
 
-  def copy(c: CITY)(population: Double = c.population, wealth: Double = c.wealth, saving: Double = c.saving): CITY =
-    c.copy(population = population, wealth = wealth, saving = saving)
-
-  def copy(s: STATE)(step: Int, cities: Seq[CITY]) = s.copy(step, cities)
+  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
+  def distanceMatrix = Lens.lensu[STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
 
   def nbCities: Int
 
-  def initial(implicit rng: Random) = MariusState(0, cities.take(nbCities).toSeq, distances)
+  def initialState(implicit rng: Random) = MariusState(0, initialCities.take(nbCities).toSeq, distances)
 
-  def cities(implicit rng: Random) =
+  def initialCities(implicit rng: Random) =
     for {
       ((p, r), c) <- populations zip regions zip capitals
     } yield {

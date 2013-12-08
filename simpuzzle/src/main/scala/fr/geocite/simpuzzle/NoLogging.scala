@@ -20,6 +20,6 @@ package fr.geocite.simpuzzle
 import scalaz._
 import Scalaz._
 
-trait NoLogging <: Logging with State {
-  type LOGGING = None.type
+trait NoLogging <: Logging {
+  override def log[T](s: T, l: Seq[LOGGING]) = s.set(Seq.empty)
 }

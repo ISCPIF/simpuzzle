@@ -17,9 +17,11 @@
 
 package fr.geocite.simpuzzle
 
-trait TimeEndingCondition extends EndingCondition with State {
-  type STATE <: { def step: Int }
+import scalaz._
 
+trait TimeEndingCondition extends EndingCondition with State {
   def maxStep: Int
-  def ended(state: STATE) = state.step >= maxStep
+  def ended(state: STATE) = step.get(state) >= maxStep
+
+  def step: Lens[STATE, Int]
 }

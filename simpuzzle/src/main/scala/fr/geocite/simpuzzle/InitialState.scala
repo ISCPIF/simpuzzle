@@ -21,5 +21,5 @@ import scala.util.Random
 import scalaz.Writer
 
 trait InitialState <: State with Logging {
-  def initial(implicit rng: Random): Writer[Seq[LOGGING], STATE]
+  def initialState(implicit rng: Random): Writer[Seq[LOGGING], STATE]
 }

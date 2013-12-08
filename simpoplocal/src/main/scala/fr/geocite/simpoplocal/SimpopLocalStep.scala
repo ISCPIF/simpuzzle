@@ -48,7 +48,7 @@ trait SimpopLocalStep
   /// The maximum carrying capacity of the landscape of each settlement (measured in number of inhabitants)
   def rMax: Double
 
-  def step(state: STATE)(implicit rng: Random) = {
+  def nextState(state: STATE)(implicit rng: Random) = {
     val disasteredSettlements = disaster(state.settlements)
 
     var currentInnovationId = state.currentInnovationId

@@ -19,26 +19,23 @@ package fr.geocite.gibrat
 
 import scala.util.Random
 import fr.geocite.simpuzzle.{ State, NoLogging }
-import fr.geocite.simpuzzle.city.Population
-import fr.geocite.simpuzzle.distribution.PopulationDistribution
+import scalaz._
 
 trait Gibrat <: fr.geocite.simpuzzle.Step
-    with GaussianGrowth
     with NoLogging
-    with PopulationDistribution
     with State {
 
-  def step(s: STATE)(implicit rng: Random) = GibratState(s.step + 1, cityGrowth(s))
+  type CITY
 
-  def cityGrowth(s: STATE)(implicit rng: Random) =
-    s.cities.map { city => city.copy(population = city.population * growthRate) }
+  def nextState(s: STATE)(implicit rng: Random) =
+    cities.mod(_.map(c => population.mod(_ * growthRate(c), c)), s)
 
-  case class City(population: Double) extends Population
+  def cities: Lens[STATE, Seq[CITY]]
+  def population: Lens[CITY, Double]
 
-  case class GibratState(step: Int, cities: Seq[City])
-  type STATE = GibratState
+  /// Annual mean growth rate
+  def rate: Double
+  def stdRate: Double
 
-  def nbCities: Int
-  def initial(implicit rng: Random) = GibratState(0, populations.take(nbCities).map(City(_)).toSeq)
-
+  def growthRate(c: CITY)(implicit rng: Random) = 1 + (stdRate * rng.nextGaussian + rate)
 }

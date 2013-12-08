@@ -20,14 +20,10 @@ package fr.geocite.marius.one.matching
 import scala.util.Random
 import fr.geocite.simpuzzle.distribution._
 import fr.geocite.marius.one._
-import fr.geocite.marius._
 
 trait ProportionalMatching <: Matching
     with InteractionPotential
-    with MariusState {
-
-  type STATE <: State with DistanceMatrix
-  type CITY <: one.City
+    with Marius {
 
   def distanceOrderSell: Double
 
@@ -35,7 +31,7 @@ trait ProportionalMatching <: Matching
     s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    lazy val interactionMatrix = interactionPotentialMatrix(s.cities, supplies, s.distanceMatrix, distanceOrderSell)
+    lazy val interactionMatrix = interactionPotentialMatrix(cities.get(s), supplies, distanceMatrix.get(s), distanceOrderSell)
     lazy val transactions = (interactionMatrix zip supplies).zipWithIndex.flatMap {
       case ((interactions, supply), from) =>
         interactions.normalise.map(_ * supply).zipWithIndex.map {
@@ -47,7 +43,7 @@ trait ProportionalMatching <: Matching
       transactions.groupBy(_.to).map {
         case (to, ts) =>
           val transactionsSum = ts.map(_.transacted).sum
-          val coef = math.min(1.0, s.cities(to).wealth / transactionsSum)
+          val coef = math.min(1.0, wealth.get(cities.get(s)(to)) / transactionsSum)
           to -> ts.map(t => t.copy(transacted = t.transacted * coef))
       }.withDefaultValue(Seq.empty)
 

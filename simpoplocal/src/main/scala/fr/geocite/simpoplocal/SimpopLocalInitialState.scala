@@ -32,7 +32,7 @@ trait SimpopLocalInitialState <: InitialState
     with EuclideanDistance
     with SimpopLocalLogging {
 
-  def initial(implicit rng: Random) = (Seq.empty, SimpopLocalState(0, readSettlements.map(_.toSettlement)))
+  def initialState(implicit rng: Random) = (Seq.empty, SimpopLocalState(0, readSettlements.map(_.toSettlement)))
 
   /**
    *

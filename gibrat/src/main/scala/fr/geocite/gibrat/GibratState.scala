@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 31/10/13 Romain Reuillon
+ * Copyright (C) 08/12/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.gibrat
 
-import fr.geocite.simpuzzle.city.Population
+import scala.util.Random
+import scalaz._
+import fr.geocite.simpuzzle.distribution.PopulationDistribution
 
-trait City <: Population {
-  def wealth: Double
-  def region: String
-  def capital: Boolean
-  def saving: Double
+trait GibratState <: Gibrat with PopulationDistribution {
+  case class City(population: Double)
+
+  case class GibratState(step: Int, populations: Seq[Double])
+
+  type STATE = GibratState
+  type CITY = City
+
+  def initial(implicit rng: Random) = GibratState(0, populations(rng).take(nbCities).toSeq)
+
+  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
+
+  def nbCities: Int
 }

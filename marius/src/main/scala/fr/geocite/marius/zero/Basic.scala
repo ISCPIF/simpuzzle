@@ -17,18 +17,6 @@
 
 package fr.geocite.marius.zero
 
-import fr.geocite.simpuzzle.city.Population
-import scala.util.Random
-import fr.geocite.simpuzzle.distribution.PopulationDistribution
+import fr.geocite.gibrat.GibratState
 
-trait Basic <: Marius with PopulationDistribution {
-  case class City(population: Double) extends Population
-  case class GibratState(step: Int, cities: Seq[City])
-
-  type CITY = City
-  type STATE = GibratState
-
-  def initial(implicit rng: Random) = GibratState(0, populations.take(nbCities).map(City(_)).toSeq)
-  def copy(c: CITY)(p: Double) = c.copy(p)
-  def copy(s: STATE)(step: Int, cities: Seq[City]) = s.copy(step, cities)
-}
+trait Basic <: Marius with GibratState

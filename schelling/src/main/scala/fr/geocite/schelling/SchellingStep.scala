@@ -51,7 +51,7 @@ trait SchellingStep <: Step
     case (_, c) => c == Free
   }.unzip._1
 
-  def step(state: STATE)(implicit rng: Random) = {
+  def nextState(state: STATE)(implicit rng: Random) = {
     val wantToMove = moving(state)
     val free = freeCells(state)
 

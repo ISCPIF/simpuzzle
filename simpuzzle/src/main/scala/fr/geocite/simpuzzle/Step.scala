@@ -21,5 +21,5 @@ import scala.util.Random
 import scalaz.Writer
 
 trait Step <: State with Logging {
-  def step(s: STATE)(implicit rng: Random): Writer[Seq[LOGGING], STATE]
+  def nextState(s: STATE)(implicit rng: Random): Writer[Seq[LOGGING], STATE]
 }

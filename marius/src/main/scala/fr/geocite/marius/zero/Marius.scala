@@ -18,22 +18,11 @@
 package fr.geocite.marius.zero
 
 import fr.geocite.marius.{ MariusFile, MariusState }
-import fr.geocite.gibrat.GaussianGrowth
-import scala.util.Random
-import fr.geocite.simpuzzle.{TimeEndingCondition, StepByStep}
+import fr.geocite.gibrat._
+import fr.geocite.simpuzzle._
 
-trait Marius <: StepByStep
-    with TimeEndingCondition
-    with MariusState
-    with GaussianGrowth
-    with MariusFile {
-  def copy(c: CITY)(population: Double): CITY
-
-  def step(s: STATE)(implicit rng: Random) = copy(s)(s.step + 1, cityGrowth(s))
-
-  def cityGrowth(s: STATE)(implicit rng: Random) =
-    s.cities.map { city => copy(city)(population = city.population * growthRate) }
-
-  def nbCities: Int
-
-}
+trait Marius <: Gibrat
+  with TimeEndingCondition
+  with NoLogging
+  with MariusState
+  with MariusFile

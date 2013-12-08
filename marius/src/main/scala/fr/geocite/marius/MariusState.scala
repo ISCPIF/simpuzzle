@@ -17,16 +17,12 @@
 
 package fr.geocite.marius
 
-import fr.geocite.simpuzzle.city.Population
+import scalaz.Lens
+import fr.geocite.simpuzzle._
 
-trait MariusState <: fr.geocite.simpuzzle.State {
-  type STATE <: State
-  type State = {
-    def step: Int
-    def cities: Seq[CITY]
-  }
-
-  type CITY <: Population
-
-  def copy(s: STATE)(step: Int, cities: Seq[CITY]): STATE
+trait MariusState <: State {
+  type CITY
+  def step: Lens[STATE, Int]
+  def cities: Lens[STATE, Seq[CITY]]
+  def population: Lens[CITY, Double]
 }

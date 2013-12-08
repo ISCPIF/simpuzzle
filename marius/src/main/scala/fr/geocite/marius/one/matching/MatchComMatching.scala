@@ -18,14 +18,11 @@
 package fr.geocite.marius.one.matching
 
 import scala.util.Random
-import fr.geocite.marius._
 import fr.geocite.marius.one._
 import fr.geocite.simpuzzle.distribution._
 
 //FIXME city too poor assertion fail after 2 steps
-trait MatchComMatching <: Matching with InteractionPotential with MariusState {
-
-  type STATE <: State with DistanceMatrix
+trait MatchComMatching <: Matching with InteractionPotential with Marius {
 
   /**
    * Relative importance of distance in the choice of partners in according to the interaction potential
@@ -43,8 +40,8 @@ trait MatchComMatching <: Matching with InteractionPotential with MariusState {
     s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    val potentialBuyers: Seq[Set[Int]] = potentialBuyerNetwork(s.cities, s.distanceMatrix, supplies, demands)
-    val potentialSellers: Seq[Set[Int]] = potentialSellerNetwork(s.cities, s.distanceMatrix, supplies, demands)
+    val potentialBuyers: Seq[Set[Int]] = potentialBuyerNetwork(cities.get(s), distanceMatrix.get(s), supplies, demands)
+    val potentialSellers: Seq[Set[Int]] = potentialSellerNetwork(cities.get(s), distanceMatrix.get(s), supplies, demands)
 
     val sellContracts: Seq[Set[Int]] = contracts(potentialBuyers, potentialSellers)
     val buyContract: Seq[Set[Int]] = contracts(potentialSellers, potentialBuyers)
@@ -87,13 +84,13 @@ trait MatchComMatching <: Matching with InteractionPotential with MariusState {
 
     def unsolds =
       for {
-        cid <- 0 until s.cities.size
+        cid <- 0 until cities.get(s).size
         transaction = transactedFrom(cid)
       } yield transaction.map(_.pps).sum - transaction.map(_.transacted).sum
 
     def unsatisfieds =
       for {
-        cid <- 0 until s.cities.size
+        cid <- 0 until cities.get(s).size
         transaction = transactedTo(cid)
       } yield transaction.map(_.ppb).sum - transaction.map(_.transacted).sum
 

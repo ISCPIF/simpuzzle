@@ -17,41 +17,41 @@
 
 package fr.geocite.marius.zero
 
-import fr.geocite.simpuzzle.city.Population
 import scala.util.Random
 import fr.geocite.simpuzzle.distribution.PopulationDistribution
 import fr.geocite.marius.{ HydrocarbonDistribution, Hydrocarbon }
+import scalaz.Lens
 
 trait HydrocarbonBonus <: Marius
     with PopulationDistribution
     with HydrocarbonDistribution {
 
-  case class City(population: Double, hydrocarbon: Boolean) extends Population with Hydrocarbon
+  case class City(population: Double, hydrocarbon: Boolean)
   case class MariusState(step: Int, cities: Seq[City])
-
-  def copy(c: CITY)(p: Double) = c.copy(p)
-  def copy(s: STATE)(step: Int, cities: Seq[City]) = s.copy(step, cities)
 
   type STATE = MariusState
   type CITY = City
 
-  /// Annual mean growth rate
-  def rate: Double
-  def stdRate: Double
+  def step = Lens.lensu[MariusState, Int]((s, v) => s.copy(step = v), _.step)
+  def cities = Lens.lensu[MariusState, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
+  def hydrocarbon = Lens.lensu[CITY, Boolean]((c, v) => c.copy(hydrocarbon = v), _.hydrocarbon)
+  def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
+
   def hydrocarbonBonus: Double
 
-  def growthRate(c: Hydrocarbon)(implicit rng: Random) = {
-    val bonus = if (c.hydrocarbon) hydrocarbonBonus else 0.0
+  override def growthRate(c: CITY)(implicit rng: Random) = {
+    val bonus = if (hydrocarbon.get(c)) hydrocarbonBonus else 0.0
     1 + (stdRate * rng.nextGaussian + rate + bonus)
   }
 
   def nbCities: Int
 
-  def initial(implicit rng: Random) = {
-    val cities = (populations zip hydrocarbons).map {
+  def initialState(implicit rng: Random) = {
+    val cities = (populations(rng) zip hydrocarbons(rng)).map {
       case (p, h) => City(p, h)
     }
     MariusState(0, cities.take(nbCities).toSeq)
   }
+
 }
 

@@ -22,6 +22,9 @@ import Scalaz._
 
 trait Logging <: State {
   type LOGGING
+
+  def log[T](s: T, l: Seq[LOGGING]) = s.set(l)
+
   protected implicit def tupleToWriter[T](t: (Seq[LOGGING], T)) = Writer(t._1, t._2)
-  protected implicit def stateToWriter(s: STATE): Writer[Seq[LOGGING], STATE] = s.set(Seq.empty)
+  protected implicit def stateToWriter(s: STATE): Writer[Seq[LOGGING], STATE] = log(s, Seq.empty)
 }
