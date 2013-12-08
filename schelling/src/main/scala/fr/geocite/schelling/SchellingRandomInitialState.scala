@@ -21,14 +21,19 @@ import fr.geocite.simpuzzle._
 import scala.util.Random
 
 trait SchellingRandomInitialState <: InitialState
-    with SchellingState
+    with Schelling
     with NoLogging {
 
   def freeProportion: Double
   def whiteProportion: Double
   def side: Int
 
-  def initialState(implicit rng: Random) = SchellingState(0, Seq.fill(side, side)(randomCell))
+  def initialState(implicit rng: Random) =
+    SchellingState(
+      0,
+      new Cells {
+        def cells = Seq.fill(side, side)(randomCell)
+      })
 
   // Randomly draw a cell type given the proportions
   def randomCell(implicit rng: Random): Place =

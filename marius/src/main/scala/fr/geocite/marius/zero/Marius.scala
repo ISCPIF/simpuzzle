@@ -21,7 +21,7 @@ import fr.geocite.marius.{ MariusFile, MariusState }
 import fr.geocite.gibrat._
 import fr.geocite.simpuzzle._
 
-trait Marius <: Gibrat
+trait Marius <: GibratStep
   with TimeEndingCondition
   with NoLogging
   with MariusState

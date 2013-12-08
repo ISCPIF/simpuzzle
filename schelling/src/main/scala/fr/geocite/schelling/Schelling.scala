@@ -17,18 +17,14 @@
 
 package fr.geocite.schelling
 
-import fr.geocite.simpuzzle._
-import fr.geocite.simpuzzle.matrix.Torus2D
+import scalaz._
 
-trait SchellingState <: State {
-  trait Place
-  case object Free extends Place
-  case object White extends Place
-  case object Black extends Place
-
-  case class SchellingState(step: Int, cells: Seq[Seq[Place]]) extends Torus2D {
-    type CELL = Place
-  }
+trait Schelling <: SchellingStep {
 
   type STATE = SchellingState
+
+  case class SchellingState(step: Int, cells: CELLS)
+
+  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def cells = Lens.lensu[STATE, CELLS]((s, v) => s.copy(cells = v), _.cells)
 }

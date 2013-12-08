@@ -17,6 +17,6 @@
 
 package fr.geocite.marius.zero
 
-import fr.geocite.gibrat.GibratState
+import fr.geocite.gibrat.Gibrat
 
-trait Basic <: Marius with GibratState
+trait Basic <: Marius with Gibrat

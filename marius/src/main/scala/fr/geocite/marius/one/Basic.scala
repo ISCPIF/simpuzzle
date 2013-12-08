@@ -22,8 +22,8 @@ import scalaz._
 
 trait Basic <: Marius {
 
-  case class ZeroCity(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
-  type CITY = ZeroCity
+  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
+  type CITY = City
 
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
@@ -31,8 +31,8 @@ trait Basic <: Marius {
   def saving = Lens.lensu[CITY, Double]((c, v) => c.copy(saving = v), _.saving)
   def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
 
-  case class MariusState(step: Int, cities: Seq[CITY], distanceMatrix: DistanceMatrix)
-  type STATE = MariusState
+  case class State(step: Int, cities: Seq[CITY], distanceMatrix: DistanceMatrix)
+  type STATE = State
 
   def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
   def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
@@ -40,13 +40,13 @@ trait Basic <: Marius {
 
   def nbCities: Int
 
-  def initialState(implicit rng: Random) = MariusState(0, initialCities.take(nbCities).toSeq, distances)
+  def initialState(implicit rng: Random) = State(0, initialCities.take(nbCities).toSeq, distances)
 
   def initialCities(implicit rng: Random) =
     for {
       ((p, r), c) <- populations zip regions zip capitals
     } yield {
-      ZeroCity(
+      City(
         population = p,
         region = r,
         capital = c,

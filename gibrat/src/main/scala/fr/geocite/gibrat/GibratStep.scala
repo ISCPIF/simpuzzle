@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 08/12/13 Romain Reuillon
+ * Copyright (C) 14/05/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -18,21 +18,24 @@
 package fr.geocite.gibrat
 
 import scala.util.Random
+import fr.geocite.simpuzzle.{ State, NoLogging }
 import scalaz._
-import fr.geocite.simpuzzle.distribution.PopulationDistribution
 
-trait GibratState <: Gibrat with PopulationDistribution {
-  case class City(population: Double)
+trait GibratStep <: fr.geocite.simpuzzle.Step
+    with NoLogging
+    with State {
 
-  case class GibratState(step: Int, populations: Seq[Double])
+  type CITY
 
-  type STATE = GibratState
-  type CITY = City
+  def nextState(s: STATE)(implicit rng: Random) =
+    cities.mod(_.map(c => population.mod(_ * growthRate(c), c)), s)
 
-  def initial(implicit rng: Random) = GibratState(0, populations(rng).take(nbCities).toSeq)
+  def cities: Lens[STATE, Seq[CITY]]
+  def population: Lens[CITY, Double]
 
-  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
-  def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
+  /// Annual mean growth rate
+  def rate: Double
+  def stdRate: Double
 
-  def nbCities: Int
+  def growthRate(c: CITY)(implicit rng: Random) = 1 + (stdRate * rng.nextGaussian + rate)
 }

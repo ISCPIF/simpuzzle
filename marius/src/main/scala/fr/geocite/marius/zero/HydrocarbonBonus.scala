@@ -27,13 +27,13 @@ trait HydrocarbonBonus <: Marius
     with HydrocarbonDistribution {
 
   case class City(population: Double, hydrocarbon: Boolean)
-  case class MariusState(step: Int, cities: Seq[City])
+  case class State(step: Int, cities: Seq[City])
 
-  type STATE = MariusState
+  type STATE = State
   type CITY = City
 
-  def step = Lens.lensu[MariusState, Int]((s, v) => s.copy(step = v), _.step)
-  def cities = Lens.lensu[MariusState, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
+  def step = Lens.lensu[State, Int]((s, v) => s.copy(step = v), _.step)
+  def cities = Lens.lensu[State, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
   def hydrocarbon = Lens.lensu[CITY, Boolean]((c, v) => c.copy(hydrocarbon = v), _.hydrocarbon)
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
 
@@ -50,7 +50,7 @@ trait HydrocarbonBonus <: Marius
     val cities = (populations(rng) zip hydrocarbons(rng)).map {
       case (p, h) => City(p, h)
     }
-    MariusState(0, cities.take(nbCities).toSeq)
+    State(0, cities.take(nbCities).toSeq)
   }
 
 }

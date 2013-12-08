@@ -21,33 +21,47 @@ import fr.geocite.simpuzzle._
 import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
 import fr.geocite.simpuzzle.neighbourhood._
+import scalaz.Lens
+import fr.geocite.simpuzzle.matrix.Torus2D
 
 trait SchellingStep <: Step
-    with SchellingState
     with MatrixNeighbourhood
     with NoLogging {
+
+  trait Place
+  case object Free extends Place
+  case object White extends Place
+  case object Black extends Place
 
   def side: Int
   def similarWanted: Double
   def neighbourhoodSize: Int
 
+  trait Cells <: Torus2D {
+    type CELL = Place
+  }
+  type CELLS = Cells
+
+  def step: Lens[STATE, Int]
+  def cells: Lens[STATE, CELLS]
+
   // Compute the proportion of similar neighbors in a neighbourhood of neighborhoodSize
   def similarNeighbours(state: STATE, i: Int, j: Int): Double = {
-    val n = neighbors(state.cell(_, _), i, j, neighbourhoodSize).filter(_ != Free)
+    val n = neighbors(cells.get(state).cell(_, _), i, j, neighbourhoodSize).filter(_ != Free)
     n.count {
-      _ == state.cells(i)(j)
+      _ == cells.get(state).cell(i, j)
     } / n.size.toDouble
   }
 
   // Compute the list of coordinates of the agent that want to move
   def moving(state: STATE): Iterable[(Int, Int)] =
-    state.cellsIndices.filter {
+    cells.get(state).cellsIndices.filter {
       case ((i, j), c) =>
         if (c == Free) false
         else similarNeighbours(state, i, j) < similarWanted
     }.unzip._1
 
-  def freeCells(state: STATE) = state.cellsIndices.filter {
+  def freeCells(state: STATE) = cells.get(state).cellsIndices.filter {
     case (_, c) => c == Free
   }.unzip._1
 
@@ -57,13 +71,15 @@ trait SchellingStep <: Step
 
     val moves = rng.shuffle(wantToMove) zip rng.shuffle(free)
 
-    val newMatrix = ArrayBuffer.tabulate(side, side)((i, j) => state.cells(i)(j))
+    val newMatrix = ArrayBuffer.tabulate(side, side)((i, j) => cells.get(state).cell(i, j))
     for (((fromI, fromJ), (toI, toJ)) <- moves) {
-      newMatrix(toI)(toJ) = state.cells(fromI)(fromJ)
+      newMatrix(toI)(toJ) = cells.get(state).cell(fromI, fromJ)
       newMatrix(fromI)(fromJ) = Free
     }
 
-    SchellingState(state.step + 1, newMatrix)
+    cells.set(step.mod(_ + 1, state), new Cells {
+      def cells = newMatrix.toSeq.map(_.toSeq)
+    })
   }
 
 }
