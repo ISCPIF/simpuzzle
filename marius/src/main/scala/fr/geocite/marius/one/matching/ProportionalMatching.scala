@@ -31,7 +31,13 @@ trait ProportionalMatching <: Matching
     s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    lazy val interactionMatrix = interactionPotentialMatrix(cities.get(s), supplies, distanceMatrix.get(s), distanceOrderSell)
+    lazy val interactionMatrix =
+      interactionPotentialMatrix(
+        cities.get(s),
+        supplies,
+        distanceMatrix.get(s),
+        distanceOrderSell)
+
     lazy val transactions = (interactionMatrix zip supplies).zipWithIndex.flatMap {
       case ((interactions, supply), from) =>
         interactions.normalise.map(_ * supply).zipWithIndex.map {
