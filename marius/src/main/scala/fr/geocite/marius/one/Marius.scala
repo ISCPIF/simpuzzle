@@ -43,11 +43,11 @@ trait Marius <: StepByStep
 
   def capitalShareOfTaxes: Double
 
-  def wealthSavingRate: Double = 0.15
+  def wealthSavingRate: Double = 0.0
 
-  def fixedCost: Double = 0
+  def fixedCost: Double = 0.0
 
-  def internalShare: Double = 0.20
+  def internalShare: Double = 0.0
 
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
@@ -71,7 +71,7 @@ trait Marius <: StepByStep
       val newCities =
         (cities.get(s) zip populations zip wealths zip savings).map(flatten).map {
           case (c, p, w, s) =>
-            assert(p >= 0)
+            assert(p >= 0, s"The population is negative $p, $w")
             assert(w > 0, s"The city too poor for the model $w, $p")
             saving.set(wealth.set(population.set(c, p), aboveOne(w)), s)
         }
@@ -110,7 +110,15 @@ trait Marius <: StepByStep
     log(
       (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip bonuses zip tbs).map(flatten).map {
         case (city, supply, demand, unsold, unsatified, bonus, tb) =>
-          wealth.get(city) + supply - internalShare * demand * 2 + demand - fixedCost + bonus - unsold + unsatified + tb
+          wealth.get(city) +
+            supply -
+            internalShare * demand * 2 +
+            demand -
+            fixedCost +
+            bonus -
+            unsold +
+            unsatified +
+            tb
       },
       transactions)
   }

@@ -30,12 +30,12 @@ trait WealthFromPopulation {
 
   def minPopulation: Double = 10
 
-  def maxPopulation: Double = 16000
+  def maxPopulation: Double = 20000
 
   private lazy val den = 2 * inversionPoint * minPopulation + 2 * inversionPoint * maxPopulation - pow(minPopulation, 2) - pow(maxPopulation, 2)
 
   private lazy val a = {
-    def aNum = minPopulation + maxPopulation - minWealth - maxWealth
+    def aNum = minPopulation - maxPopulation - minWealth + maxWealth
     aNum / den
   }
 
@@ -53,6 +53,8 @@ trait WealthFromPopulation {
 
   def wealthToPopulation(wealth: Double) = {
     assert(a != 0)
-    (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
+    (-b +
+      sqrt(pow(b, 2) - 4 * a * (c - wealth))
+    ) / (2 * a)
   }
 }

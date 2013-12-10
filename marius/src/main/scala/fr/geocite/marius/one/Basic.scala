@@ -34,7 +34,10 @@ trait Basic <: Marius {
   case class State(step: Int, cities: Seq[CITY], distanceMatrix: DistanceMatrix)
   type STATE = State
 
-  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def step = Lens.lensu[STATE, Int](
+    (s, v) => s.copy(step = v),
+    _.step)
+
   def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
   def distanceMatrix = Lens.lensu[STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
 
