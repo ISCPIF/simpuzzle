@@ -28,26 +28,15 @@ trait WealthFromPopulation {
 
   def maxWealth: Double = 20000
 
-  def minPopulation: Double = 10
+  def minPopulation: Double = 0
 
   def maxPopulation: Double = 20000
 
-  private lazy val den = 2 * inversionPoint * minPopulation + 2 * inversionPoint * maxPopulation - pow(minPopulation, 2) - pow(maxPopulation, 2)
+  private lazy val a = 1 / (2 * inversionPoint)
 
-  private lazy val a = {
-    def aNum = minPopulation - maxPopulation - minWealth + maxWealth
-    aNum / den
-  }
+  private lazy val b = 0
 
-  private lazy val b = {
-    def bNum = 2 * inversionPoint * minWealth + 2 * inversionPoint * maxWealth - pow(minPopulation, 2) - pow(maxPopulation, 2)
-    bNum / den
-  }
-
-  private lazy val c = {
-    def cNum = -2 * inversionPoint * minPopulation * maxWealth + 2 * inversionPoint * maxPopulation * minWealth - pow(minPopulation, 2) * maxPopulation + pow(minPopulation, 2) * maxWealth + minPopulation * pow(maxPopulation, 2) - pow(maxPopulation, 2) * minWealth
-    cNum / den
-  }
+  private lazy val c = 0
 
   def initialWealth(population: Double)(implicit rng: Random): Double = a * pow(population, 2) + b * population + c
 
