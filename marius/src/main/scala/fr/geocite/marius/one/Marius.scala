@@ -57,7 +57,7 @@ trait Marius <: StepByStep
 
   def nextState(s: STATE)(implicit rng: Random) = {
 
-    def aboveOne(v: Double) = if (v <= 1) 1.0 else v
+    //def aboveOne(v: Double) = if (v <= 1) 1.0 else v
     val tBalance = territoryBalance(cities.get(s))
 
     for {
@@ -72,8 +72,8 @@ trait Marius <: StepByStep
         (cities.get(s) zip populations zip wealths zip savings).map(flatten).map {
           case (c, p, w, s) =>
             assert(p >= 0, s"The population is negative $p, $w")
-            assert(w > 0, s"The city too poor for the model $w, $p")
-            saving.set(wealth.set(population.set(c, p), aboveOne(w)), s)
+            assert(w >= 0, s"The city too poor for the model $w, $p")
+            saving.set(wealth.set(population.set(c, p), w), s)
         }
 
       cities.set(step.mod(_ + 1, s), newCities)
@@ -119,6 +119,8 @@ trait Marius <: StepByStep
             unsold +
             unsatified +
             tb
+      }.map {
+        w => if (w >= 0) w else 0
       },
       transactions)
   }
