@@ -24,7 +24,7 @@ import fr.geocite.simpuzzle._
 
 object MariusGraphStream extends App {
 
-    val m = new Marius with Basic with ProportionalMatching {
+  val m = new Marius with Basic with ProportionalMatching {
     def distanceDecay = 1
     def adjustConsumption = 0.01
     def adjustProductivity = 0.03918953552458127
@@ -43,16 +43,20 @@ object MariusGraphStream extends App {
     val cities = state.value.cities
     val transacted = state.written
 
+    for {
+      (cities, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
+    } {
 
+    }
   }
 
   val graph = new MultiGraph("Marius")
-  graph.addNode("A");
-  graph.addNode("B");
-  graph.addNode("C");
-  graph.addEdge("AB", "A", "B");
-  graph.addEdge("BC", "B", "C");
-  graph.addEdge("CA", "C", "A");
+  graph.addNode("A")
+  graph.addNode("B")
+  graph.addNode("C")
+  graph.addEdge("AB", "A", "B")
+  graph.addEdge("BC", "B", "C")
+  graph.addEdge("CA", "C", "A")
 
   graph.display()
 
