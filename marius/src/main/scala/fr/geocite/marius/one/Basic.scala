@@ -20,10 +20,14 @@ package fr.geocite.marius.one
 import scala.util.Random
 import scalaz._
 
+object Basic {
+  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
+  case class State(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
+}
+
 trait Basic <: Marius {
 
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
-  type CITY = City
+  type CITY = Basic.City
 
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
@@ -31,8 +35,7 @@ trait Basic <: Marius {
   def saving = Lens.lensu[CITY, Double]((c, v) => c.copy(saving = v), _.saving)
   def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
 
-  case class State(step: Int, cities: Seq[CITY], distanceMatrix: DistanceMatrix)
-  type STATE = State
+  type STATE = Basic.State
 
   def step = Lens.lensu[STATE, Int](
     (s, v) => s.copy(step = v),
@@ -43,13 +46,13 @@ trait Basic <: Marius {
 
   def nbCities: Int
 
-  def initialState(implicit rng: Random) = State(0, initialCities.take(nbCities).toSeq, distances)
+  def initialState(implicit rng: Random) = Basic.State(0, initialCities.take(nbCities).toSeq, distances)
 
   def initialCities(implicit rng: Random) =
     for {
       ((p, r), c) <- populations zip regions zip capitals
     } yield {
-      City(
+      Basic.City(
         population = p,
         region = r,
         capital = c,

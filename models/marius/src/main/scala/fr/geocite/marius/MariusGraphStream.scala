@@ -43,14 +43,17 @@ object MariusGraphStream extends App {
     val cities = state.value.cities
     val transacted = state.written
 
-    for {
+    println(transacted.size)
+
+    /* for {
       (cities, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
     } {
 
-    }
+    }  */
   }
 
   val graph = new MultiGraph("Marius")
+
   graph.addNode("A")
   graph.addNode("B")
   graph.addNode("C")
