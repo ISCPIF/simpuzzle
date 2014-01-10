@@ -23,7 +23,7 @@ import java.util.Calendar
 import scalax.io.Resource
 import fr.geocite.simpuzzle._
 
-object Marius extends App {
+object MariusGEXF extends App {
 
   val m = new Marius with Basic with ProportionalMatching {
     def distanceDecay = 1
@@ -36,7 +36,7 @@ object Marius extends App {
     def maxStep = 31
   }
 
-  def transactedCeil = 10
+  def transactedCeil = 100
 
   val graph = Resource.fromFile("/tmp/marius.gexf")
 

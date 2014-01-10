@@ -47,7 +47,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle) settings (globalSettings: _*)
 
- lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius")) dependsOn(marius) settings (libraryDependencies += gexf4j)
+ lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius")) dependsOn(marius) settings (libraryDependencies += graphstream)
 
  //lazy val all = Project(id = "all", base = file("."), settings = Project.defaultSettings ++ osgiSettings ++ globalSettings ++ Seq(geotools))  settings (publish := { }, bundleSymbolicName := "fr.geocite.simpuzzle", bundleVersion := "1.0", exportPackage := Seq("fr.geocite.*")) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat, sugarscape) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat, gis, sugarscape)
 }
