@@ -37,6 +37,12 @@ trait MariusFile <: PopulationDistribution
 
   def rokato = startingCities.map(_(0))
 
+  def names = startingCities.map(_(1))
+
+  def lat = startingCities.map(_(4))
+
+  def long = startingCities.map(_(5))
+
   def populationDistribution = Distribution(startingCities.map(_(12).toDouble))
 
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
