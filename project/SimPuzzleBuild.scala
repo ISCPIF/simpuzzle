@@ -10,7 +10,8 @@ object SimPuzzleBuild extends Build {
  override def settings = 
    super.settings ++ Seq(
      scalaVersion := "2.10.2",
-     organization := "fr.geocite"
+     organization := "fr.geocite",
+     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
    ) 
 
   lazy val globalSettings = Project.defaultSettings ++ Seq(
@@ -23,8 +24,7 @@ object SimPuzzleBuild extends Build {
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.2",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.3",
      libraryDependencies += "com.chuusai" % "shapeless" % "2.0.0-M1" cross CrossVersion.full,
-     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.2",
-     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public"
+     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.2"
    ) ++ releaseSettings
 
 
