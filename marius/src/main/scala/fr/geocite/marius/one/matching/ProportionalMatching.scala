@@ -50,7 +50,7 @@ trait ProportionalMatching <: Matching
         case (to, ts) =>
           val transactionsSum = ts.map(_.transacted).sum
           val coef = math.min(1.0, wealth.get(cities.get(s)(to)) / transactionsSum)
-          to -> ts.map(t => t.copy(transacted = t.transacted * coef))
+          (to, ts.map(t => t.copy(transacted = t.transacted * coef)))
       }.withDefaultValue(Seq.empty)
 
     def unsatisfieds =

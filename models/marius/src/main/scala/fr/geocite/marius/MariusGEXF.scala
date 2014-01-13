@@ -27,8 +27,8 @@ object MariusGEXF extends App {
 
   val m = new Marius with Basic with ProportionalMatching {
     def distanceDecay = 1
-    def adjustConsumption = 0.01
-    def adjustProductivity = 0.03918953552458127
+    def sizeEffectOnEco = 142
+    def gamma = 92
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceOrderSell = 0.854448839836991
@@ -55,7 +55,6 @@ object MariusGEXF extends App {
         <attributes class="node" mode="dynamic">
             <attribute id="population" title="population" type="double"/>
             <attribute id="wealth" title="wealth" type="double"/>
-            <attribute id="saving" title="saving" type="double"/>
         </attributes>
         <attributes class="edge" mode="dynamic">
             <attribute id="transacted" title="transacted" type="double"/>
@@ -82,7 +81,6 @@ object MariusGEXF extends App {
           Seq(
             s"""<attvalue for="population" value="${s.population}" start="$step" end="${step + 1}"/>""",
             s"""<attvalue for="wealth" value="${s.wealth}" start="$step" end="${step + 1}"/>""",
-            s"""<attvalue for="saving" value="${s.saving}" start="$step" end="${step + 1}"/>""",
             s"""<viz:position x="$long" y="$lat" z="0.0"/>"""
           )
       }

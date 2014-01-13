@@ -26,8 +26,8 @@ object MariusGraphStream extends App {
 
   val m = new Marius with Basic with ProportionalMatching {
     def distanceDecay = 1
-    def adjustConsumption = 0.01
-    def adjustProductivity = 0.03918953552458127
+    def sizeEffectOnEco = 142
+    def gamma = 92
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceOrderSell = 0.854448839836991

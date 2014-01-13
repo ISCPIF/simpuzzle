@@ -21,7 +21,7 @@ import scala.util.Random
 import scalaz._
 
 object Basic {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean, saving: Double)
+  case class City(population: Double, wealth: Double, region: String, capital: Boolean)
   case class State(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
 }
 
@@ -32,7 +32,6 @@ trait Basic <: Marius {
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
   def capital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(capital = v), _.capital)
-  def saving = Lens.lensu[CITY, Double]((c, v) => c.copy(saving = v), _.saving)
   def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
 
   type STATE = Basic.State
@@ -56,8 +55,7 @@ trait Basic <: Marius {
         population = p,
         region = r,
         capital = c,
-        wealth = initialWealth(p),
-        saving = 0
+        wealth = initialWealth(p)
       )
     }
 

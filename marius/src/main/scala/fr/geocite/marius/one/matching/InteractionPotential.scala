@@ -23,8 +23,8 @@ trait InteractionPotential <: MariusState {
 
   def distanceDecay: Double
 
-  def interactionPotentialMatrix(s: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
-    val citiesWithSupply = s zip masses
+  def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
+    val citiesWithSupply = cities zip masses
     citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>
         citiesWithSupply.zipWithIndex.toIndexedSeq.flatMap {

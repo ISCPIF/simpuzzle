@@ -37,9 +37,9 @@ trait Marius <: StepByStep
 
   // calibré sur les villes brésiliennes, pour que les grandes villes consomment et produisent plus que les plus petites
   // selon la formule : Revenu/hab(=productivity) = sizeEffectOnEco * ln (Pop) + gamma
-  def sizeEffectOnEco: Double = 142
+  def sizeEffectOnEco: Double
 
-  def gamma: Double = 92
+  def gamma: Double
 
   def territorialTaxes: Double
 
