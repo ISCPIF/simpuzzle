@@ -30,14 +30,14 @@ trait InteractionPotential <: MariusState {
         citiesWithSupply.zipWithIndex.toIndexedSeq.flatMap {
           case ((c2, s2), j) =>
             if (i == j) None
-            else Some(interactionPotential(s1, s2, distances(i)(j), beta))
+            else Some(interactionPotential(s1, s2, distances(i)(j)))
         }
     }
   }
 
-  def interactionPotential(supply1: Double, supply2: Double, distance: Double, beta: Double) = {
-    val potential = math.pow(supply1 * supply2, 1 - beta) / math.pow(math.pow(distance, distanceDecay), beta)
-    assert(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance $beta")
+  def interactionPotential(supply1: Double, supply2: Double, distance: Double) = {
+    val potential = (supply1 * supply2) / math.pow(distance, distanceDecay)
+    assert(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
     potential
   }
 }

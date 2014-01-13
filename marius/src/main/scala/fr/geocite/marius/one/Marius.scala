@@ -35,24 +35,20 @@ trait Marius <: StepByStep
     with PositionDistribution
     with GeodeticDistance {
 
-  def adjustConsumption: Double
+  // calibré sur les villes brésiliennes, pour que les grandes villes consomment et produisent plus que les plus petites
+  // selon la formule : Revenu/hab(=productivity) = sizeEffectOnEco * ln (Pop) + gamma
+  def sizeEffectOnEco: Double = 142
 
-  def adjustProductivity: Double
+  def gamma: Double = 92
 
   def territorialTaxes: Double
 
   def capitalShareOfTaxes: Double
 
-  def wealthSavingRate: Double = 0.0
-
-  def fixedCost: Double = 0.0
-
-  def internalShare: Double = 0.0
-
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
-  def saving: Lens[CITY, Double]
+
   def distanceMatrix: Lens[STATE, DistanceMatrix]
 
   def nextState(s: STATE)(implicit rng: Random) = {
@@ -65,25 +61,25 @@ trait Marius <: StepByStep
     } yield {
       def populations = wealths.map { wealthToPopulation }
 
-      def savings =
-        cities.get(s).map(c => wealth.get(c) * wealthSavingRate)
 
-      val newCities =
-        (cities.get(s) zip populations zip wealths zip savings).map(flatten).map {
-          case (c, p, w, s) =>
+  val newCities =
+        (cities.get(s) zip populations zip wealths ).map(flatten).map {
+          case (c, p, w) =>
             assert(p >= 0, s"The population is negative $p, $w")
             assert(w >= 0, s"The city too poor for the model $w, $p")
-            saving.set(wealth.set(population.set(c, p), w), s)
+            wealth.set(population.set(c, p), w)
         }
 
       cities.set(step.mod(_ + 1, s), newCities)
     }
+
   }
+
 
   def wealthToPopulation(wealth: Double): Double
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
-    val supplies = cities.get(s).map(c => supply(population.get(c), population.get(c)))
+    val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
     val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
@@ -108,14 +104,11 @@ trait Marius <: StepByStep
     }
 
     log(
-      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip bonuses zip tbs).map(flatten).map {
-        case (city, supply, demand, unsold, unsatified, bonus, tb) =>
+      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs).map(flatten).map {
+        case (city, supply, demand, unsold, unsatified, tb) =>
           wealth.get(city) +
             supply -
-            internalShare * demand * 2 +
-            demand -
-            fixedCost +
-            bonus -
+            demand  -
             unsold +
             unsatified +
             tb
@@ -125,13 +118,13 @@ trait Marius <: StepByStep
       transactions)
   }
 
-  def consumption(population: Double) = adjustConsumption * math.log(population + 1)
+  def consumption(population: Double) = sizeEffectOnEco * math.log(population + 1) - gamma
 
-  def productivity(wealth: Double) = adjustProductivity * math.log(wealth + 1)
+  def productivity(population: Double) = sizeEffectOnEco * math.log(population + 1) - gamma
 
   def demand(population: Double) = consumption(population) * population
 
-  def supply(population: Double, wealth: Double) = productivity(wealth) * population
+  def supply(population: Double) = productivity(population) * population
 
   def territoryBalance(s: Seq[CITY]): Seq[Double] = {
     val deltas =
