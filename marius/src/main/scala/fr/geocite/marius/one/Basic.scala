@@ -40,7 +40,7 @@ trait Basic <: Marius {
     (s, v) => s.copy(step = v),
     _.step)
 
-  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v), _.cities)
+  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toArray.toSeq), _.cities)
   def distanceMatrix = Lens.lensu[STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
 
   def nbCities: Int
