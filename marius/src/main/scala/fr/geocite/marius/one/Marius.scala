@@ -61,9 +61,8 @@ trait Marius <: StepByStep
     } yield {
       def populations = wealths.map { wealthToPopulation }
 
-
-  val newCities =
-        (cities.get(s) zip populations zip wealths ).map(flatten).map {
+      val newCities =
+        (cities.get(s) zip populations zip wealths).map(flatten).map {
           case (c, p, w) =>
             assert(p >= 0, s"The population is negative $p, $w")
             assert(w >= 0, s"The city too poor for the model $w, $p")
@@ -74,7 +73,6 @@ trait Marius <: StepByStep
     }
 
   }
-
 
   def wealthToPopulation(wealth: Double): Double
 
@@ -108,7 +106,7 @@ trait Marius <: StepByStep
         case (city, supply, demand, unsold, unsatified, tb) =>
           wealth.get(city) +
             supply -
-            demand  -
+            demand -
             unsold +
             unsatified +
             tb
@@ -131,9 +129,7 @@ trait Marius <: StepByStep
       for {
         (r, cs) <- s.zipWithIndex.groupBy(c => region.get(c._1))
         (cities, indexes) = cs.unzip
-      }
-      yield
-      {
+      } yield {
         val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
         val capitalShare = capitalShareOfTaxes * taxes.sum
         val taxesLeft = taxes.sum - capitalShare
@@ -157,7 +153,7 @@ trait Marius <: StepByStep
   }
 
   def distances(implicit rng: Random) = {
-    val positions = positionDistribution(rng).toIndexedSeq
+    val positions = positionDistribution(rng).toVector
 
     positions.zipWithIndex.map {
       case (c1, i) =>

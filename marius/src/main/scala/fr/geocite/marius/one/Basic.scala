@@ -45,7 +45,7 @@ trait Basic <: Marius {
 
   def nbCities: Int
 
-  def initialState(implicit rng: Random) = Basic.State(0, initialCities.take(nbCities).toSeq, distances)
+  def initialState(implicit rng: Random) = Basic.State(0, initialCities.take(nbCities).toVector, distances)
 
   def initialCities(implicit rng: Random) =
     for {
