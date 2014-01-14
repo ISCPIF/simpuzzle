@@ -22,13 +22,42 @@ object TutoGraphStream extends App {
   graph.addNode("D")
   graph.addNode("E")
   graph.addNode("F")
-  graph.addEdge("AB", "A", "B");
-  graph.addEdge("BC", "B", "C");
-  graph.addEdge("CA", "C", "A");
-  graph.addEdge("AD", "A", "D");
-  graph.addEdge("DE", "D", "E");
-  graph.addEdge("DF", "D", "F");
-  graph.addEdge("EF", "E", "F");
+
+  graph.addNode("G")
+  graph.addNode("H")
+  graph.addNode("I")
+  graph.addNode("J")
+  graph.addNode("K")
+  graph.addNode("L")
+
+
+
+
+
+  graph.addEdge("AB", "A", "B")
+  graph.addEdge("BC", "B", "C")
+  graph.addEdge("CD", "C", "D")
+  graph.addEdge("DE", "D", "E")
+  graph.addEdge("EF", "E", "F")
+  graph.addEdge("FA", "F", "A")
+
+
+
+  graph.addEdge("GH", "G", "H")
+  graph.addEdge("HI", "H", "I")
+  graph.addEdge("IJ", "I", "J")
+  graph.addEdge("JK", "J", "K")
+  graph.addEdge("KL","K","L")
+  graph.addEdge("LG", "L", "G")
+
+
+  graph.addEdge("AG", "A", "G")
+  graph.addEdge("HB", "H", "B")
+  graph.addEdge("IC","I","C")
+  graph.addEdge("JD", "J", "D")
+  graph.addEdge("KE", "K", "E")
+  graph.addEdge("FL","F","L")
+
 
 
 
@@ -40,6 +69,7 @@ object TutoGraphStream extends App {
   val F: Node = graph.getNode("F")
 
 
+
   //val reader = new CSVReader(new FileReader("Desktop/graph-stream.csv"), ",", 1)
  // for (row <- reader.readAll) {
    // println(row(0))
@@ -47,14 +77,14 @@ object TutoGraphStream extends App {
 
 
 
-  A.addAttribute("ui.size", "40")
+  /*A.addAttribute("ui.size", "40")
   B.addAttribute("ui.size", "20")
   C.addAttribute("ui.size", "50")
   D.addAttribute("ui.size", "60")
   E.addAttribute("ui.size", "30")
   F.addAttribute("ui.size", "40")
 
-
+    */
 
   val allNodes = List(A, B, C, D, E, F)
   for { i <- allNodes}
@@ -63,12 +93,6 @@ object TutoGraphStream extends App {
     i.addAttribute ("ui.class", "marked")
   }
 
-  //A.addAttribute("ui.label", "A")
-  //val B: Node = graph.getNode("B")
-  //B.addAttribute("ui.label", "B")
-  //A.setAttribute ("ui.class", "marked")
- // val degreeA = A.getDegree()
-  //println(degreeA)
 
    for { i <- allNodes}
   {
