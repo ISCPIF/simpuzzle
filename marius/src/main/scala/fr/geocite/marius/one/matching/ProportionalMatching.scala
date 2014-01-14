@@ -38,37 +38,34 @@ trait ProportionalMatching <: Matching
         distanceMatrix.get(s),
         distanceOrderSell)
 
-    lazy val transactions = (interactionMatrix zip supplies).zipWithIndex.flatMap {
-      case ((interactions, supply), from) =>
-        interactions.normalise.map(_ * supply).zipWithIndex.map {
-          case (q, to) => Transaction(from, to, q)
+ lazy val transactions = interactionMatrix.zipWithIndex.map {
+      case (interactions, from) =>
+        val interactionPotentialSum = interactions.sum
+        interactions.zipWithIndex.map {
+          case (ip, to) =>
+           val transacted = (ip / interactionPotentialSum) * supplies(from)
+            Transaction(from, to, transacted)
         }
     }
 
-    val effectiveTransactedTo =
-      transactions.groupBy(_.to).map {
-        case (to, ts) =>
-          val transactionsSum = ts.map(_.transacted).sum
-          val coef = math.min(1.0, wealth.get(cities.get(s)(to)) / transactionsSum)
-          (to, ts.map(t => t.copy(transacted = t.transacted * coef)))
-      }.withDefaultValue(Seq.empty)
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
-        transactions = effectiveTransactedTo(i)
-      } yield d - transactions.map(_.transacted).sum
-
+        transactionsFrom = transactions(i)
+      } yield d - transactionsFrom.map(_.transacted).sum
+/*
     val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
       effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
-
+*/
+/*
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
         transactions = effectiveTransactedFrom(i)
       } yield s - transactions.map(_.transacted).sum
-
-    Matched(transactions, unsolds.toSeq, unsatisfieds.toSeq)
+*/
+    Matched(transactions.flatten, cities.get(s).map(c=>0.0), unsatisfieds.toSeq)
   }
 
 }

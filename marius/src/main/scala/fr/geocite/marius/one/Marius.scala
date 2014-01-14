@@ -131,8 +131,10 @@ trait Marius <: StepByStep
       for {
         (r, cs) <- s.zipWithIndex.groupBy(c => region.get(c._1))
         (cities, indexes) = cs.unzip
-      } yield {
-        val taxes = cities.map(c => wealth.get(c) * territorialTaxes)
+      }
+      yield
+      {
+        val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
         val capitalShare = capitalShareOfTaxes * taxes.sum
         val taxesLeft = taxes.sum - capitalShare
         val regionPopulation = cities.map(c => population.get(c)).sum
