@@ -38,8 +38,10 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  val out  = Resource.fromFile("/tmp/test.csv")
-  out.append("Hello\n")
+  val out  = Resource.fromFile("/home/chap/stats/mariusmodel_log.csv")
+  out.append("step, arokato, population, wealth \n")
+
+  var cptr = 0
 
   for {
     state <- m.states
@@ -47,12 +49,17 @@ object MariusCSV extends App {
     val cities = state.value.cities
     val transacted = state.written
 
-    /* for {
-      (cities, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
+     for {
+      (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
     } {
 
-    }  */
-  }
+	def uneligne = Seq ( cptr , rokato, city.population, city.wealth )
+	
+	out.append(uneligne.mkString("",",","\n"))
+    } 
+  
+	 cptr += 1
+}
 
 
 }
