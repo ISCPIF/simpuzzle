@@ -22,20 +22,12 @@ import math._
 
 trait WealthFromPopulation {
 
-  def inversionPoint: Double
-
-  def minWealth: Double = 0
-
-  def maxWealth: Double = 20000
-
-  def minPopulation: Double = 0
-
-  def maxPopulation: Double = 20000
-
-  private lazy val a =               0.000292792792792793
 
 
-  private lazy val b =        0.941441441441441
+  private lazy val a = 0.000292792792792793
+
+
+  private lazy val b =  0.941441441441441
 
 
   private lazy val c = 0
