@@ -32,9 +32,11 @@ trait WealthFromPopulation {
 
   def maxPopulation: Double = 20000
 
-  private lazy val a = 0.000292792792792793
+  private lazy val a =               0.000292792792792793
 
-  private lazy val b = 0.941441441441441
+
+  private lazy val b =        0.941441441441441
+
 
   private lazy val c = 0
 
