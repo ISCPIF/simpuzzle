@@ -22,10 +22,9 @@ import matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
 
-
 object MariusCSV extends App {
 
-    val m = new Marius with Basic with ProportionalMatching {
+  val m = new Marius with Basic with ProportionalMatching {
     def distanceDecay = 1
     def sizeEffectOnEco = 142
     def gamma = 92
@@ -38,28 +37,22 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  val out  = Resource.fromFile("/home/chap/stats/mariusmodel_log.csv")
+  val out = Resource.fromFile("/home/chap/stats/mariusmodel_log.csv")
   out.append("step, arokato, population, wealth \n")
 
-  var cptr = 0
-
   for {
-    state <- m.states
+    (state, cptr) <- m.states zipWithIndex
   } {
     val cities = state.value.cities
     val transacted = state.written
 
-     for {
+    for {
       (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
     } {
+      def uneligne = Seq(cptr, rokato, city.population, city.wealth)
+      out.append(uneligne.mkString("", ",", "\n"))
+    }
 
-	def uneligne = Seq ( cptr , rokato, city.population, city.wealth )
-	
-	out.append(uneligne.mkString("",",","\n"))
-    } 
-  
-	 cptr += 1
-}
-
+  }
 
 }
