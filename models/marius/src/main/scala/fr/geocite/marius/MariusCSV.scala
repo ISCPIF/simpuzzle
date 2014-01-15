@@ -31,7 +31,6 @@ object MariusCSV extends App {
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceOrderSell = 0.854448839836991
-    def inversionPoint = 10.00029163524558
     def maxStep = 31
   }
 
