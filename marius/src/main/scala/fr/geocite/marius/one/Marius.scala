@@ -37,7 +37,9 @@ trait Marius <: StepByStep
 
   // calibré sur les villes brésiliennes, pour que les grandes villes consomment et produisent plus que les plus petites
   // selon la formule : Revenu/hab(=productivity) = sizeEffectOnEco * ln (Pop) + gamma
-  def sizeEffectOnEco: Double
+  def sizeEffectOnConsumption: Double
+
+  def sizeEffectOnProductivity: Double
 
   def gamma: Double
 
@@ -102,23 +104,32 @@ trait Marius <: StepByStep
     }
 
     log(
-      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs).map(flatten).map {
-        case (city, supply, demand, unsold, unsatified, tb) =>
+      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs zipWithIndex).map(flatten).map {
+        case (city, supply, demand, unsold, unsatisfied, tb, i) =>
+          if ( i == 0 ) {
+	val calc = wealth.get(city) + supply - demand + unsatisfied 
+	//println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
+//	println("Wealth ", wealth.get(city), "supply", supply, "demand", demand, "unsat",unsatisfied ,"calc" , calc)
+	}
           wealth.get(city) +
             supply -
             demand -
             unsold +
-            unsatified +
+            unsatisfied * 0.5 +
             tb
       }.map {
-        w => if (w >= 0) w else 0
-      },
+        
+	w => if (w >= 0) w else 0
+      	
+
+	},
       transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnEco * math.log(population + 1) - gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) +  gamma
 
-  def productivity(population: Double) = sizeEffectOnEco * math.log(population + 1) - gamma
+  //def productivity(population: Double) = sizeEffectOnEco * math.log(population + 1) + gamma
+  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1) + gamma
 
   def demand(population: Double) = consumption(population) * population
 
