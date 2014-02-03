@@ -18,13 +18,13 @@
 package fr.geocite.marius
 
 import org.graphstream.graph.implementations.MultiGraph
-import fr.geocite.marius.one._
-import matching._
+import fr.geocite.marius._
+import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 
 object MariusGraphStream extends App {
 
-  val m = new Marius with Basic with ProportionalMatching {
+  val m = new Marius with MariusState with ProportionalMatching {
     def distanceDecay = 1
     def sizeEffectOnEco = 142
     def gamma = 92

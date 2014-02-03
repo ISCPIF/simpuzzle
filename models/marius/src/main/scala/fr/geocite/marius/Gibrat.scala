@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 23/09/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,10 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.marius
 
-import fr.geocite.simpuzzle._
+import fr.geocite.gibrat._
+import fr.geocite.marius._
 
-trait MariusLogging <: Logging {
-  type LOGGING = Transaction
+object Gibrat extends App {
+  val m = new GibratStep with MariusState {
+    override def stdRate = ???
+    override def rate = ???
+  }
+
 }

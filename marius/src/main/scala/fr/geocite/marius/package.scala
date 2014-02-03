@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 23/10/13 Romain Reuillon
+ * Copyright (C) 08/12/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,19 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.matching
+package fr.geocite
 
-import scala.util.Random
-import fr.geocite.marius.one.Transaction
-import fr.geocite.simpuzzle.State
-
-trait Matching <: State {
-
-  case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
-
-  def matchCities(
-    s: STATE,
-    supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random): Matched
-
+package object marius {
+  type DistanceMatrix = Seq[Seq[Double]]
 }

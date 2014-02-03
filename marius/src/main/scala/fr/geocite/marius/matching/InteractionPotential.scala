@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.matching
+package fr.geocite.marius.matching
 
 import fr.geocite.marius._
 
-trait InteractionPotential <: MariusState {
+trait InteractionPotential <: Marius {
 
   def distanceDecay: Double
 

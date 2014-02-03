@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.matching
+package fr.geocite.marius.matching
 
 import scala.util.Random
-import fr.geocite.marius.one._
 import fr.geocite.simpuzzle.distribution._
+import fr.geocite.marius.{ Transaction, Marius }
 
 //FIXME city too poor assertion fail after 2 steps
 trait MatchComMatching <: Matching with InteractionPotential with Marius {

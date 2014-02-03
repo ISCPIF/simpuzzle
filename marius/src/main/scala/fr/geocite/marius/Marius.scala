@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 20/11/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,25 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.marius
 
-import scala.util.Random
 import fr.geocite.simpuzzle._
 import distribution._
-import fr.geocite.marius.one.matching.Matching
-import fr.geocite.marius._
+import fr.geocite.marius.matching.Matching
+import fr.geocite.simpuzzle.distribution.PositionDistribution
 import fr.geocite.gis.distance.GeodeticDistance
 import scalaz._
+import scala.util.Random
 
 trait Marius <: StepByStep
     with TimeEndingCondition
     with MariusLogging
     with Matching
-    with MariusState
     with MariusFile
-    with WealthFromPopulation
-    with PositionDistribution
-    with GeodeticDistance {
+    with PositionDistribution {
+
+  type CITY
+
+  def cities: Lens[STATE, Seq[CITY]]
+  def population: Lens[CITY, Double]
 
   // calibré sur les villes brésiliennes, pour que les grandes villes consomment et produisent plus que les plus petites
   // selon la formule : Revenu/hab(=productivity) = sizeEffectOnEco * ln (Pop) + gamma
@@ -150,15 +152,6 @@ trait Marius <: StepByStep
     deltas.flatten.toSeq.sortBy {
       case (i, _) => i
     }.unzip._2
-  }
-
-  def distances(implicit rng: Random) = {
-    val positions = positionDistribution(rng).toVector
-
-    positions.zipWithIndex.map {
-      case (c1, i) =>
-        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
   }
 
 }
