@@ -57,6 +57,7 @@ trait Marius <: StepByStep
 
     //def aboveOne(v: Double) = if (v <= 1) 1.0 else v
     val tBalance = territoryBalance(cities.get(s))
+   // val nBalance = nationalBalance(cities.get(s))
 
     for {
       wealths <- wealths(s, tBalance)
@@ -104,8 +105,10 @@ trait Marius <: StepByStep
     }
 
     log(
-      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs zipWithIndex).map(flatten).map {
-        case (city, supply, demand, unsold, unsatisfied, tb, i) =>
+      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs
+        //zip nbs
+        zipWithIndex).map(flatten).map {
+        case (city, supply, demand, unsold, unsatisfied, tb, nb, i) =>
           if ( i == 0 ) {
 	val calc = wealth.get(city) + supply - demand + unsatisfied 
 	//println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
@@ -117,6 +120,8 @@ trait Marius <: StepByStep
             unsold +
             unsatisfied * 0.5 +
             tb
+          //+ nb
+
       }.map {
         
 	w => if (w >= 0) w else 0
@@ -128,7 +133,6 @@ trait Marius <: StepByStep
 
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) +  gamma
 
-  //def productivity(population: Double) = sizeEffectOnEco * math.log(population + 1) + gamma
   def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1) + gamma
 
   def demand(population: Double) = consumption(population) * population
@@ -173,3 +177,31 @@ trait Marius <: StepByStep
   }
 
 }
+
+
+
+// Un autre niveau de péréquation fiscale : les Etats
+/*
+def nationalBalance(s: Seq[CITY]): Seq[Double] = {
+val deltas =
+for {
+(p, cs) <- s.zipWithIndex.groupBy(c => nations.get(c._1))
+(cities, indexes) = cs.unzip
+} yield {
+val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
+val capitalShare = capitalShareOfTaxes * taxes.sum
+val taxesLeft = taxes.sum - capitalShare
+val nationPopulation = cities.map(c => population.get(c)).sum
+
+val nationalDeltas = (cities zip taxes).map {
+case (city, cityTaxes) =>
+val populationShare = population.get(city) / nationPopulation
+
+val delta =
+(if (nationalCapital.get(city)) taxesLeft * populationShare + capitalShare
+else taxesLeft * populationShare) - cityTaxes
+delta
+}
+indexes zip nationalDeltas
+}
+*/
