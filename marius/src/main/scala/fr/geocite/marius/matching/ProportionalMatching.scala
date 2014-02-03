@@ -15,11 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one.matching
+package fr.geocite.marius.matching
 
 import scala.util.Random
-import fr.geocite.simpuzzle.distribution._
-import fr.geocite.marius.one._
+import fr.geocite.marius.{ Transaction, Marius }
 
 trait ProportionalMatching <: Matching
     with InteractionPotential

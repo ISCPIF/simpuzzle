@@ -9,7 +9,7 @@ object SimPuzzleBuild extends Build {
 
  override def settings = 
    super.settings ++ Seq(
-     scalaVersion := "2.10.2",
+     scalaVersion := "2.10.3",
      organization := "fr.geocite",
      resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
    ) 

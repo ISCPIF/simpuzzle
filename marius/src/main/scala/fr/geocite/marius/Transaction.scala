@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 19/11/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,25 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.one
+package fr.geocite.marius
 
-import util.Random
-import math._
-
-trait WealthFromPopulation {
-
-  private lazy val a = 0.000292792792792793
-
-  private lazy val b = 0.941441441441441
-
-  private lazy val c = 0
-
-  def initialWealth(population: Double)(implicit rng: Random): Double = a * pow(population, 2) + b * population + c
-
-  def wealthToPopulation(wealth: Double) = {
-    assert(a != 0)
-    (-b +
-      sqrt(pow(b, 2) - 4 * a * (c - wealth))
-    ) / (2 * a)
-  }
-}
+case class Transaction(from: Int, to: Int, transacted: Double)

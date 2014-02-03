@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 08/12/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -17,6 +17,8 @@
 
 package fr.geocite.marius
 
-package object one {
-  type DistanceMatrix = Seq[Seq[Double]]
+import fr.geocite.simpuzzle.Logging
+
+trait MariusLogging <: Logging {
+  type LOGGING = Transaction
 }

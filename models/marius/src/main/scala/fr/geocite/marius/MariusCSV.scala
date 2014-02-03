@@ -17,8 +17,8 @@
 
 package fr.geocite.marius
 
-import fr.geocite.marius.one._
-import matching._
+import fr.geocite.marius._
+import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import scalax.file.Path
@@ -26,7 +26,7 @@ import scalax.file.Path
 
 object MariusCSV extends App {
 
-  val m = new Marius with Basic with ProportionalMatching {
+  val m = new Marius with MariusState with ProportionalMatching {
     def distanceDecay = 1
     def sizeEffectOnConsumption = 0.008
     def sizeEffectOnProductivity = 0.016

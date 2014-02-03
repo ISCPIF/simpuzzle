@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 05/12/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,14 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.zero
+package fr.geocite.marius
 
-import fr.geocite.marius.{ MariusFile, MariusState }
-import fr.geocite.gibrat._
-import fr.geocite.simpuzzle._
+import scala.util.Random
+import scala.math._
 
-trait Marius <: GibratStep
-  with TimeEndingCondition
-  with NoLogging
-  with MariusState
-  with MariusFile
+trait WealthFromPopulation {
+
+  private lazy val a = 0.000292792792792793
+
+  private lazy val b = 0.941441441441441
+
+  private lazy val c = 0
+
+  def initialWealth(population: Double)(implicit rng: Random): Double = a * pow(population, 2) + b * population + c
+
+  def wealthToPopulation(wealth: Double) = {
+    assert(a != 0)
+    (-b +
+      sqrt(pow(b, 2) - 4 * a * (c - wealth))
+    ) / (2 * a)
+  }
+}
