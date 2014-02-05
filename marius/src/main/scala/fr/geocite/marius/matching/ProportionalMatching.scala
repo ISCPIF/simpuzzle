@@ -45,18 +45,14 @@ trait ProportionalMatching <: Matching
             val transacted = (ip / interactionPotentialSum) * supplies(from)
             Transaction(from, to, transacted)
         }
-    }
+    }.transpose
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
-        transactionsFrom = transactions(i)
+        transactionsTo = transactions(i)
+      } yield d - transactionsTo.map(_.transacted).sum
 
-      } yield {
-
-        d - transactionsFrom.map(_.transacted).sum
-
-      }
     /*    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
       effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
 

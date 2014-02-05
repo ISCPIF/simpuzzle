@@ -59,7 +59,7 @@ trait Marius <: StepByStep
 
     //def aboveOne(v: Double) = if (v <= 1) 1.0 else v
     val tBalance = territoryBalance(cities.get(s))
-    val nBalance = nationalBalance(cities.get(s))
+    //val nBalance = nationalBalance(cities.get(s))
 
     for {
       wealths <- wealths(s, tBalance)
@@ -109,7 +109,7 @@ trait Marius <: StepByStep
     log(
       (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
       zipWithIndex).map(flatten).map {
-        case (city, supply, demand, unsold, unsatisfied, tb, nb, i) =>
+        case (city, supply, demand, unsold, unsatisfied, tb, i) =>
           if (i == 0) {
             val calc = wealth.get(city) + supply - demand + unsatisfied
             //println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
