@@ -28,8 +28,8 @@ object MariusGEXF extends App {
   val m = new Marius with MariusState with ProportionalMatching {
     def distanceDecay = 1
     def sizeEffectOnConsumption = 142
-    	def sizeEffectOnProductivity = 300
-	def gamma = 92
+    def sizeEffectOnProductivity = 300
+    def gamma = 92
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceOrderSell = 0.854448839836991

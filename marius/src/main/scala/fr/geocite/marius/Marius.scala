@@ -59,7 +59,7 @@ trait Marius <: StepByStep
 
     //def aboveOne(v: Double) = if (v <= 1) 1.0 else v
     val tBalance = territoryBalance(cities.get(s))
-   // val nBalance = nationalBalance(cities.get(s))
+    val nBalance = nationalBalance(cities.get(s))
 
     for {
       wealths <- wealths(s, tBalance)
@@ -107,33 +107,31 @@ trait Marius <: StepByStep
     }
 
     log(
-      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs
-        //zip nbs
-        zipWithIndex).map(flatten).map {
+      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
+      zipWithIndex).map(flatten).map {
         case (city, supply, demand, unsold, unsatisfied, tb, nb, i) =>
-          if ( i == 0 ) {
-	val calc = wealth.get(city) + supply - demand + unsatisfied 
-	//println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
-//	println("Wealth ", wealth.get(city), "supply", supply, "demand", demand, "unsat",unsatisfied ,"calc" , calc)
-	}
+          if (i == 0) {
+            val calc = wealth.get(city) + supply - demand + unsatisfied
+            //println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
+            //	println("Wealth ", wealth.get(city), "supply", supply, "demand", demand, "unsat",unsatisfied ,"calc" , calc)
+          }
           wealth.get(city) +
             supply -
             demand -
             unsold +
             unsatisfied * 0.5 +
             tb
-          //+ nb
+        //+ nb
 
       }.map {
-        
-	w => if (w >= 0) w else 0
-      	
 
-	},
+        w => if (w >= 0) w else 0
+
+      },
       transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) +  gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) + gamma
 
   def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1) + gamma
 
@@ -170,8 +168,6 @@ trait Marius <: StepByStep
   }
 
 }
-
-
 
 // Un autre niveau de péréquation fiscale : les Etats
 /*

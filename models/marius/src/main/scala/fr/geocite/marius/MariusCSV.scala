@@ -23,7 +23,6 @@ import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import scalax.file.Path
 
-
 object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching {
@@ -40,10 +39,10 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-	val path = "/home/chap/stats/mariusmodel_log.csv"
+  val path = "/home/chap/stats/mariusmodel_log.csv"
 
-	  val out = Resource.fromFile(path)
-	
+  val out = Resource.fromFile(path)
+
   out.append("step, arokato, population, wealth \n")
 
   for {
@@ -59,11 +58,11 @@ object MariusCSV extends App {
       out.append(uneligne.mkString("", ",", "\n"))
 
     }
-	val totalWealth = cities.map(_.wealth).sum
-	val totalPop = cities.map(_.population).sum
+    val totalWealth = cities.map(_.wealth).sum
+    val totalPop = cities.map(_.population).sum
 
-	println("Etat ",cptr," Wealth totale", totalWealth ," pop totale", totalPop)
-	
-}
+    println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+
+  }
 
 }

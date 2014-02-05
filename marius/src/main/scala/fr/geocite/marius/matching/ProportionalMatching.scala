@@ -43,7 +43,7 @@ trait ProportionalMatching <: Matching
         interactions.zipWithIndex.map {
           case (ip, to) =>
             val transacted = (ip / interactionPotentialSum) * supplies(from)
-	    Transaction(from, to, transacted)
+            Transaction(from, to, transacted)
         }
     }
 
@@ -51,13 +51,13 @@ trait ProportionalMatching <: Matching
       for {
         (d, i) <- demands.zipWithIndex
         transactionsFrom = transactions(i)
-	
+
       } yield {
 
-d - transactionsFrom.map(_.transacted).sum
- 
-}   
-/*    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
+        d - transactionsFrom.map(_.transacted).sum
+
+      }
+    /*    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
       effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
 
 
