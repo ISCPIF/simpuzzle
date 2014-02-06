@@ -119,7 +119,7 @@ trait Marius <: StepByStep
             supply -
             demand -
             unsold +
-            unsatisfied * 0.5 +
+            unsatisfied +
             tb
         //+ nb
 
