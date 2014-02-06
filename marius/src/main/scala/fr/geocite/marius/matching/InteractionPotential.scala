@@ -23,15 +23,16 @@ trait InteractionPotential <: Marius {
 
   def distanceDecay: Double
 
-  def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]], beta: Double) = {
+  def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]]) = {
     val citiesWithSupply = cities zip masses
     citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>
-        citiesWithSupply.zipWithIndex.toIndexedSeq.flatMap {
+        citiesWithSupply.zipWithIndex.toIndexedSeq.map {
           case ((c2, s2), j) =>
-            if (i == j) None
-            else Some(interactionPotential(s1, s2, distances(i)(j)))
+            if (i == j) 0.0
+            else interactionPotential(s1, s2, distances(i)(j))
         }
+
     }
   }
 

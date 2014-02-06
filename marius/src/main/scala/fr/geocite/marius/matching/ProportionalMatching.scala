@@ -34,8 +34,7 @@ trait ProportionalMatching <: Matching
       interactionPotentialMatrix(
         cities.get(s),
         supplies,
-        distanceMatrix.get(s),
-        distanceOrderSell)
+        distanceMatrix.get(s))
 
     lazy val transactions = interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
@@ -44,15 +43,22 @@ trait ProportionalMatching <: Matching
           case (ip, to) =>
             val transacted = (ip / interactionPotentialSum) * supplies(from)
             Transaction(from, to, transacted)
-        }
+	}
     }.transpose
+	//println("size dernière lign trans", transactions(1144).size)
+	//println("col dernière ligne trans", transactions(1144))
+	
+	
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
         transactionsTo = transactions(i)
-      } yield d - transactionsTo.map(_.transacted).sum
+      } yield {
 
+	//println("transac[",i,"]",transactionsTo.size)
+d - transactionsTo.map(_.transacted).sum
+}
     /*    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
       effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
 
