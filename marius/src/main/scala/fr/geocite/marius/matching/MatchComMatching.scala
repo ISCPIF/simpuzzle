@@ -118,7 +118,7 @@ trait MatchComMatching <: Matching with InteractionPotential with Marius {
     distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    val interactionPotentials = interactionPotentialMatrix(s, supplies, distances, distanceOrderBuy)
+    val interactionPotentials = interactionPotentialMatrix(s, supplies, distances)
     (s zip demands).zipWithIndex.map {
       case ((c1, d1), i) =>
         drawCandidates(interactionPotentials(i).zipWithIndex, distances, supplies, s => s >= partnerMultiplier * d1)
@@ -130,7 +130,7 @@ trait MatchComMatching <: Matching with InteractionPotential with Marius {
     distances: Seq[Seq[Double]],
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
-    val acquaintance = interactionPotentialMatrix(s, supplies, distances, distanceOrderSell)
+    val acquaintance = interactionPotentialMatrix(s, supplies, distances)
     (s zip supplies).zipWithIndex.map {
       case ((c1, s1), i) =>
         drawCandidates(acquaintance(i).zipWithIndex, distances, supplies, s => s >= partnerMultiplier * s1)
