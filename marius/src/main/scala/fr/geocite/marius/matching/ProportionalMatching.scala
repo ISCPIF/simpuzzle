@@ -24,7 +24,7 @@ trait ProportionalMatching <: Matching
     with InteractionPotential
     with Marius {
 
-  def distanceOrderSell: Double
+//  def distanceOrderSell: Double
 
   def matchCities(
     s: STATE,

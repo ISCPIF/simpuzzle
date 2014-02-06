@@ -49,6 +49,8 @@ trait Marius <: StepByStep
 
   def capitalShareOfTaxes: Double
 
+  def paramyster : Double
+
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
@@ -62,7 +64,7 @@ trait Marius <: StepByStep
     //val nBalance = nationalBalance(cities.get(s))
 
     for {
-      wealths <- wealths(s, tBalance)
+      wealths <- wealths(s, tBalance, paramyster)
     } yield {
       def populations = wealths.map { wealthToPopulation }
 
@@ -81,7 +83,7 @@ trait Marius <: StepByStep
 
   def wealthToPopulation(wealth: Double): Double
 
-  def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
+  def wealths(s: STATE, tbs: Seq[Double], paramyster: Double)(implicit rng: Random) = {
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
@@ -119,7 +121,7 @@ trait Marius <: StepByStep
             supply -
             demand -
             unsold +
-            unsatisfied * 0.5 +
+            unsatisfied * paramyster +
             tb
         //+ nb
 

@@ -34,6 +34,9 @@ object MariusGraphStream extends App {
     def distanceOrderSell = 0.854448839836991
     def inversionPoint = 10.00029163524558
     def maxStep = 31
+	
+    def paramyster = 1
+
   }
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
