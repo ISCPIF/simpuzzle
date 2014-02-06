@@ -24,7 +24,6 @@ trait ProportionalMatching <: Matching
     with InteractionPotential
     with Marius {
 
-//  def distanceOrderSell: Double
 
   def matchCities(
     s: STATE,
@@ -44,31 +43,29 @@ trait ProportionalMatching <: Matching
             val transacted = (ip / interactionPotentialSum) * supplies(from)
             Transaction(from, to, transacted)
 	}
-    }.transpose
-	//println("size dernière lign trans", transactions(1144).size)
-	//println("col dernière ligne trans", transactions(1144))
+    }
 	
-	
+
+ val transposedTransactions = transactions.transpose
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
-        transactionsTo = transactions(i)
+        transactionsTo = transposedTransactions(i)
       } yield {
 
-	//println("transac[",i,"]",transactionsTo.size)
 d - transactionsTo.map(_.transacted).sum
 }
-    /*    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
-      effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
+    //    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
+    //  effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
 
 
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
-        transactions = effectiveTransactedFrom(i)
-      } yield s - transactions.map(_.transacted).sum
-*/
+        transactionsFrom = transactions(i)
+      } yield s - transactionsFrom.map(_.transacted).sum
+
 
     Matched(transactions.flatten, cities.get(s).map(c => 0.0), unsatisfieds.toSeq)
   }
