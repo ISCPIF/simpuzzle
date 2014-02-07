@@ -33,10 +33,18 @@ object MariusGEXF extends App {
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceOrderSell = 0.854448839836991
-    def inversionPoint = 10.00029163524558
     def maxStep = 31
 
     def paramyster = 1
+
+	def popMax = 18000
+    def popMin = 0
+    def wMin = 0
+    def wMax =  40000
+    def inversionPoint = 100
+
+
+
   }
 
   def transactedCeil = 100
