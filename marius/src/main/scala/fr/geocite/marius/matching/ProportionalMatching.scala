@@ -24,7 +24,6 @@ trait ProportionalMatching <: Matching
     with InteractionPotential
     with Marius {
 
-
   def matchCities(
     s: STATE,
     supplies: Seq[Double],
@@ -42,30 +41,24 @@ trait ProportionalMatching <: Matching
           case (ip, to) =>
             val transacted = (ip / interactionPotentialSum) * supplies(from)
             Transaction(from, to, transacted)
-	}
+        }
     }
-	
 
- val transposedTransactions = transactions.transpose
+    val transposedTransactions = transactions.transpose
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
         transactionsTo = transposedTransactions(i)
       } yield {
-
-d - transactionsTo.map(_.transacted).sum
-}
-    //    val effectiveTransactedFrom: Map[Int, Seq[Transaction]] =
-    //  effectiveTransactedTo.toSeq.flatMap(_._2).groupBy(_.from).withDefaultValue(Seq.empty)
-
+        d - transactionsTo.map(_.transacted).sum
+      }
 
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
         transactionsFrom = transactions(i)
       } yield s - transactionsFrom.map(_.transacted).sum
-
 
     Matched(transactions.flatten, cities.get(s).map(c => 0.0), unsatisfieds.toSeq)
   }

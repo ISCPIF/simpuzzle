@@ -49,7 +49,7 @@ trait Marius <: StepByStep
 
   def capitalShareOfTaxes: Double
 
-  def paramyster : Double
+  def paramyster: Double
 
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
