@@ -36,12 +36,11 @@ object MariusGraphStream extends App {
 
     def paramyster = 1
 
-	def popMax = 18000
+    def popMax = 18000
     def popMin = 0
     def wMin = 0
-    def wMax =  40000
+    def wMax = 40000
     def inversionPoint = 100
-
 
   }
 

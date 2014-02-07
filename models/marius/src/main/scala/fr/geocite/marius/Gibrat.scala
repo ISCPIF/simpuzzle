@@ -22,27 +22,17 @@ import fr.geocite.marius._
 
 object Gibrat extends App {
 
-
-
- def popMin = 0
-
+  def popMin = 0
 
   val m = new GibratStep with MariusState {
     override def stdRate = ???
     override def rate = ???
 
-
-
-
-
- 
     def popMax = 18000
     def popMin = 0
     def wMin = 0
-    def wMax =  40000
+    def wMax = 40000
     def inversionPoint = 100
 
-
-
-}
+  }
 }
