@@ -22,34 +22,15 @@ import scala.math._
 
 trait WealthFromPopulation {
 
-  private lazy val a = coeffA(popMin, popMax, wMin, wMax, inversionPoint)
+  private lazy val a = 1.0 / (2.0 * inversionPoint)
 
-  private lazy val b = coeffB(popMin, popMax, wMin, wMax, inversionPoint)
-
-  private lazy val c = 0
-
-  def popMin: Double
-  def popMax: Double
   def inversionPoint: Double
-  def wMin: Double
-  def wMax: Double
 
-  def initialWealth(population: Double)(implicit rng: Random): Double = a * pow(population, 2) + b * population + c
+  def initialWealth(population: Double)(implicit rng: Random): Double = a * pow(population, 2)
 
   def wealthToPopulation(wealth: Double) = {
-    assert(a != 0)
-    (-b +
-      sqrt(pow(b, 2) - 4 * a * (c - wealth))
-    ) / (2 * a)
+    assert(a > 0)
+    math.sqrt(wealth / a)
   }
-
-  def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double =
-    2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
-
-  def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double =
-    (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
-
-  def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double =
-    (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
 
 }
