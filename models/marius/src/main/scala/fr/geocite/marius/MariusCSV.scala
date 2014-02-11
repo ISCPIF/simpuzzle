@@ -27,25 +27,21 @@ object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching {
     def distanceDecay = 1
-    def sizeEffectOnConsumption = 0.008
-    def sizeEffectOnProductivity = 0.016
+
+    def sizeEffectOnConsumption = 43.503914617787686
+    def sizeEffectOnProductivity = 159.1856860610076
+    def gamma = 46.630831844084184
+    def inversionPoint = 10.0
+
     def paramyster = 1
-
-    def popMax = 18000
-    def popMin = 0
-    def wMin = 0
-    def wMax = 40000
-    def inversionPoint = 100
-
-    def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
-    def maxStep = 31
+    def maxStep = 30
   }
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  val path = "/home/chap/stats/mariusmodel_log.csv"
+  val path = "/tmp/mariusmodel_log.csv"
 
   val out = Resource.fromFile(path)
 
