@@ -118,7 +118,11 @@ trait Marius <: StepByStep
 
   def initialWealth(population: Double)(implicit rng: Random): Double = population
 
-  def wealthToPopulation(wealth: Double) = wealth
+  def wealthToPopulation(wealth: Double) =
+    wealth match {
+      case x if x >= 0 => x
+      case _ => 0.0
+    }
 
   def territoryBalance(s: Seq[CITY]): Seq[Double] = {
     val deltas =
