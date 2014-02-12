@@ -60,7 +60,6 @@ trait Marius <: StepByStep
         (cities.get(s) zip populations zip wealths).map(flatten).map {
           case (c, p, w) =>
             assert(p >= 0, s"The population of $c is negative $p, $w")
-            assert(w >= 0, s"The city $c is too poor for the model $w, $p")
             wealth.set(population.set(c, p), w)
         }
 
