@@ -26,13 +26,11 @@ import scalax.file.Path
 object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching {
-    def distanceDecay = 1
+    def distanceDecay = 1.1
 
-    def sizeEffectOnConsumption = 43.503914617787686
-    def sizeEffectOnProductivity = 159.1856860610076
-    def gamma = 46.630831844084184
-    def supplyMultiplier = 6
-
+    def sizeEffectOnConsumption = 0.002
+    def sizeEffectOnProductivity = 0.004
+    def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
 

@@ -39,7 +39,6 @@ trait Marius <: StepByStep
   def gamma: Double
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
-  def supplyMultiplier: Double
 
   def cities: Lens[STATE, Seq[CITY]]
   def population: Lens[CITY, Double]
@@ -47,8 +46,6 @@ trait Marius <: StepByStep
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
   def distanceMatrix: Lens[STATE, DistanceMatrix]
-
-  def wLambertEpsilon = 0.001
 
   def nextState(s: STATE)(implicit rng: Random) = {
     val tBalance = territoryBalance(cities.get(s))
@@ -107,8 +104,6 @@ trait Marius <: StepByStep
             unsold +
             unsatisfied +
             tb
-      }.map {
-        w => if (w >= 0) w else 0
       },
       transactions)
   }
@@ -121,25 +116,9 @@ trait Marius <: StepByStep
 
   def supply(population: Double) = productivity(population) * population
 
-  def initialWealth(population: Double)(implicit rng: Random): Double = supplyMultiplier * supply(population)
+  def initialWealth(population: Double)(implicit rng: Random): Double = population
 
-  def wealthToPopulation(wealth: Double) = {
-    val x1 = supplyMultiplier * sizeEffectOnProductivity
-    (wealth - gamma) / (x1 * wLambert((wealth - gamma) / x1))
-  }
-
-  def wLambert(x: Double): Double = {
-    assert(x > (1 / math.E))
-    def recursiveWLambert(wn: Double): Double = {
-      val expWN = exp(wn)
-      val nextWN = wn - (wn * expWN - x) / ((1 + wn) * expWN)
-      math.abs(wn - nextWN) match {
-        case eps if eps < wLambertEpsilon => nextWN
-        case _ => recursiveWLambert(nextWN)
-      }
-    }
-    recursiveWLambert(1.0)
-  }
+  def wealthToPopulation(wealth: Double) = wealth
 
   def territoryBalance(s: Seq[CITY]): Seq[Double] = {
     val deltas =

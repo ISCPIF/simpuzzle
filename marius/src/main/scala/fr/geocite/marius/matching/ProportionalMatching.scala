@@ -50,15 +50,20 @@ trait ProportionalMatching <: Matching
       for {
         (d, i) <- demands.zipWithIndex
         transactionsTo = transposedTransactions(i)
-      } yield {
-        d - transactionsTo.map(_.transacted).sum
+      } yield d - transactionsTo.map(_.transacted).sum match {
+        case x if x <= 0 => 0
+        case x => x
       }
 
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
         transactionsFrom = transactions(i)
-      } yield s - transactionsFrom.map(_.transacted).sum
+      } yield {
+        val unsold = s - transactionsFrom.map(_.transacted).sum
+        assert(unsold > 0)
+        unsold
+      }
 
     Matched(transactions.flatten, cities.get(s).map(c => 0.0), unsatisfieds.toSeq)
   }
