@@ -31,11 +31,11 @@ object MariusCSV extends App {
     def sizeEffectOnConsumption = 43.503914617787686
     def sizeEffectOnProductivity = 159.1856860610076
     def gamma = 46.630831844084184
-    def inversionPoint = 10.0
+    def supplyMultiplier = 6
 
-    def paramyster = 1
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
+
     def maxStep = 30
   }
 

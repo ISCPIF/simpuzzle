@@ -21,9 +21,9 @@ import fr.geocite.simpuzzle._
 import distribution._
 import fr.geocite.marius.matching.Matching
 import fr.geocite.simpuzzle.distribution.PositionDistribution
-import fr.geocite.gis.distance.GeodeticDistance
 import scalaz._
 import scala.util.Random
+import scala.math._
 
 trait Marius <: StepByStep
     with TimeEndingCondition
@@ -34,37 +34,28 @@ trait Marius <: StepByStep
 
   type CITY
 
+  def sizeEffectOnConsumption: Double
+  def sizeEffectOnProductivity: Double
+  def gamma: Double
+  def territorialTaxes: Double
+  def capitalShareOfTaxes: Double
+  def supplyMultiplier: Double
+
   def cities: Lens[STATE, Seq[CITY]]
   def population: Lens[CITY, Double]
-
-  // calibré sur les villes brésiliennes, pour que les grandes villes consomment et produisent plus que les plus petites
-  // selon la formule : Revenu/hab(=productivity) = sizeEffectOnEco * ln (Pop) + gamma
-  def sizeEffectOnConsumption: Double
-
-  def sizeEffectOnProductivity: Double
-
-  def gamma: Double
-
-  def territorialTaxes: Double
-
-  def capitalShareOfTaxes: Double
-
-  def paramyster: Double
-
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
-
   def distanceMatrix: Lens[STATE, DistanceMatrix]
 
-  def nextState(s: STATE)(implicit rng: Random) = {
+  def wLambertEpsilon = 0.001
 
-    //def aboveOne(v: Double) = if (v <= 1) 1.0 else v
+  def nextState(s: STATE)(implicit rng: Random) = {
     val tBalance = territoryBalance(cities.get(s))
     //val nBalance = nationalBalance(cities.get(s))
 
     for {
-      wealths <- wealths(s, tBalance, paramyster)
+      wealths <- wealths(s, tBalance)
     } yield {
       def populations = wealths.map { wealthToPopulation }
 
@@ -81,9 +72,7 @@ trait Marius <: StepByStep
 
   }
 
-  def wealthToPopulation(wealth: Double): Double
-
-  def wealths(s: STATE, tbs: Seq[Double], paramyster: Double)(implicit rng: Random) = {
+  def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
@@ -112,34 +101,45 @@ trait Marius <: StepByStep
       (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
       zipWithIndex).map(flatten).map {
         case (city, supply, demand, unsold, unsatisfied, tb, i) =>
-          if (i == 0) {
-            val calc = wealth.get(city) + supply - demand + unsatisfied
-            //println("Wealth ", wealth.get(city), "supply " , supply, "demande ", demand, "unsatisfied ", unsatisfied , "pop" , wealthToPopulation(wealth.get(city) ))
-            //	println("Wealth ", wealth.get(city), "supply", supply, "demand", demand, "unsat",unsatisfied ,"calc" , calc)
-          }
           wealth.get(city) +
             supply -
             demand -
             unsold +
-            unsatisfied * paramyster +
+            unsatisfied +
             tb
-        //+ nb
-
       }.map {
-
         w => if (w >= 0) w else 0
-
       },
       transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) + gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population) + gamma
 
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1) + gamma
+  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population) + gamma
 
   def demand(population: Double) = consumption(population) * population
 
   def supply(population: Double) = productivity(population) * population
+
+  def initialWealth(population: Double)(implicit rng: Random): Double = supplyMultiplier * supply(population)
+
+  def wealthToPopulation(wealth: Double) = {
+    val x1 = supplyMultiplier * sizeEffectOnProductivity
+    (wealth - gamma) / (x1 * wLambert((wealth - gamma) / x1))
+  }
+
+  def wLambert(x: Double): Double = {
+    assert(x > (1 / math.E))
+    def recursiveWLambert(wn: Double): Double = {
+      val expWN = exp(wn)
+      val nextWN = wn - (wn * expWN - x) / ((1 + wn) * expWN)
+      math.abs(wn - nextWN) match {
+        case eps if eps < wLambertEpsilon => nextWN
+        case _ => recursiveWLambert(nextWN)
+      }
+    }
+    recursiveWLambert(1.0)
+  }
 
   def territoryBalance(s: Seq[CITY]): Seq[Double] = {
     val deltas =

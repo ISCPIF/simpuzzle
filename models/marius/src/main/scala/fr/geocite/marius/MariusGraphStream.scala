@@ -22,54 +22,54 @@ import fr.geocite.marius._
 import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 
-object MariusGraphStream extends App {
-
-  val m = new Marius with MariusState with ProportionalMatching {
-    def distanceDecay = 1
-    def sizeEffectOnConsumption = 142
-    def sizeEffectOnProductivity = 300
-    def gamma = 92
-    def territorialTaxes = 0.0
-    def capitalShareOfTaxes = 0.0
-    def distanceOrderSell = 0.854448839836991
-    def maxStep = 31
-
-    def paramyster = 1
-
-    def popMax = 18000
-    def popMin = 0
-    def wMin = 0
-    def wMax = 40000
-    def inversionPoint = 100
-
-  }
-
-  implicit val rng = fr.geocite.simpuzzle.random(42)
-
-  for {
-    state <- m.states
-  } {
-    val cities = state.value.cities
-    val transacted = state.written
-
-    println(transacted.size)
-
-    /* for {
-      (cities, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
-    } {
-
-    }  */
-  }
-
-  val graph = new MultiGraph("Marius")
-
-  graph.addNode("A")
-  graph.addNode("B")
-  graph.addNode("C")
-  graph.addEdge("AB", "A", "B")
-  graph.addEdge("BC", "B", "C")
-  graph.addEdge("CA", "C", "A")
-
-  graph.display()
-
-}
+//object MariusGraphStream extends App {
+//
+//  val m = new Marius with MariusState with ProportionalMatching {
+//    def distanceDecay = 1
+//    def sizeEffectOnConsumption = 142
+//    def sizeEffectOnProductivity = 300
+//    def gamma = 92
+//    def territorialTaxes = 0.0
+//    def capitalShareOfTaxes = 0.0
+//    def distanceOrderSell = 0.854448839836991
+//    def maxStep = 31
+//
+//    def paramyster = 1
+//
+//    def popMax = 18000
+//    def popMin = 0
+//    def wMin = 0
+//    def wMax = 40000
+//    def inversionPoint = 100
+//
+//  }
+//
+//  implicit val rng = fr.geocite.simpuzzle.random(42)
+//
+//  for {
+//    state <- m.states
+//  } {
+//    val cities = state.value.cities
+//    val transacted = state.written
+//
+//    println(transacted.size)
+//
+//    /* for {
+//      (cities, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
+//    } {
+//
+//    }  */
+//  }
+//
+//  val graph = new MultiGraph("Marius")
+//
+//  graph.addNode("A")
+//  graph.addNode("B")
+//  graph.addNode("C")
+//  graph.addEdge("AB", "A", "B")
+//  graph.addEdge("BC", "B", "C")
+//  graph.addEdge("CA", "C", "A")
+//
+//  graph.display()
+//
+//}

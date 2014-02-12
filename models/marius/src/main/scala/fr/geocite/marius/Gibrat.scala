@@ -24,7 +24,7 @@ object Gibrat extends App {
 
   def popMin = 0
 
-  val m = new GibratStep with MariusState {
+  val m = new Gibrat with MariusFile {
     override def stdRate = ???
     override def rate = ???
 

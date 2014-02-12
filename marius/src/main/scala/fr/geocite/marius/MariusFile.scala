@@ -30,6 +30,8 @@ trait MariusFile <: PopulationDistribution
     with CapitalDistribution
     with PositionDistribution {
 
+  def minPopulation = populationValues.min
+
   def nbCities = startingCities.size
 
   def startingCities =
@@ -43,7 +45,9 @@ trait MariusFile <: PopulationDistribution
 
   def long = startingCities.map(_(5))
 
-  def populationDistribution = Distribution(startingCities.map(_(12).toDouble))
+  def populationValues = startingCities.map(_(12).toDouble)
+
+  def populationDistribution = Distribution(populationValues)
 
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 

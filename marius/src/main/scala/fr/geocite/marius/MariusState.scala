@@ -32,10 +32,10 @@ trait MariusState <: PopulationDistribution
     with RegionDistribution
     with PositionDistribution
     with GeodeticDistance
-    with WealthFromPopulation
     with CapitalDistribution
     with MariusFile
-    with MariusLogging {
+    with MariusLogging
+    with Marius {
 
   type CITY = MariusState.City
   type STATE = MariusState.State

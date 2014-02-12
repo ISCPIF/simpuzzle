@@ -24,15 +24,16 @@ import fr.geocite.simpuzzle.distribution.PopulationDistribution
 trait Gibrat <: GibratStep with PopulationDistribution {
   case class City(population: Double)
 
-  case class GibratState(step: Int, populations: Seq[Double])
+  case class GibratState(step: Int, cities: Seq[City])
 
   type STATE = GibratState
   type CITY = City
 
-  def initial(implicit rng: Random) = GibratState(0, populations(rng).take(nbCities).toSeq)
+  def initial(implicit rng: Random) = GibratState(0, populations(rng).take(nbCities).map(City(_))toSeq)
 
   def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
+  def cities = Lens.lensu[STATE, Seq[CITY]]((c, v) => c.copy(cities = v), _.cities)
 
   def nbCities: Int
 }
