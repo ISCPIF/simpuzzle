@@ -72,7 +72,7 @@ trait Marius <: StepByStep
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
-    val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
+  val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
 
     val transactedFrom: Map[Int, Seq[Transaction]] =
       transactions.groupBy(_.from).withDefaultValue(Seq.empty)
@@ -97,7 +97,7 @@ trait Marius <: StepByStep
       (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
       zipWithIndex).map(flatten).map {
         case (city, supply, demand, unsold, unsatisfied, tb, i) =>
-          wealth.get(city) +
+	 wealth.get(city) +
             supply -
             demand -
             unsold +
@@ -107,9 +107,9 @@ trait Marius <: StepByStep
       transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1) + gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population ) + gamma
 
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1) + gamma
+  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population ) + gamma
 
   def demand(population: Double) = consumption(population) * population
 

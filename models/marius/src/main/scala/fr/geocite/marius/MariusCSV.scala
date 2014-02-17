@@ -28,8 +28,8 @@ object MariusCSV extends App {
   val m = new Marius with MariusState with ProportionalMatching {
     def distanceDecay = 1.1
 
-    def sizeEffectOnConsumption = 0.002
-    def sizeEffectOnProductivity = 0.004
+    def sizeEffectOnConsumption = 0.000002
+   def sizeEffectOnProductivity = 0.0035
     def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0

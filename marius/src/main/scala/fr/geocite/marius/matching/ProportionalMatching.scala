@@ -19,6 +19,8 @@ package fr.geocite.marius.matching
 
 import scala.util.Random
 import fr.geocite.marius.{ Transaction, Marius }
+import scala.math._
+
 
 trait ProportionalMatching <: Matching
     with InteractionPotential
@@ -32,14 +34,14 @@ trait ProportionalMatching <: Matching
       interactionPotentialMatrix(
         cities.get(s),
         supplies,
-        distanceMatrix.get(s))
+	distanceMatrix.get(s))
 
     lazy val transactions = interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
         val interactionPotentialSum = interactions.sum
         interactions.zipWithIndex.map {
           case (ip, to) =>
-            val transacted = (ip / interactionPotentialSum) * supplies(from)
+          val transacted = min((ip / interactionPotentialSum) * supplies(from),(ip/ interactionPotentialSum)* demands(to) )
             Transaction(from, to, transacted)
         }
     }
@@ -50,12 +52,9 @@ trait ProportionalMatching <: Matching
       for {
         (d, i) <- demands.zipWithIndex
         transactionsTo = transposedTransactions(i)
-      } yield d - transactionsTo.map(_.transacted).sum match {
-        case x if x <= 0 => 0
-        case x => x
-      }
-
-    def unsolds =
+      } yield d - transactionsTo.map(_.transacted).sum 
+   
+ def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
         transactionsFrom = transactions(i)
