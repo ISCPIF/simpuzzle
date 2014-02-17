@@ -29,7 +29,7 @@ object MariusCSV extends App {
     def distanceDecay = 1.1
 
     def sizeEffectOnConsumption = 0.000002
-   def sizeEffectOnProductivity = 0.0035
+    def sizeEffectOnProductivity = 0.0035
     def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0

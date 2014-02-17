@@ -31,8 +31,8 @@ trait InteractionPotential <: Marius {
           case ((c2, s2), j) =>
             if (i == j) 0.0
             else {
-interactionPotential(s1, s2, distances(i)(j))
-}
+              interactionPotential(s1, s2, distances(i)(j))
+            }
         }
 
     }
