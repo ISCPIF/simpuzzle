@@ -53,26 +53,24 @@ trait Marius <: StepByStep
       val tBalance = territoryBalance(cities.get(s))
       //val nBalance = nationalBalance(cities.get(s))
 
-      for {
-        wealths <- wealths(s, tBalance)
-      } yield {
-        def populations =
-          wealths.map {
-            w =>
-              val p = wealthToPopulation(w)
-              assert(p >= 0, s"Error in wealth $w $p")
-              p
-          }
+      val (ws, transactions) = wealths(s, tBalance)
 
-        val newCities =
-          (cities.get(s) zip populations zip wealths).map(flatten).map {
-            case (c, p, w) =>
-              assert(p >= 0, s"The population of $c is negative $p, $w")
-              wealth.set(population.set(c, p), w)
-          }
+      def populations =
+        ws.map {
+          w =>
+            val p = wealthToPopulation(w)
+            assert(p >= 0, s"Error in wealth $w $p")
+            p
+        }
 
-        cities.set(step.mod(_ + 1, s), newCities)
-      }
+      def newCities =
+        (cities.get(s) zip populations zip ws).map(flatten).map {
+          case (c, p, w) =>
+            assert(p >= 0, s"The population of $c is negative $p, $w")
+            wealth.set(population.set(c, p), w)
+        }
+
+      log(cities.set(step.mod(_ + 1, s), newCities), transactions)
     } catch {
       case e: AssertionError => InvalidState(s, e)
     }
@@ -89,20 +87,20 @@ trait Marius <: StepByStep
     val transactedTo: Map[Int, Seq[Transaction]] =
       transactions.groupBy(_.to).withDefaultValue(Seq.empty)
 
-    log(
-      (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
-      zipWithIndex).map(flatten).map {
-        case (city, supply, demand, unsold, unsatisfied, tb, i) =>
-          //assert(supply - demand >= 0, s"suply and demand relationship not good, $supply $demand")
-          //assert(unsatisfied - unsold >= 0, s"unsatified and unsold relationship not good, $unsatisfied $unsold")
-          wealth.get(city) +
-            supply -
-            demand -
-            unsold +
-            unsatisfied +
-            tb
-      },
-      transactions)
+    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
+    zipWithIndex).map(flatten).map {
+      case (city, supply, demand, unsold, unsatisfied, tb, i) =>
+        //assert(supply - demand >= 0, s"suply and demand relationship not good, $supply $demand")
+        //assert(unsatisfied - unsold >= 0, s"unsatified and unsold relationship not good, $unsatisfied $unsold")
+        wealth.get(city) +
+          supply -
+          demand -
+          unsold +
+          unsatisfied +
+          tb
+    }
+
+    (ws, transactions)
   }
 
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
