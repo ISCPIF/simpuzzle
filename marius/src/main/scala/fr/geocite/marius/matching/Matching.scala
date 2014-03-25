@@ -26,7 +26,7 @@ trait Matching <: State {
   case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
 
   def matchCities(
-    s: VALID_STATE,
+    s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random): Matched
 

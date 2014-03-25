@@ -21,15 +21,18 @@ import fr.geocite.marius._
 import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
-import scalax.file.Path
 
 object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching {
-    def distanceDecay = 0.7713425612482909 //1.1
+    //def distanceDecay = 0.7713425612482909 //1.1
+    def distanceDecay = 1.1
 
-    def sizeEffectOnConsumption = 123.09219346245203 //0.000002
-    def sizeEffectOnProductivity = 90.38998194356837 //0.0035
+    //def sizeEffectOnConsumption = 123.09219346245203 //0.000002
+    //def sizeEffectOnProductivity = 90.38998194356837 //0.0035
+    def sizeEffectOnConsumption = 0.000002
+    def sizeEffectOnProductivity = 0.0035
+
     def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
@@ -46,24 +49,24 @@ object MariusCSV extends App {
   out.append("step, arokato, population, wealth \n")
 
   for {
-    (state, cptr) <- m.validStatesLogs zipWithIndex
-  } {
+    (log, cptr) <- m.logs zipWithIndex
+  } log.value match {
+    case m.ValidState(s) =>
+      val cities = s.cities
+      val transacted = log.written
 
-    val cities = state.value.cities
-    val transacted = state.written
+      for {
+        (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
+      } {
+        def uneligne = Seq(cptr, rokato, city.population, city.wealth)
+        out.append(uneligne.mkString("", ",", "\n"))
 
-    for {
-      (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
-    } {
-      def uneligne = Seq(cptr, rokato, city.population, city.wealth)
-      out.append(uneligne.mkString("", ",", "\n"))
+      }
+      val totalWealth = cities.map(_.wealth).sum
+      val totalPop = cities.map(_.population).sum
 
-    }
-    val totalWealth = cities.map(_.wealth).sum
-    val totalPop = cities.map(_.population).sum
-
-    println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
-
+      println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+    case m.InvalidState(s, e) => println(s"Invadid State $e")
   }
 
 }

@@ -22,7 +22,7 @@ import fr.geocite.simpuzzle.state
 
 trait TimeEndingCondition extends EndingCondition with State {
   def maxStep: Int
-  def ended(state: VALID_STATE) = step.get(state) >= maxStep
+  def ended(state: STATE) = step.get(state) >= maxStep
 
-  def step: Lens[VALID_STATE, Int]
+  def step: Lens[STATE, Int]
 }

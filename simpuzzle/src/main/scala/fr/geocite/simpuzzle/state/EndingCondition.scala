@@ -18,5 +18,5 @@
 package fr.geocite.simpuzzle.state
 
 trait EndingCondition extends State {
-  def ended(s: VALID_STATE): Boolean
+  def ended(s: STATE): Boolean
 }

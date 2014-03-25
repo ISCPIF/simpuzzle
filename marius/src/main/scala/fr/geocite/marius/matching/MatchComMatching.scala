@@ -37,7 +37,7 @@ trait MatchComMatching <: Matching with InteractionPotential with Marius {
   def partnerMultiplier: Double
 
   def matchCities(
-    s: VALID_STATE,
+    s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
     val potentialBuyers: Seq[Set[Int]] = potentialBuyerNetwork(cities.get(s), distanceMatrix.get(s), supplies, demands)

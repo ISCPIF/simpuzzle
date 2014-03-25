@@ -17,23 +17,11 @@
 
 package fr.geocite.simpuzzle.state
 
-import scala.reflect.macros._
-import scala.reflect.runtime.universe._
-import scala.reflect._
-import scala.reflect.api._
-import scala.language.experimental.macros
-
-object State {
-  def ct[S](c: Context): c.Expr[ClassTag[S]] = {
-    import c.universe._
-    val a = c.prefix.tree.tpe.member(newTypeName("VALID_STATE")).typeSignature
-    c.Expr(q"implicitly[ClassTag[$a]]").asInstanceOf[c.Expr[ClassTag[S]]]
-  }
-}
-
 trait State {
-  type VALID_STATE <: STATE
+  sealed trait GenericState
   type STATE
+  case class InvalidState(lastState: STATE, exception: Throwable) extends GenericState
+  case class ValidState(state: STATE) extends GenericState
 
-  implicit def validStateTag: reflect.ClassTag[VALID_STATE] = macro State.ct[VALID_STATE]
+  implicit def stateToValidState(s: STATE) = ValidState(s)
 }

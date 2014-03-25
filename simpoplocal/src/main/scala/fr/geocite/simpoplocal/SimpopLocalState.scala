@@ -22,7 +22,7 @@ import scala.collection.immutable.{ TreeSet, TreeMap }
 import scalaz.Lens
 import fr.geocite.simpuzzle.state._
 
-trait SimpopLocalState <: State with AlwaysValidState {
+trait SimpopLocalState <: State {
 
   type STATE = SimpopLocalState
 

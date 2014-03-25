@@ -26,7 +26,7 @@ trait ProportionalMatching <: Matching
     with Marius {
 
   def matchCities(
-    s: VALID_STATE,
+    s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
 

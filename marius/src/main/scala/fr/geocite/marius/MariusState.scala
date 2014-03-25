@@ -22,20 +22,13 @@ import scalaz._
 import fr.geocite.simpuzzle.distribution._
 import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.simpuzzle._
+import scala.reflect.ClassTag
 
 object MariusState {
   case class City(population: Double, wealth: Double, region: String, capital: Boolean)
-
-  sealed trait State {
-    def step: Int
-  }
-
-  case class ValidState(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix) extends State
-  case class InvalidState(step: Int, exception: Throwable) extends State
+  case class State(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
 
 }
-
-import MariusState._
 
 trait MariusState <: PopulationDistribution
     with RegionDistribution
@@ -48,20 +41,19 @@ trait MariusState <: PopulationDistribution
 
   type CITY = MariusState.City
   type STATE = MariusState.State
-  type VALID_STATE = MariusState.ValidState
 
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
   def capital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(capital = v), _.capital)
   def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
 
-  def step = Lens.lensu[VALID_STATE, Int]((s, v) => s.copy(step = v), _.step)
-  def cities = Lens.lensu[VALID_STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
-  def distanceMatrix = Lens.lensu[VALID_STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
+  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
+  def distanceMatrix = Lens.lensu[STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
 
   def nbCities: Int
 
-  def initialState(implicit rng: Random): Writer[Seq[LOGGING], STATE] = ValidState(0, initialCities.take(nbCities).toVector, distances)
+  def initialState(implicit rng: Random) = MariusState.State(0, initialCities.take(nbCities).toVector, distances)
 
   def initialCities(implicit rng: Random) =
     for {
@@ -83,8 +75,5 @@ trait MariusState <: PopulationDistribution
         positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
     }
   }
-
-  def assertionError(previousState: VALID_STATE, e: AssertionError): STATE =
-    MariusState.InvalidState(step.get(previousState) + 1, e)
 
 }

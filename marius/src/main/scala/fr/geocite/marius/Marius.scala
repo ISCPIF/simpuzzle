@@ -41,14 +41,14 @@ trait Marius <: StepByStep
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
-  def cities: Lens[VALID_STATE, Seq[CITY]]
+  def cities: Lens[STATE, Seq[CITY]]
   def population: Lens[CITY, Double]
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
-  def distanceMatrix: Lens[VALID_STATE, DistanceMatrix]
+  def distanceMatrix: Lens[STATE, DistanceMatrix]
 
-  def nextState(s: VALID_STATE)(implicit rng: Random) =
+  def nextState(s: STATE)(implicit rng: Random) =
     try {
       val tBalance = territoryBalance(cities.get(s))
       //val nBalance = nationalBalance(cities.get(s))
@@ -74,12 +74,10 @@ trait Marius <: StepByStep
         cities.set(step.mod(_ + 1, s), newCities)
       }
     } catch {
-      case e: AssertionError => assertionError(s, e)
+      case e: AssertionError => InvalidState(s, e)
     }
 
-  def assertionError(previousState: VALID_STATE, e: AssertionError): STATE
-
-  def wealths(s: VALID_STATE, tbs: Seq[Double])(implicit rng: Random) = {
+  def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 

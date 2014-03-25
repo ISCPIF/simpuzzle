@@ -66,7 +66,7 @@ trait SimpopLocalStep
       logs ++= evolved.written
     }
 
-    (logs, SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId))
+    log(SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId), logs)
   }
 
   /**

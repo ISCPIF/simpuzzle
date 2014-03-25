@@ -27,5 +27,7 @@ trait Logging <: state.State {
   def log[T](s: T, l: Seq[LOGGING]) = s.set(l)
 
   protected implicit def tupleToWriter[T](t: (Seq[LOGGING], T)) = Writer(t._1, t._2)
-  protected implicit def stateToWriter(s: STATE): Writer[Seq[LOGGING], STATE] = log(s, Seq.empty)
+  protected implicit def stateWriterToValidStateWriter(w: Writer[Seq[LOGGING], STATE]) = w.map(s => ValidState(s))
+  protected implicit def stateToWriter(s: STATE): Writer[Seq[LOGGING], ValidState] = log(ValidState(s), Seq.empty)
+  protected implicit def invalidStateToInvalidStateWriter(s: InvalidState) = log(s, Seq.empty)
 }

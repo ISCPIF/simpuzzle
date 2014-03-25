@@ -23,26 +23,32 @@ import fr.geocite.simpuzzle.extendIterator
 
 trait StepByStep <: State with InitialState with Step with EndingCondition {
 
-  def logs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
+  def logs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], GenericState]] =
     Iterator.iterate(initialState) {
-      _.value match {
-        case s: VALID_STATE => nextState(s)
-        case x => x
-      }
+      v =>
+        v.value match {
+          case ValidState(s) => nextState(s)
+          case s: InvalidState => v
+        }
     }.takeWhileInclusive {
       _.value match {
-        case s: VALID_STATE => ended(s)
-        case _ => false
+        case ValidState(s) => !ended(s)
+        case _: InvalidState => false
       }
     }
 
-  def validStatesLogs(implicit rng: Random) = logs.collect { case x: Writer[_, VALID_STATE] => x }
+  def validStatesLogs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
+    logs.collect {
+      case x if x.value.isInstanceOf[ValidState] =>
+        val casted: ValidState = x.value.asInstanceOf[ValidState]
+        log(casted.state, x.written)
+    }
 
   def states(implicit rng: Random) =
     logs.map { _.value }
 
-  def validStates(implicit rng: Random) =
-    states.collect { case x: VALID_STATE => x }
+  def validStates(implicit rng: Random): Iterator[STATE] =
+    states.collect { case ValidState(x) => x }
 
   def run(implicit rng: Random) = states.last
 }
