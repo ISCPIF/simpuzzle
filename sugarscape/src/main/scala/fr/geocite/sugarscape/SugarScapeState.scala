@@ -19,6 +19,7 @@ package fr.geocite.sugarscape
 
 import fr.geocite.simpuzzle._
 import fr.geocite.simpuzzle.matrix.Torus2D
+import fr.geocite.simpuzzle.state.State
 
 trait SugarScapeState <: State {
 

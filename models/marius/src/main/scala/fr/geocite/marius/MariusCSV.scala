@@ -26,10 +26,10 @@ import scalax.file.Path
 object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching {
-    def distanceDecay = 1.1
+    def distanceDecay = 0.7713425612482909 //1.1
 
-    def sizeEffectOnConsumption = 0.000002
-    def sizeEffectOnProductivity = 0.0035
+    def sizeEffectOnConsumption = 123.09219346245203 //0.000002
+    def sizeEffectOnProductivity = 90.38998194356837 //0.0035
     def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
@@ -46,8 +46,9 @@ object MariusCSV extends App {
   out.append("step, arokato, population, wealth \n")
 
   for {
-    (state, cptr) <- m.states zipWithIndex
+    (state, cptr) <- m.validStatesLogs zipWithIndex
   } {
+
     val cities = state.value.cities
     val transacted = state.written
 

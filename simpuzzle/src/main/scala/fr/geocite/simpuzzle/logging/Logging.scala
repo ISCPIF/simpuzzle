@@ -15,12 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.logging
 
 import scalaz._
 import Scalaz._
+import fr.geocite.simpuzzle.state
 
-trait Logging <: State {
+trait Logging <: state.State {
   type LOGGING
 
   def log[T](s: T, l: Seq[LOGGING]) = s.set(l)

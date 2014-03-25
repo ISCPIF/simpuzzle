@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.state
 
 import scala.util.Random
 import scalaz.Writer
+import fr.geocite.simpuzzle.logging.Logging
 
 trait InitialState <: State with Logging {
   def initialState(implicit rng: Random): Writer[Seq[LOGGING], STATE]

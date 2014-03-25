@@ -17,7 +17,7 @@
 
 package fr.geocite.simpoplocal
 
-import fr.geocite.simpuzzle.Logging
+import fr.geocite.simpuzzle.logging.Logging
 
 trait SimpopLocalLogging <: Logging {
 

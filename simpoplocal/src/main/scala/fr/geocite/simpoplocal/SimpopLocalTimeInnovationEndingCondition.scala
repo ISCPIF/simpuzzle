@@ -17,7 +17,7 @@
 
 package fr.geocite.simpoplocal
 
-import fr.geocite.simpuzzle.EndingCondition
+import fr.geocite.simpuzzle.state.EndingCondition
 
 trait SimpopLocalTimeInnovationEndingCondition extends EndingCondition with SimpopLocalState {
 

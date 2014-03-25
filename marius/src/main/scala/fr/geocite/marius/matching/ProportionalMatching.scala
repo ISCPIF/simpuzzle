@@ -26,9 +26,10 @@ trait ProportionalMatching <: Matching
     with Marius {
 
   def matchCities(
-    s: STATE,
+    s: VALID_STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
+
     lazy val interactionMatrix =
       interactionPotentialMatrix(
         cities.get(s),
@@ -40,8 +41,16 @@ trait ProportionalMatching <: Matching
         val interactionPotentialSum = interactions.sum
         interactions.zipWithIndex.map {
           case (ip, to) =>
-            val transacted = min((ip / interactionPotentialSum) * supplies(from), (ip / interactionPotentialSum) * demands(to))
-            Transaction(from, to, transacted)
+            if (interactionPotentialSum <= 0.0) Transaction(from, to, 0.0)
+            else {
+              val fSupply = supplies(from)
+              val dDemand = demands(to)
+              assert(fSupply >= 0 && dDemand >= 0, s"supply or demand not good, $fSupply $dDemand")
+              val transacted =
+                min((ip / interactionPotentialSum) * fSupply, (ip / interactionPotentialSum) * dDemand)
+              assert(!transacted.isNaN, s"Transacted is NaN $ip $interactionPotentialSum $fSupply $dDemand")
+              Transaction(from, to, transacted)
+            }
         }
     }
 
@@ -51,7 +60,12 @@ trait ProportionalMatching <: Matching
       for {
         (d, i) <- demands.zipWithIndex
         transactionsTo = transposedTransactions(i)
-      } yield d - transactionsTo.map(_.transacted).sum
+      } yield {
+        val transactedSum = transactionsTo.map(_.transacted).sum
+        val unsatisfied = d - transactedSum
+        assert(unsatisfied >= 0, s"unsatisfied not good, $unsatisfied $d $transactedSum")
+        unsatisfied
+      }
 
     def unsolds =
       for {
@@ -59,11 +73,11 @@ trait ProportionalMatching <: Matching
         transactionsFrom = transactions(i)
       } yield {
         val unsold = s - transactionsFrom.map(_.transacted).sum
-        assert(unsold > 0)
+        assert(unsold >= 0, s"unsold not good, $unsold")
         unsold
       }
 
-    Matched(transactions.flatten, cities.get(s).map(c => 0.0), unsatisfieds.toSeq)
+    Matched(transactions.flatten, unsolds.toSeq, unsatisfieds.toSeq)
   }
 
 }

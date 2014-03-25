@@ -15,10 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpoplocal
+package fr.geocite.simpuzzle.state
 
-import fr.geocite.simpuzzle.state.TimeEndingCondition
-
-trait SimpopLocalTimeEndingCondition <: TimeEndingCondition with SimpopLocalState {
-  def maxStep: Int = 4000
+trait EndingCondition extends State {
+  def ended(s: VALID_STATE): Boolean
 }

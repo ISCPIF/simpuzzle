@@ -18,12 +18,14 @@
 package fr.geocite.gibrat
 
 import scala.util.Random
-import fr.geocite.simpuzzle.{ State, NoLogging }
+import fr.geocite.simpuzzle.state
 import scalaz._
+import fr.geocite.simpuzzle.state.Step
+import fr.geocite.simpuzzle.logging.NoLogging
 
-trait GibratStep <: fr.geocite.simpuzzle.Step
+trait GibratStep <: Step
     with NoLogging
-    with State {
+    with state.State {
 
   type CITY
 

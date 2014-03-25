@@ -19,20 +19,15 @@ package fr.geocite.marius
 
 import fr.geocite.gibrat._
 import fr.geocite.marius._
+import fr.geocite.simpuzzle._
 
 object Gibrat extends App {
 
   def popMin = 0
 
-  val m = new Gibrat with MariusFile {
+  /*val m = new StepByStep with Gibrat with MariusFile with TimeEndingCondition {
     override def stdRate = ???
     override def rate = ???
 
-    def popMax = 18000
-    def popMin = 0
-    def wMin = 0
-    def wMax = 40000
-    def inversionPoint = 100
-
-  }
+  }*/
 }

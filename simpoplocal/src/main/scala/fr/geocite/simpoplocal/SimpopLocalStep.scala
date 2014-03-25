@@ -21,9 +21,10 @@ import scala.util.Random
 import scala.collection.mutable.ListBuffer
 import scalaz._
 import Scalaz._
+import fr.geocite.simpuzzle.state.Step
 
 trait SimpopLocalStep
-    extends fr.geocite.simpuzzle.Step
+    extends Step
     with SimpopLocalState
     with SimpopLocalInitialState
     with NoDisaster

@@ -17,7 +17,7 @@
 
 package fr.geocite.marius
 
-import fr.geocite.simpuzzle.Logging
+import fr.geocite.simpuzzle.logging.Logging
 
 trait MariusLogging <: Logging {
   type LOGGING = Transaction

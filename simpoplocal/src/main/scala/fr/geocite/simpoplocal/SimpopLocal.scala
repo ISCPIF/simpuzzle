@@ -17,6 +17,6 @@
 
 package fr.geocite.simpoplocal
 
-import fr.geocite.simpuzzle.StepByStep
+import fr.geocite.simpuzzle.state.StepByStep
 
 trait SimpopLocal extends StepByStep with SimpopLocalStep with SimpopLocalTimeInnovationEndingCondition

@@ -30,9 +30,7 @@ trait InteractionPotential <: Marius {
         citiesWithSupply.zipWithIndex.toIndexedSeq.map {
           case ((c2, s2), j) =>
             if (i == j) 0.0
-            else {
-              interactionPotential(s1, s2, distances(i)(j))
-            }
+            else interactionPotential(s1, s2, distances(i)(j))
         }
 
     }

@@ -24,6 +24,7 @@ import fr.geocite.simpuzzle.distance._
 import fr.geocite.simpuzzle._
 import scala.collection.immutable.TreeSet
 import fr.geocite.simpuzzle.city._
+import fr.geocite.simpuzzle.state.InitialState
 
 trait SimpopLocalInitialState <: InitialState
     with SimpopLocalState

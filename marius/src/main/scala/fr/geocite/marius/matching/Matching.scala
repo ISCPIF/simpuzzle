@@ -18,15 +18,15 @@
 package fr.geocite.marius.matching
 
 import scala.util.Random
-import fr.geocite.simpuzzle.State
 import fr.geocite.marius.Transaction
+import fr.geocite.simpuzzle.state.State
 
 trait Matching <: State {
 
   case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
 
   def matchCities(
-    s: STATE,
+    s: VALID_STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random): Matched
 

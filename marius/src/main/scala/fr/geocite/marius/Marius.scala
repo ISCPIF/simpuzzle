@@ -24,6 +24,7 @@ import fr.geocite.simpuzzle.distribution.PositionDistribution
 import scalaz._
 import scala.util.Random
 import scala.math._
+import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 
 trait Marius <: StepByStep
     with TimeEndingCondition
@@ -40,35 +41,45 @@ trait Marius <: StepByStep
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
-  def cities: Lens[STATE, Seq[CITY]]
+  def cities: Lens[VALID_STATE, Seq[CITY]]
   def population: Lens[CITY, Double]
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
-  def distanceMatrix: Lens[STATE, DistanceMatrix]
+  def distanceMatrix: Lens[VALID_STATE, DistanceMatrix]
 
-  def nextState(s: STATE)(implicit rng: Random) = {
-    val tBalance = territoryBalance(cities.get(s))
-    //val nBalance = nationalBalance(cities.get(s))
+  def nextState(s: VALID_STATE)(implicit rng: Random) =
+    try {
+      val tBalance = territoryBalance(cities.get(s))
+      //val nBalance = nationalBalance(cities.get(s))
 
-    for {
-      wealths <- wealths(s, tBalance)
-    } yield {
-      def populations = wealths.map { wealthToPopulation }
+      for {
+        wealths <- wealths(s, tBalance)
+      } yield {
+        def populations =
+          wealths.map {
+            w =>
+              val p = wealthToPopulation(w)
+              assert(p >= 0, s"Error in wealth $w $p")
+              p
+          }
 
-      val newCities =
-        (cities.get(s) zip populations zip wealths).map(flatten).map {
-          case (c, p, w) =>
-            assert(p >= 0, s"The population of $c is negative $p, $w")
-            wealth.set(population.set(c, p), w)
-        }
+        val newCities =
+          (cities.get(s) zip populations zip wealths).map(flatten).map {
+            case (c, p, w) =>
+              assert(p >= 0, s"The population of $c is negative $p, $w")
+              wealth.set(population.set(c, p), w)
+          }
 
-      cities.set(step.mod(_ + 1, s), newCities)
+        cities.set(step.mod(_ + 1, s), newCities)
+      }
+    } catch {
+      case e: AssertionError => assertionError(s, e)
     }
 
-  }
+  def assertionError(previousState: VALID_STATE, e: AssertionError): STATE
 
-  def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
+  def wealths(s: VALID_STATE, tbs: Seq[Double])(implicit rng: Random) = {
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
@@ -80,23 +91,12 @@ trait Marius <: StepByStep
     val transactedTo: Map[Int, Seq[Transaction]] =
       transactions.groupBy(_.to).withDefaultValue(Seq.empty)
 
-    def bonuses = {
-      val allTransactionsDist =
-        for {
-          cid <- 0 until cities.get(s).size
-          tfrom = transactedFrom(cid)
-          tto = transactedTo(cid)
-        } yield tfrom ++ tto
-
-      def nbDist = allTransactionsDist.map(_.size.toDouble).centered.reduced
-      def nbTotal = allTransactionsDist.map(_.map(_.transacted).sum).centered.reduced
-      (nbDist zip nbTotal).map { case (x, y) => x + y }
-    }
-
     log(
       (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
       zipWithIndex).map(flatten).map {
         case (city, supply, demand, unsold, unsatisfied, tb, i) =>
+          //assert(supply - demand >= 0, s"suply and demand relationship not good, $supply $demand")
+          //assert(unsatisfied - unsold >= 0, s"unsatified and unsold relationship not good, $unsatisfied $unsold")
           wealth.get(city) +
             supply -
             demand -
@@ -107,13 +107,17 @@ trait Marius <: StepByStep
       transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population) + gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
 
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population) + gamma
+  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0) + gamma
 
   def demand(population: Double) = consumption(population) * population
 
-  def supply(population: Double) = productivity(population) * population
+  def supply(population: Double) = {
+    val s = productivity(population) * population
+    assert(s >= 0, s"Supply is not good, $s $population")
+    s
+  }
 
   def initialWealth(population: Double)(implicit rng: Random): Double = population
 

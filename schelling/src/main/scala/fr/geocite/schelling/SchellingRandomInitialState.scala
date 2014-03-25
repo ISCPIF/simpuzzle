@@ -19,6 +19,8 @@ package fr.geocite.schelling
 
 import fr.geocite.simpuzzle._
 import scala.util.Random
+import fr.geocite.simpuzzle.state.InitialState
+import fr.geocite.simpuzzle.logging.NoLogging
 
 trait SchellingRandomInitialState <: InitialState
     with Schelling

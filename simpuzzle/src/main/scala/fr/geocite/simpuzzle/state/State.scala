@@ -15,13 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.state
 
-import scalaz._
+import scala.reflect.macros._
+import scala.reflect.runtime.universe._
+import scala.reflect._
+import scala.reflect.api._
+import scala.language.experimental.macros
 
-trait TimeEndingCondition extends EndingCondition with State {
-  def maxStep: Int
-  def ended(state: STATE) = step.get(state) >= maxStep
+object State {
+  def ct[S](c: Context): c.Expr[ClassTag[S]] = {
+    import c.universe._
+    val a = c.prefix.tree.tpe.member(newTypeName("VALID_STATE")).typeSignature
+    c.Expr(q"implicitly[ClassTag[$a]]").asInstanceOf[c.Expr[ClassTag[S]]]
+  }
+}
 
-  def step: Lens[STATE, Int]
+trait State {
+  type VALID_STATE <: STATE
+  type STATE
+
+  implicit def validStateTag: reflect.ClassTag[VALID_STATE] = macro State.ct[VALID_STATE]
 }

@@ -19,9 +19,10 @@ package fr.geocite.simpoplocal
 
 import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 import scala.collection.immutable.{ TreeSet, TreeMap }
-import scalaz._
+import scalaz.Lens
+import fr.geocite.simpuzzle.state._
 
-trait SimpopLocalState extends fr.geocite.simpuzzle.State {
+trait SimpopLocalState <: State with AlwaysValidState {
 
   type STATE = SimpopLocalState
 

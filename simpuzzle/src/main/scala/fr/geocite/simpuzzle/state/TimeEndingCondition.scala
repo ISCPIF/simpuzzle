@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 23/04/13 Romain Reuillon
+ * Copyright (C) 25/04/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,18 +15,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.state
 
-import scala.util.Random
-import scalaz.Writer
+import scalaz._
+import fr.geocite.simpuzzle.state
 
-trait StepByStep <: State with InitialState with Step with EndingCondition {
+trait TimeEndingCondition extends EndingCondition with State {
+  def maxStep: Int
+  def ended(state: VALID_STATE) = step.get(state) >= maxStep
 
-  def states(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
-    Iterator.iterate(initialState) {
-      s => nextState(s.value)
-    }.takeWhileInclusive(s => !ended(s.value))
-
-  def run(implicit rng: Random) = states.last
-
+  def step: Lens[VALID_STATE, Int]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 25/04/13 Romain Reuillon
+ * Copyright (C) 16/09/13 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,8 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.simpuzzle
+package fr.geocite.simpuzzle.logging
 
-trait EndingCondition extends State {
-  def ended(s: STATE): Boolean
+import scalaz._
+import Scalaz._
+
+trait NoLogging <: Logging {
+  override def log[T](s: T, l: Seq[LOGGING]) = s.set(Seq.empty)
 }

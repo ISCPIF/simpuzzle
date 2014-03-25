@@ -23,6 +23,8 @@ import scala.collection.mutable.ArrayBuffer
 import fr.geocite.simpuzzle.neighbourhood._
 import scalaz.Lens
 import fr.geocite.simpuzzle.matrix.Torus2D
+import fr.geocite.simpuzzle.state.Step
+import fr.geocite.simpuzzle.logging.NoLogging
 
 trait SchellingStep <: Step
     with MatrixNeighbourhood
