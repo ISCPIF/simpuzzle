@@ -72,7 +72,7 @@ trait Marius <: StepByStep
 
       log(cities.set(step.mod(_ + 1, s), newCities), transactions)
     } catch {
-      case e: AssertionError => InvalidState(s, e)
+      case e: AssertionError => InvalidState(e)
     }
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {

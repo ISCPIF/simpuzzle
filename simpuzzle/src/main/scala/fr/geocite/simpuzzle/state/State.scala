@@ -20,7 +20,7 @@ package fr.geocite.simpuzzle.state
 trait State {
   sealed trait GenericState
   type STATE
-  case class InvalidState(lastState: STATE, exception: Throwable) extends GenericState
+  case class InvalidState(exception: Throwable) extends GenericState
   case class ValidState(state: STATE) extends GenericState
 
   implicit def stateToValidState(s: STATE) = ValidState(s)
