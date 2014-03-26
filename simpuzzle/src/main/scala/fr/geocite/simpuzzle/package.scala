@@ -58,5 +58,9 @@ package object simpuzzle {
     implicit def caseTuple[P <: Product](implicit fm: FlatMapper[P, flatten.type]) =
       at[P](_.flatMap(flatten))
   }
+
+  def check(predicate: => Boolean, msg: String) =
+    if(!predicate) throw new AssertionError(msg)
+
 }
 

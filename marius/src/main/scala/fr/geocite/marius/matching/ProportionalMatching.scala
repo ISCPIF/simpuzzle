@@ -20,6 +20,7 @@ package fr.geocite.marius.matching
 import scala.util.Random
 import fr.geocite.marius.{ Transaction, Marius }
 import scala.math._
+import fr.geocite.simpuzzle._
 
 trait ProportionalMatching <: Matching
     with InteractionPotential
@@ -45,10 +46,10 @@ trait ProportionalMatching <: Matching
             else {
               val fSupply = supplies(from)
               val dDemand = demands(to)
-              assert(fSupply >= 0 && dDemand >= 0, s"supply or demand not good, $fSupply $dDemand")
+              check(fSupply >= 0 && dDemand >= 0, s"supply or demand not good, $fSupply $dDemand")
               val transacted =
                 min((ip / interactionPotentialSum) * fSupply, (ip / interactionPotentialSum) * dDemand)
-              assert(!transacted.isNaN, s"Transacted is NaN $ip $interactionPotentialSum $fSupply $dDemand")
+              check(!transacted.isNaN, s"Transacted is NaN $ip $interactionPotentialSum $fSupply $dDemand")
               Transaction(from, to, transacted)
             }
         }
@@ -63,7 +64,7 @@ trait ProportionalMatching <: Matching
       } yield {
         val transactedSum = transactionsTo.map(_.transacted).sum
         val unsatisfied = d - transactedSum
-        assert(unsatisfied >= 0, s"unsatisfied not good, $unsatisfied $d $transactedSum")
+        check(unsatisfied >= 0, s"unsatisfied not good, $unsatisfied $d $transactedSum")
         unsatisfied
       }
 
@@ -73,7 +74,7 @@ trait ProportionalMatching <: Matching
         transactionsFrom = transactions(i)
       } yield {
         val unsold = s - transactionsFrom.map(_.transacted).sum
-        assert(unsold >= 0, s"unsold not good, $unsold")
+        check(unsold >= 0, s"unsold not good, $unsold")
         unsold
       }
 

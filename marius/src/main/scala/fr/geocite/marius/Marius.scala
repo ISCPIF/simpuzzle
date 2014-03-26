@@ -59,14 +59,14 @@ trait Marius <: StepByStep
         ws.map {
           w =>
             val p = wealthToPopulation(w)
-            assert(p >= 0, s"Error in wealth $w $p")
+            check(p >= 0, s"Error in wealth $w $p")
             p
         }
 
       def newCities =
         (cities.get(s) zip populations zip ws).map(flatten).map {
           case (c, p, w) =>
-            assert(p >= 0, s"The population of $c is negative $p, $w")
+            check(p >= 0, s"The population of $c is negative $p, $w")
             wealth.set(population.set(c, p), w)
         }
 
@@ -111,7 +111,7 @@ trait Marius <: StepByStep
 
   def supply(population: Double) = {
     val s = productivity(population) * population
-    assert(s >= 0, s"Supply is not good, $s $population")
+    check(s >= 0, s"Supply is not good, $s $population")
     s
   }
 
