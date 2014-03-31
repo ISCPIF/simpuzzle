@@ -37,22 +37,32 @@ trait ProportionalMatching <: Matching
         supplies,
         distanceMatrix.get(s))
 
+    lazy val toInteractionPotentialSums = interactionMatrix.transpose.map(_.sum)
+    lazy val fromInteractionPotentialSums= interactionMatrix.map(_.sum)
+
     lazy val transactions = interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
-        val interactionPotentialSum = interactions.sum
+        val fromIPSum = fromInteractionPotentialSums(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
-            if (interactionPotentialSum <= 0.0) Transaction(from, to, 0.0)
+            if (ip <= 0.0) {
+              //println("#### IP entre ", from ,"et" , to, "negatif ou nul")
+              Transaction(from, to, 0.0)
+            }
             else {
               val fSupply = supplies(from)
-              val dDemand = demands(to)
-              check(fSupply >= 0 && dDemand >= 0, s"supply or demand not good, $fSupply $dDemand")
-              val transacted =
-                min((ip / interactionPotentialSum) * fSupply, (ip / interactionPotentialSum) * dDemand)
-              check(!transacted.isNaN, s"Transacted is NaN $ip $interactionPotentialSum $fSupply $dDemand")
+              val tDemand = demands(to)
+              val tSupply = supplies(to)
+              val toIPSum=   toInteractionPotentialSums(to)
+              check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
+               val transacted = min((ip / fromIPSum) * fSupply, (ip / toIPSum) * tDemand)
+                val ipfrmprct = ip / fromIPSum
+                val iptoprct =   ip / toIPSum
+                check(!transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply")
               Transaction(from, to, transacted)
             }
         }
+
     }
 
     val transposedTransactions = transactions.transpose
@@ -64,7 +74,7 @@ trait ProportionalMatching <: Matching
       } yield {
         val transactedSum = transactionsTo.map(_.transacted).sum
         val unsatisfied = d - transactedSum
-        check(unsatisfied >= 0, s"unsatisfied not good, $unsatisfied $d $transactedSum")
+        check(unsatisfied >= 0 || abs(unsatisfied) <= 0.0000000001, s"unsatisfied not good city $i , unsat $unsatisfied demand  $d  sum transac $transactedSum ")
         unsatisfied
       }
 
@@ -74,7 +84,7 @@ trait ProportionalMatching <: Matching
         transactionsFrom = transactions(i)
       } yield {
         val unsold = s - transactionsFrom.map(_.transacted).sum
-        check(unsold >= 0, s"unsold not good, $unsold")
+        check(unsold >= 0 || abs(unsold) <= 0.0000000001, s"unsold not good, $unsold")
         unsold
       }
 
