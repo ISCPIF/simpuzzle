@@ -60,7 +60,7 @@ package object simpuzzle {
   }
 
   def check(predicate: => Boolean, msg: String) =
-    if(!predicate) throw new AssertionError(msg)
+    if (!predicate) throw new AssertionError(msg)
 
 }
 

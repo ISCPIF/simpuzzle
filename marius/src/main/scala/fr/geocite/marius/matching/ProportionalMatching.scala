@@ -38,27 +38,24 @@ trait ProportionalMatching <: Matching
         distanceMatrix.get(s))
 
     lazy val toInteractionPotentialSums = interactionMatrix.transpose.map(_.sum)
-    lazy val fromInteractionPotentialSums= interactionMatrix.map(_.sum)
+    lazy val fromInteractionPotentialSums = interactionMatrix.map(_.sum)
 
     lazy val transactions = interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
         val fromIPSum = fromInteractionPotentialSums(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
-            if (ip <= 0.0) {
-              //println("#### IP entre ", from ,"et" , to, "negatif ou nul")
-              Transaction(from, to, 0.0)
-            }
+            if (ip <= 0.0) Transaction(from, to, 0.0)
             else {
               val fSupply = supplies(from)
               val tDemand = demands(to)
               val tSupply = supplies(to)
-              val toIPSum=   toInteractionPotentialSums(to)
+              val toIPSum = toInteractionPotentialSums(to)
               check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
-               val transacted = min((ip / fromIPSum) * fSupply, (ip / toIPSum) * tDemand)
-                val ipfrmprct = ip / fromIPSum
-                val iptoprct =   ip / toIPSum
-                check(!transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply")
+              val transacted = min((ip / fromIPSum) * fSupply, (ip / toIPSum) * tDemand)
+              val ipfrmprct = ip / fromIPSum
+              val iptoprct = ip / toIPSum
+              check(!transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply")
               Transaction(from, to, transacted)
             }
         }
