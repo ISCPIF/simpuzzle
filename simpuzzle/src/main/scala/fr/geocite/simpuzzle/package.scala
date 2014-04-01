@@ -59,8 +59,8 @@ package object simpuzzle {
       at[P](_.flatMap(flatten))
   }
 
-  def check(predicate: => Boolean, msg: String) =
-    if (!predicate) throw new AssertionError(msg)
+  def check(predicate: => Boolean, msg: String, exception: String => AssertionError = s => new AssertionError(s)) =
+    if (!predicate) throw exception(msg)
 
 }
 

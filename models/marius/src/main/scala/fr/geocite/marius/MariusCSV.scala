@@ -66,6 +66,8 @@ object MariusCSV extends App {
       val totalPop = cities.map(_.population).sum
 
       println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+    case m.InvalidState(e: InteractionPotential.InteractionPotentialException) =>
+      println(s"${e.message} with matrix ${e.matrix}")
     case m.InvalidState(e) => println(s"Invadid State $e")
   }
 

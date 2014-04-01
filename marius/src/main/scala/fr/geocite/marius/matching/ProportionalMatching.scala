@@ -55,7 +55,11 @@ trait ProportionalMatching <: Matching
               val transacted = min((ip / fromIPSum) * fSupply, (ip / toIPSum) * tDemand)
               val ipfrmprct = ip / fromIPSum
               val iptoprct = ip / toIPSum
-              check(!transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply")
+              check(
+                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
+                InteractionPotential.InteractionPotentialException(_, interactionMatrix)
+              )
+
               Transaction(from, to, transacted)
             }
         }

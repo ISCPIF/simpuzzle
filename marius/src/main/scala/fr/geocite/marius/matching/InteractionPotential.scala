@@ -19,6 +19,10 @@ package fr.geocite.marius.matching
 
 import fr.geocite.marius._
 
+object InteractionPotential {
+  case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
+}
+
 trait InteractionPotential <: Marius {
 
   def distanceDecay: Double
