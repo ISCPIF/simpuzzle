@@ -18,6 +18,7 @@
 package fr.geocite.marius.matching
 
 import fr.geocite.marius._
+import fr.geocite.simpuzzle._
 
 object InteractionPotential {
   case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
@@ -29,7 +30,7 @@ trait InteractionPotential <: Marius {
 
   def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]]) = {
     val citiesWithSupply = cities zip masses
-    citiesWithSupply.zipWithIndex.toIndexedSeq.map {
+    val interactionMatrix = citiesWithSupply.zipWithIndex.toIndexedSeq.map {
       case ((c1, s1), i) =>
         citiesWithSupply.zipWithIndex.toIndexedSeq.map {
           case ((c2, s2), j) =>
@@ -38,6 +39,12 @@ trait InteractionPotential <: Marius {
         }
 
     }
+    check(
+      interactionMatrix.flatten.count(ip => ip > 0) >= 2,
+      s"Interaction potential matrix is empty",
+      InteractionPotential.InteractionPotentialException(_, interactionMatrix)
+    )
+    interactionMatrix
   }
 
   def interactionPotential(supply1: Double, supply2: Double, distance: Double) = {
@@ -45,7 +52,5 @@ trait InteractionPotential <: Marius {
     assert(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
     potential
   }
-
-
 
 }
