@@ -49,7 +49,7 @@ trait InteractionPotential <: Marius {
 
   def interactionPotential(supply1: Double, supply2: Double, distance: Double) = {
     val potential = (supply1 * supply2) / math.pow(distance, distanceDecay)
-    assert(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
+    check(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
     potential
   }
 
