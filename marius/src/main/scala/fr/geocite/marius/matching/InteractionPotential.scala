@@ -45,4 +45,7 @@ trait InteractionPotential <: Marius {
     assert(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
     potential
   }
+
+
+
 }

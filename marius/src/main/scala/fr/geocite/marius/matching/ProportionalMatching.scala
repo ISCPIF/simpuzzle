@@ -59,6 +59,12 @@ trait ProportionalMatching <: Matching
                 !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
                 InteractionPotential.InteractionPotentialException(_, interactionMatrix)
               )
+              check(
+                interactionMatrix.flatten.count(ip => ip > 0) >= 2, s"matrice de potentiels d'interactions vide (supplies nulles)",    InteractionPotential.InteractionPotentialException(_, interactionMatrix)
+
+              )
+
+
 
               Transaction(from, to, transacted)
             }
