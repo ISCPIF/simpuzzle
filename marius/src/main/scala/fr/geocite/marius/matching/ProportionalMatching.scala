@@ -74,7 +74,7 @@ trait ProportionalMatching <: Matching
       } yield {
         val transactedSum = transactionsTo.map(_.transacted).sum
         val unsatisfied = d - transactedSum
-        check(unsatisfied >= 0 || abs(unsatisfied) <= 0.0000000001, s"unsatisfied not good city $i , unsat $unsatisfied demand  $d  sum transac $transactedSum ")
+        check(unsatisfied >= 0 || abs(unsatisfied) <= 0.00001, s"unsatisfied not good city $i , unsat $unsatisfied demand  $d  sum transac $transactedSum ")
         unsatisfied
       }
 
@@ -84,7 +84,7 @@ trait ProportionalMatching <: Matching
         transactionsFrom = transactions(i)
       } yield {
         val unsold = s - transactionsFrom.map(_.transacted).sum
-        check(unsold >= 0 || abs(unsold) <= 0.0000000001, s"unsold not good, $unsold")
+        check(unsold >= 0 || abs(unsold) <= 0.00001, s"unsold not good, $unsold")
         unsold
       }
 
