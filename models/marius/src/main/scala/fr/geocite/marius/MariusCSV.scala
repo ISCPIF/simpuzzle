@@ -31,14 +31,13 @@ object MariusCSV extends App {
     //def sizeEffectOnConsumption = 123.09219346245203 //0.000002
     //def sizeEffectOnProductivity = 90.38998194356837 //0.0035
 
-       def inversionPoint: Double = 100     // WARNING : never set inversionpoint > PopMax / 2
-   def popMax: Double = 20000
-   def popMin: Double = 0
-   def wMax: Double = 880000
+    def inversionPoint: Double = 100 // WARNING : never set inversionpoint > PopMax / 2
+    def popMax: Double = 20000
+    def popMin: Double = 0
+    def wMax: Double = 880000
     def wMin: Double = 0
 
-
-    def sizeEffectOnConsumption =  2
+    def sizeEffectOnConsumption = 2
     def sizeEffectOnProductivity = 2.5
 
     def gamma = 0

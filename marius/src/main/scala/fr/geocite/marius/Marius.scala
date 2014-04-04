@@ -57,9 +57,9 @@ trait Marius <: StepByStep
 
       def populations =
         ws.zipWithIndex.map {
-          case(w,i) =>
-           // println("ville",i,"W", w)
-            check(w >= 0 , s"ville $i error in wealth avant conversion toPop $w")
+          case (w, i) =>
+            // println("ville",i,"W", w)
+            check(w >= 0, s"ville $i error in wealth avant conversion toPop $w")
             val p = wealthToPopulation(w)
             check(p >= 0, s"Error in wealth $w $p")
             p
@@ -90,23 +90,20 @@ trait Marius <: StepByStep
       transactions.groupBy(_.to).withDefaultValue(Seq.empty)
 
     def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
-      zipWithIndex).map(flatten).map {
+    zipWithIndex).map(flatten).map {
       case (city, supply, demand, unsold, unsatisfied, tb, i) =>
         //assert(supply - demand >= 0, s"suply > demand relationship not good, $supply $demand")
         //assert(unsatisfied - unsold >= 0, s"unsatified > unsold relationship not good, $unsatisfied $unsold")
-val newWealth =  wealth.get(city) +  supply -  demand - unsold +  unsatisfied
-        if (newWealth <= 0.0){
+        val newWealth = wealth.get(city) + supply - demand - unsold + unsatisfied
+        if (newWealth <= 0.0) {
           //println("ville",i, "ruinée pour la grandeur de la mère russie")
           0.0
-        }
-        else{
+        } else {
           newWealth
         }
     }
     (ws, transactions)
   }
-
-
 
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
 
@@ -121,41 +118,40 @@ val newWealth =  wealth.get(city) +  supply -  demand - unsold +  unsatisfied
   }
 
   private lazy val a = {
-    println("## coeff A",coeffA(popMin, popMax ,wMin, wMax, inversionPoint) )
-    coeffA(popMin, popMax ,wMin, wMax, inversionPoint)
+    println("## coeff A", coeffA(popMin, popMax, wMin, wMax, inversionPoint))
+    coeffA(popMin, popMax, wMin, wMax, inversionPoint)
   }
   private lazy val b = {
-    println("## coeff B",coeffB(popMin, popMax ,wMin, wMax, inversionPoint) )
-    coeffB(popMin , popMax , wMin , wMax, inversionPoint)
+    println("## coeff B", coeffB(popMin, popMax, wMin, wMax, inversionPoint))
+    coeffB(popMin, popMax, wMin, wMax, inversionPoint)
   }
   private lazy val c = 0
   def popMin: Double
-  def popMax : Double
-  def inversionPoint : Double
-  def wMin : Double
-  def wMax : Double
-  def denominator(popMin: Double, popMax : Double, inversionPoint: Double) : Double =  2 * inversionPoint*popMin -2*inversionPoint*popMax - pow(popMin,2) + pow(popMax,2)
-  def coeffA(popMin : Double, popMax : Double, wMin : Double , wMax : Double, inversionPoint : Double): Double =  {
-    assert( inversionPoint < popMax / 2.0)
-    (popMin - popMax - wMin + wMax)/ denominator(popMin, popMax, inversionPoint)
+  def popMax: Double
+  def inversionPoint: Double
+  def wMin: Double
+  def wMax: Double
+  def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double = 2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
+  def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
+    assert(inversionPoint < popMax / 2.0)
+    (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
   }
-  def coeffB(popMin : Double, popMax : Double, wMin : Double , wMax : Double, inversionPoint : Double): Double =   {
-    assert( inversionPoint < popMax / 2.0)
-    (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin,2) + pow(popMax,2)   )/ denominator(popMin, popMax, inversionPoint)
+  def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
+    assert(inversionPoint < popMax / 2.0)
+    (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
   }
-
 
   def initialWealth(population: Double)(implicit rng: Random): Double = {
     val wealthInit = a * pow(population, 2) + b * population + c
-    check(wealthInit>=0, s"wealth negative à l'init $wealth")
+    check(wealthInit >= 0, s"wealth negative à l'init $wealth")
     wealthInit
   }
   def wealthToPopulation(wealth: Double) = {
-    check(wealth >= 0 , s"wealth negative $wealth")
-    (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth)) ) / (2 * a)
+    check(wealth >= 0, s"wealth negative $wealth")
+    (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
   }
 
-           /*
+  /*
   def initialWealth(population: Double)(implicit rng: Random): Double = population
 
   def wealthToPopulation(wealth: Double) =
