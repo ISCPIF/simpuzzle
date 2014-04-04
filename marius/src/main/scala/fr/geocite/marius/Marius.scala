@@ -117,25 +117,23 @@ trait Marius <: StepByStep
     s
   }
 
-  private lazy val a = {
-    println("## coeff A", coeffA(popMin, popMax, wMin, wMax, inversionPoint))
-    coeffA(popMin, popMax, wMin, wMax, inversionPoint)
-  }
-  private lazy val b = {
-    println("## coeff B", coeffB(popMin, popMax, wMin, wMax, inversionPoint))
-    coeffB(popMin, popMax, wMin, wMax, inversionPoint)
-  }
+  private lazy val a = coeffA(popMin, popMax, wMin, wMax, inversionPoint)
+  private lazy val b = coeffB(popMin, popMax, wMin, wMax, inversionPoint)
   private lazy val c = 0
+
   def popMin: Double
   def popMax: Double
   def inversionPoint: Double
   def wMin: Double
   def wMax: Double
+
   def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double = 2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
+
   def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
     assert(inversionPoint < popMax / 2.0)
     (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
   }
+
   def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
     assert(inversionPoint < popMax / 2.0)
     (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
@@ -150,16 +148,6 @@ trait Marius <: StepByStep
     check(wealth >= 0, s"wealth negative $wealth")
     (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
   }
-
-  /*
-  def initialWealth(population: Double)(implicit rng: Random): Double = population
-
-  def wealthToPopulation(wealth: Double) =
-    wealth match {
-      case x if x >= 0 => x
-      case _ => 0.0
-    }
-         */
 
   def territoryBalance(s: Seq[CITY]): Seq[Double] = {
     val deltas =
