@@ -24,10 +24,10 @@ import fr.geocite.simpuzzle.extendIterator
 trait StepByStep <: State with InitialState with Step with EndingCondition {
 
   def logs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], GenericState]] =
-    Iterator.iterate(initialState) {
+    Iterator.iterate(tryValid(initialState)) {
       v =>
         v.value match {
-          case ValidState(s) => nextState(s)
+          case ValidState(s) => tryValid(nextState(s))
           case s: InvalidState => v
         }
     }.takeWhileInclusive {
@@ -51,4 +51,10 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
     states.collect { case ValidState(x) => x }
 
   def run(implicit rng: Random) = states.last
+
+  private def tryValid(f: => Writer[Seq[LOGGING], STATE]) =
+    try f.map(ValidState(_))
+    catch {
+      case e: AssertionError => log(InvalidState(e), Seq.empty)
+    }
 }

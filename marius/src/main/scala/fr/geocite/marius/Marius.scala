@@ -48,34 +48,31 @@ trait Marius <: StepByStep
   def capital: Lens[CITY, Boolean]
   def distanceMatrix: Lens[STATE, DistanceMatrix]
 
-  def nextState(s: STATE)(implicit rng: Random) =
-    try {
-      val tBalance = territoryBalance(cities.get(s))
-      //val nBalance = nationalBalance(cities.get(s))
+  def nextState(s: STATE)(implicit rng: Random) = {
+    val tBalance = territoryBalance(cities.get(s))
+    //val nBalance = nationalBalance(cities.get(s))
 
-      val (ws, transactions) = wealths(s, tBalance)
+    val (ws, transactions) = wealths(s, tBalance)
 
-      def populations =
-        ws.zipWithIndex.map {
-          case (w, i) =>
-            // println("ville",i,"W", w)
-            check(w >= 0, s"ville $i error in wealth avant conversion toPop $w")
-            val p = wealthToPopulation(w)
-            check(p >= 0, s"Error in wealth $w $p")
-            p
-        }
+    def populations =
+      ws.zipWithIndex.map {
+        case (w, i) =>
+          // println("ville",i,"W", w)
+          check(w >= 0, s"City $i error in wealth before conversion toPop $w")
+          val p = wealthToPopulation(w)
+          check(p >= 0, s"Error in wealth $w $p")
+          p
+      }
 
-      def newCities =
-        (cities.get(s) zip populations zip ws).map(flatten).map {
-          case (c, p, w) =>
-            check(p >= 0, s"The population of $c is negative $p, $w")
-            wealth.set(population.set(c, p), w)
-        }
+    def newCities =
+      (cities.get(s) zip populations zip ws).map(flatten).map {
+        case (c, p, w) =>
+          check(p >= 0, s"The population of $c is negative $p, $w")
+          wealth.set(population.set(c, p), w)
+      }
 
-      log(cities.set(step.mod(_ + 1, s), newCities), transactions)
-    } catch {
-      case e: AssertionError => InvalidState(e)
-    }
+    log(cities.set(step.mod(_ + 1, s), newCities), transactions)
+  }
 
   def wealths(s: STATE, tbs: Seq[Double])(implicit rng: Random) = {
     val supplies = cities.get(s).map(c => supply(population.get(c)))
@@ -141,11 +138,11 @@ trait Marius <: StepByStep
 
   def initialWealth(population: Double)(implicit rng: Random): Double = {
     val wealthInit = a * pow(population, 2) + b * population + c
-    check(wealthInit >= 0, s"wealth negative à l'init $wealth")
+    check(wealthInit >= 0, s"Negative wealth $wealth")
     wealthInit
   }
   def wealthToPopulation(wealth: Double) = {
-    check(wealth >= 0, s"wealth negative $wealth")
+    check(wealth >= 0, s"Negative wealth $wealth")
     (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
   }
 
