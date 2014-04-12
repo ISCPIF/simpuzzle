@@ -35,8 +35,7 @@ trait Marius <: StepByStep
 
   type CITY
 
-  def sizeEffectOnConsumption: Double
-  def sizeEffectOnProductivity: Double
+  def sizeEffect: Double
   def gamma: Double
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
@@ -102,9 +101,8 @@ trait Marius <: StepByStep
     (ws, transactions)
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
-
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0) + gamma
+  def consumption(population: Double) = (1.0 - sizeEffect) * math.log(population + 1.0) + gamma
+  def productivity(population: Double) = (1.0 + sizeEffect) * math.log(population + 1.0) + gamma
 
   def demand(population: Double) = consumption(population) * population
 
