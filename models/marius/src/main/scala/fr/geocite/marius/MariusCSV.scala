@@ -37,8 +37,7 @@ object MariusCSV extends App {
     def wMax: Double = 880000
     def wMin: Double = 0
 
-    def sizeEffectOnConsumption = 2
-    def sizeEffectOnProductivity = 2.5
+    def sizeEffect = 0.1
 
     def gamma = 0
     def territorialTaxes = 0.0
