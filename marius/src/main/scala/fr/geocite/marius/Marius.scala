@@ -101,8 +101,8 @@ trait Marius <: StepByStep
     (ws, transactions)
   }
 
-  def consumption(population: Double) = (1.0 - sizeEffect) * math.log(population + 1.0) + gamma
-  def productivity(population: Double) = (1.0 + sizeEffect) * math.log(population + 1.0) + gamma
+  def consumption(population: Double) = ((1.0 - sizeEffect) / 2) * math.log(population + 1.0) + gamma
+  def productivity(population: Double) = ((1.0 + sizeEffect) / 2) * math.log(population + 1.0) + gamma
 
   def demand(population: Double) = consumption(population) * population
 
