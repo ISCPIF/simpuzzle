@@ -56,7 +56,6 @@ trait Marius <: StepByStep
     def populations =
       ws.zipWithIndex.map {
         case (w, i) =>
-          // println("ville",i,"W", w)
           check(w >= 0, s"City $i error in wealth before conversion toPop $w")
           val p = wealthToPopulation(w)
           check(p >= 0, s"Error in wealth $w $p")
@@ -79,24 +78,11 @@ trait Marius <: StepByStep
 
     val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
 
-    val transactedFrom: Map[Int, Seq[Transaction]] =
-      transactions.groupBy(_.from).withDefaultValue(Seq.empty)
-
-    val transactedTo: Map[Int, Seq[Transaction]] =
-      transactions.groupBy(_.to).withDefaultValue(Seq.empty)
-
-    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs //zip nbs
+    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs
     zipWithIndex).map(flatten).map {
       case (city, supply, demand, unsold, unsatisfied, tb, i) =>
-        //assert(supply - demand >= 0, s"suply > demand relationship not good, $supply $demand")
-        //assert(unsatisfied - unsold >= 0, s"unsatified > unsold relationship not good, $unsatisfied $unsold")
         val newWealth = wealth.get(city) + supply - demand - unsold + unsatisfied
-        if (newWealth <= 0.0) {
-          //println("ville",i, "ruinée pour la grandeur de la mère russie")
-          0.0
-        } else {
-          newWealth
-        }
+        if (newWealth <= 0.0) 0.0 else newWealth
     }
     (ws, transactions)
   }
