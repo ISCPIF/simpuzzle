@@ -36,6 +36,8 @@ trait Marius <: StepByStep
   type CITY
 
   def sizeEffect: Double
+  //pour les bonus
+  def bonusMultiplyer: Double
   def gamma: Double
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
@@ -76,13 +78,19 @@ trait Marius <: StepByStep
     val supplies = cities.get(s).map(c => supply(population.get(c)))
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
-    val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
+    //bonus
+    val Matched(transactions, unsolds, unsatisfieds, importShares, exportShares) = matchCities(s, supplies, demands)
 
-    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs
+    //bonus
+    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip importShares zip exportShares zip tbs
     zipWithIndex).map(flatten).map {
-      case (city, supply, demand, unsold, unsatisfied, tb, i) =>
-        val newWealth = wealth.get(city) + supply - demand - unsold + unsatisfied
-        if (newWealth <= 0.0) 0.0 else newWealth
+      //bonus
+      case (city, supply, demand, unsold, unsatisfied, importShare, exportShare, tb, i) =>
+      // bonus
+        val newWealth =
+          wealth.get(city) + supply - demand - unsold + unsatisfied
+        + ( bonusMultiplyer * ( importShare + exportShare ) )
+        if (newWealth <= 0.0) 0.0 else  newWealth
     }
     (ws, transactions)
   }
