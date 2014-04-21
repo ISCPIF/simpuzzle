@@ -22,8 +22,8 @@ import fr.geocite.marius.Transaction
 import fr.geocite.simpuzzle.state.State
 
 trait Matching <: State {
-
-  case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double])
+//bonus
+  case class Matched(transacted: Seq[Transaction], unsold: Seq[Double], unsatisfied: Seq[Double], importShare: Seq[Double], exportShare: Seq[Double])
 
   def matchCities(
     s: STATE,

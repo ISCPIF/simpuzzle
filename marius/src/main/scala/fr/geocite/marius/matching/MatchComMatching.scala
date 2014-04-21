@@ -94,7 +94,21 @@ trait MatchComMatching <: Matching with InteractionPotential with Marius {
         transaction = transactedTo(cid)
       } yield transaction.map(_.ppb).sum - transaction.map(_.transacted).sum
 
-    Matched(transactions.map(_.toTransaction), unsolds, unsatisfieds)
+
+
+    def importShares =
+      for {
+        cid <- 0 until cities.get(s).size
+        transaction = transactedTo(cid)
+      } yield transaction.map(_.transacted).sum // à diviser par la demande de la ville
+
+    def exportShares =
+      for {
+        cid <- 0 until cities.get(s).size
+        transaction = transactedFrom(cid)
+      } yield transaction.map(_.transacted).sum // à diviser par la supply de la ville
+
+    Matched(transactions.map(_.toTransaction), unsolds, unsatisfieds, importShares, exportShares)
   }
 
   def contracts(from: Seq[Set[Int]], to: Seq[Set[Int]]) =

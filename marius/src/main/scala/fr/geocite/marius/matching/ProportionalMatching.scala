@@ -88,7 +88,32 @@ trait ProportionalMatching <: Matching
         unsold
       }
 
-    Matched(transactions.flatten, unsolds.toSeq, unsatisfieds.toSeq)
+
+   //  bonus
+     def importShares =
+      for {
+        (d, i) <- demands.zipWithIndex
+        transactionsTo = transposedTransactions(i)
+      } yield {
+        val importShare = transactionsTo.map(_.transacted).sum / d
+        check(importShare >= 0 || abs(importShare) <= 0.00001, s"importShare not good city $i , impshare $importShare demand  $d ")
+        importShare
+      }
+
+
+    def exportShares =
+      for {
+        (s, i) <- supplies.zipWithIndex
+        transactionsFrom = transactions(i)
+      } yield {
+        val exportShare = transactionsFrom.map(_.transacted).sum / s
+        check(exportShare >= 0 || abs(exportShare) <= 0.00001, s"exportShare not good city $i , exshare $exportShare supply  $s")
+        exportShare
+      }
+
+
+//bonus
+    Matched(transactions.flatten, unsolds.toSeq, unsatisfieds.toSeq, importShares.toSeq, exportShares.toSeq)
   }
 
 }
