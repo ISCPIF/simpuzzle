@@ -24,7 +24,7 @@ import scalax.io.Resource
 
 object MariusCSV extends App {
 
-  val m = new Marius with MariusState with ProportionalMatching {
+  val m = new Marius with MariusState with ProportionalMatching with RelatedSizeEffect {
     //def distanceDecay = 0.7713425612482909 //1.1
     def distanceDecay = 0.1
     // def constantGravity = 0.01  ne sert à rien
@@ -43,7 +43,6 @@ object MariusCSV extends App {
 
     def sizeEffect = 0.0087
 
-    def gamma = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
 
