@@ -25,6 +25,7 @@ import scalaz._
 import scala.util.Random
 import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
+import meta._
 
 trait Marius <: StepByStep
     with TimeEndingCondition
@@ -35,7 +36,9 @@ trait Marius <: StepByStep
 
   type CITY
 
+  @Domain(-1, 1)
   def sizeEffect: Double
+
   def gamma: Double
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
@@ -78,8 +81,7 @@ trait Marius <: StepByStep
 
     val Matched(transactions, unsolds, unsatisfieds) = matchCities(s, supplies, demands)
 
-    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs
-    zipWithIndex).map(flatten).map {
+    def ws = (cities.get(s) zip supplies zip demands zip unsolds zip unsatisfieds zip tbs zipWithIndex).map(flatten).map {
       case (city, supply, demand, unsold, unsatisfied, tb, i) =>
         val newWealth = wealth.get(city) + supply - demand - unsold + unsatisfied
         if (newWealth <= 0.0) 0.0 else newWealth
