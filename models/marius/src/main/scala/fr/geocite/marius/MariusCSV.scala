@@ -27,7 +27,7 @@ object MariusCSV extends App {
   val m = new Marius with MariusState with ProportionalMatching {
     //def distanceDecay = 0.7713425612482909 //1.1
     def distanceDecay = 0.1
-   // def constantGravity = 0.01  ne sert à rien
+    // def constantGravity = 0.01  ne sert à rien
 
     //def sizeEffectOnConsumption = 123.09219346245203 //0.000002
     //def sizeEffectOnProductivity = 90.38998194356837 //0.0035
