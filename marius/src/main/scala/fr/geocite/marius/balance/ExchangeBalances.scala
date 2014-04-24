@@ -22,9 +22,7 @@ import scala.util.Random
 import fr.geocite.simpuzzle._
 import fr.geocite.marius.MariusLogging
 
-trait ExchangeBalances <: Matching with MariusLogging {
-
-  def bonusMultiplier: Double
+trait ExchangeBalances <: Matching with NoBonus with MariusLogging {
 
   def exchangeBalances(
     s: STATE,
@@ -66,9 +64,9 @@ trait ExchangeBalances <: Matching with MariusLogging {
         transactionsFrom = transactions(i)
       } yield transactionsFrom.map(_.transacted).sum / supply
 
-    def balances = (unsolds zip unsatisfieds zip importShares zip exportShares).map(flatten).map {
-      case (unsold, unsatisfied, importShare, exportShare) =>
-        val newWealth = unsatisfied - unsold + (bonusMultiplier * (importShare + exportShare))
+    def balances = (unsolds zip unsatisfieds zip bonuses(importShares, exportShares)).map(flatten).map {
+      case (unsold, unsatisfied, bonus) =>
+        val newWealth = unsatisfied - unsold + bonus
         if (newWealth >= 0) newWealth else 0
     }
     log(balances, transactions.flatten)
