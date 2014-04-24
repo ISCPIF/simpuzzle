@@ -41,8 +41,7 @@ trait ExchangeBalances <: Matching with MariusLogging {
       } yield {
         val transactedSum = transactionsTo.map(_.transacted).sum
         val unsatisfied = d - transactedSum
-        check(unsatisfied >= 0, s"unsatisfied not good city $i , unsat $unsatisfied demand  $d  sum transac $transactedSum ")
-        unsatisfied
+        if (unsatisfied >= 0) unsatisfied else 0
       }
 
     def unsolds =
@@ -51,8 +50,7 @@ trait ExchangeBalances <: Matching with MariusLogging {
         transactionsFrom = transactions(i)
       } yield {
         val unsold = s - transactionsFrom.map(_.transacted).sum
-        check(unsold >= 0, s"unsold not good, $unsold")
-        unsold
+        if (unsold >= 0) unsold else 0
       }
 
     def importShares =
@@ -70,7 +68,7 @@ trait ExchangeBalances <: Matching with MariusLogging {
     def balances = (unsolds zip unsatisfieds zip importShares zip exportShares).map(flatten).map {
       case (unsold, unsatisfied, importShare, exportShare) =>
         val newWealth = unsold + unsatisfied + (bonusMultiplier * (importShare + exportShare))
-        if (newWealth <= 0.0) 0.0 else newWealth
+        if (newWealth >= 0) newWealth else 0
     }
     log(balances, transactions.flatten)
   }

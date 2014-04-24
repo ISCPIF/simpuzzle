@@ -25,23 +25,14 @@ import scalax.io.Resource
 object MariusCSV extends App {
 
   val m = new Marius with MariusState with ProportionalMatching with RelatedSizeEffect {
-    //def distanceDecay = 0.7713425612482909 //1.1
     def distanceDecay = 0.1
-
-    //def sizeEffectOnConsumption = 123.09219346245203 //0.000002
-    //def sizeEffectOnProductivity = 90.38998194356837 //0.0035
-
-    def inversionPoint: Double = 103 // WARNING : never set inversionpoint > PopMax / 2
+    def inversionPoint: Double = 103
     def popMax: Double = 20000
     def popMin: Double = 0
     def wMax: Double = 880000
     def wMin: Double = 0
-
-    // pour les bonus
     def bonusMultiplier: Double = 1.0
-
     def sizeEffect = 0.0087
-
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
 
