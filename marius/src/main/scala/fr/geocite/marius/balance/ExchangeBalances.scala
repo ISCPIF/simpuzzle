@@ -65,9 +65,7 @@ trait ExchangeBalances <: Matching with NoBonus with MariusLogging {
       } yield transactionsFrom.map(_.transacted).sum / supply
 
     def balances = (unsolds zip unsatisfieds zip bonuses(importShares, exportShares)).map(flatten).map {
-      case (unsold, unsatisfied, bonus) =>
-        val newWealth = unsatisfied - unsold + bonus
-        if (newWealth >= 0) newWealth else 0
+      case (unsold, unsatisfied, bonus) => unsatisfied - unsold + bonus
     }
     log(balances, transactions.flatten)
   }
