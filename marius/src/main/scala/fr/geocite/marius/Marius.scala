@@ -26,14 +26,14 @@ import scala.util.Random
 import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 import meta._
+import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
 
 trait Marius <: StepByStep
     with TimeEndingCondition
     with MariusLogging
-    with ExchangeBalances
+    with Balances
     with MariusFile
-    with PositionDistribution
-    with TerritorialBalances {
+    with PositionDistribution {
 
   type CITY
 
@@ -79,16 +79,15 @@ trait Marius <: StepByStep
     val demands = cities.get(s).map(c => demand(population.get(c)))
 
     for {
-      eb <- exchangeBalances(s, supplies, demands)
+      bs <- balances(s, supplies, demands)
     } yield {
       (cities.get(s) zip
         supplies zip
         demands zip
-        eb zip
-        territorialBalances(cities.get(s)) zipWithIndex).map(flatten).map {
-        case (city, supply, demand, exchangeBalance, territorialBalance, i) =>
+        bs zipWithIndex).map(flatten).map {
+        case (city, supply, demand, b, i) =>
           val newWealth =
-            wealth.get(city) + supply - demand + exchangeBalance + territorialBalance
+            wealth.get(city) + supply - demand + b
           if (newWealth <= 0.0) 0.0 else newWealth
       }
     }

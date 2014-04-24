@@ -15,22 +15,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius
+package fr.geocite.marius.balance
 
-trait TerritorialBalances { model: Marius =>
+import fr.geocite.marius.Marius
 
-  def territorialTaxes: Double
-  def capitalShareOfTaxes: Double
+trait Redistribution { model: Marius =>
 
-  def territorialBalances(s: Seq[CITY]): Seq[Double] = taxes(s, region.get _, capital.get _)
-
-  def taxes(s: Seq[CITY], territorialUnit: CITY => String, capital: CITY => Boolean) = {
+  def redistribution(s: Seq[CITY], territorialUnit: CITY => String, capital: CITY => Boolean, taxesRate: Double, capitalShareOfTaxes: Double) = {
     def deltas =
       for {
         (r, cs) <- s.zipWithIndex.groupBy { case (c, _) => territorialUnit(c) }
         (cities, indexes) = cs.unzip
       } yield {
-        val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
+        val taxes = cities.map(c => supply(population.get(c)) * taxesRate)
         val capitalShare = capitalShareOfTaxes * taxes.sum
         val taxesLeft = taxes.sum - capitalShare
         val regionPopulation = cities.map(c => population.get(c)).sum
@@ -51,5 +48,4 @@ trait TerritorialBalances { model: Marius =>
       case (i, _) => i
     }.unzip._2
   }
-
 }

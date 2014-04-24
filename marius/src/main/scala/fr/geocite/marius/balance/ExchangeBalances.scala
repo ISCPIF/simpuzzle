@@ -15,11 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius
+package fr.geocite.marius.balance
 
 import fr.geocite.marius.matching.Matching
 import scala.util.Random
 import fr.geocite.simpuzzle._
+import fr.geocite.marius.MariusLogging
 
 trait ExchangeBalances <: Matching with MariusLogging {
 
