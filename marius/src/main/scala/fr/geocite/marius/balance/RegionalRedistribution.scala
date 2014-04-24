@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 2014 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -9,14 +9,19 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius
+package fr.geocite.marius.balance
 
-trait CapitalDistribution {
-  def regionCapitals: Iterator[Boolean]
+import fr.geocite.marius.Marius
+
+trait RegionalRedistribution <: NoRegionalRedistribution with Redistribution { model: Marius =>
+
+  override def regionalBalances(s: Seq[CITY]): Seq[Double] =
+    redistribution(s, region.get _, regionalCapital.get _)
+
 }

@@ -47,7 +47,8 @@ trait Marius <: StepByStep
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
   def nation: Lens[CITY, String]
-  def capital: Lens[CITY, Boolean]
+  def regionalCapital: Lens[CITY, Boolean]
+  def nationalCapital: Lens[CITY, Boolean]
   def distanceMatrix: Lens[STATE, DistanceMatrix]
 
   def nextState(s: STATE)(implicit rng: Random) = {

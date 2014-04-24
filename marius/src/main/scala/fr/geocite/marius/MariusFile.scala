@@ -58,7 +58,7 @@ trait MariusFile <: PopulationDistribution
 
   def regions = startingCities.map(_(2)).toIterator
 
-  def capitals = startingCities.map(l => toBoolean(l(7))).toIterator
+  def regionCapitals = startingCities.map(l => toBoolean(l(7))).toIterator
 
   def nationalCapitals = startingCities.map(l => toBoolean(l(11))).toIterator
 

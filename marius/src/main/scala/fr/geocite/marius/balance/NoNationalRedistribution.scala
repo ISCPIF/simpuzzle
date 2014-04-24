@@ -19,6 +19,6 @@ package fr.geocite.marius.balance
 
 import fr.geocite.marius.Marius
 
-trait NoTerritorialRedistribution { model: Marius =>
-  def territorialBalances(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)
+trait NoNationalRedistribution { model: Marius =>
+  def nationalBalances(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)
 }
