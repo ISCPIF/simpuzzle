@@ -40,7 +40,7 @@ trait ProportionalMatching <: Matching
     lazy val toInteractionPotentialSums = interactionMatrix.transpose.map(_.sum)
     lazy val fromInteractionPotentialSums = interactionMatrix.map(_.sum)
 
-    lazy val transactions = interactionMatrix.zipWithIndex.map {
+    interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
         val fromIPSum = fromInteractionPotentialSums(from)
         interactions.zipWithIndex.map {
@@ -51,69 +51,21 @@ trait ProportionalMatching <: Matching
               val tDemand = demands(to)
               val tSupply = supplies(to)
               val toIPSum = toInteractionPotentialSums(to)
+
               check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
-              val transacted = min((ip / fromIPSum) * fSupply, (ip / toIPSum) * tDemand)
-              val ipfrmprct = ip / fromIPSum
-              val iptoprct = ip / toIPSum
+
+              val normalisedIPFrom = ip / fromIPSum
+              val normalisedIPTo = ip / toIPSum
+
+              val transacted = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
               check(
-                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $ipfrmprct supplyfrom  $fSupply todemand $tDemand ip%to $iptoprct  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
+                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
                 InteractionPotential.InteractionPotentialException(_, interactionMatrix)
               )
               Transaction(from, to, transacted)
             }
         }
-
     }
-
-    val transposedTransactions = transactions.transpose
-
-    def unsatisfieds =
-      for {
-        (d, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransactions(i)
-      } yield {
-        val transactedSum = transactionsTo.map(_.transacted).sum
-        val unsatisfied = d - transactedSum
-        check(unsatisfied >= 0 || abs(unsatisfied) <= 0.00001, s"unsatisfied not good city $i , unsat $unsatisfied demand  $d  sum transac $transactedSum ")
-        unsatisfied
-      }
-
-    def unsolds =
-      for {
-        (s, i) <- supplies.zipWithIndex
-        transactionsFrom = transactions(i)
-      } yield {
-        val unsold = s - transactionsFrom.map(_.transacted).sum
-        check(unsold >= 0 || abs(unsold) <= 0.00001, s"unsold not good, $unsold")
-        unsold
-      }
-
-
-   //  bonus
-     def importShares =
-      for {
-        (d, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransactions(i)
-      } yield {
-        val importShare = transactionsTo.map(_.transacted).sum / d
-        check(importShare >= 0 || abs(importShare) <= 0.00001, s"importShare not good city $i , impshare $importShare demand  $d ")
-        importShare
-      }
-
-
-    def exportShares =
-      for {
-        (s, i) <- supplies.zipWithIndex
-        transactionsFrom = transactions(i)
-      } yield {
-        val exportShare = transactionsFrom.map(_.transacted).sum / s
-        check(exportShare >= 0 || abs(exportShare) <= 0.00001, s"exportShare not good city $i , exshare $exportShare supply  $s")
-        exportShare
-      }
-
-
-//bonus
-    Matched(transactions.flatten, unsolds.toSeq, unsatisfieds.toSeq, importShares.toSeq, exportShares.toSeq)
   }
 
 }

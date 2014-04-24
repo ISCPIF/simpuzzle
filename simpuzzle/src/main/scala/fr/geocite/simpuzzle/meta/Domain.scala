@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 23/10/13 Romain Reuillon
+ * Copyright (C) 2014 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -9,23 +9,14 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.matching
+package fr.geocite.simpuzzle.meta
 
-import scala.util.Random
-import fr.geocite.marius.Transaction
-import fr.geocite.simpuzzle.state.State
+import scala.annotation.StaticAnnotation
 
-trait Matching <: State {
-
-  def matchCities(
-    s: STATE,
-    supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random): Seq[Seq[Transaction]]
-
-}
+case class Domain(min: Double, max: Double) extends StaticAnnotation

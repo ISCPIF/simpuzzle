@@ -24,7 +24,7 @@ import fr.geocite.simpuzzle.state
 trait Logging <: state.State {
   type LOGGING
 
-  def log[T](s: T, l: Seq[LOGGING]) = s.set(l)
+  def log[T](s: T, l: => Seq[LOGGING]) = s.set(l)
 
   protected implicit def tupleToWriter[T](t: (Seq[LOGGING], T)) = Writer(t._1, t._2)
   protected implicit def stateWriterToValidStateWriter(w: Writer[Seq[LOGGING], STATE]) = w.map(s => ValidState(s))
