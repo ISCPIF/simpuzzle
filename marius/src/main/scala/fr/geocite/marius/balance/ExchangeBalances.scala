@@ -68,7 +68,7 @@ trait ExchangeBalances <: Matching with MariusLogging {
 
     def balances = (unsolds zip unsatisfieds zip importShares zip exportShares).map(flatten).map {
       case (unsold, unsatisfied, importShare, exportShare) =>
-        val newWealth = unsold + unsatisfied + (bonusMultiplier * (importShare + exportShare))
+        val newWealth = unsatisfied - unsold + (bonusMultiplier * (importShare + exportShare))
         if (newWealth >= 0) newWealth else 0
     }
     log(balances, transactions.flatten)
