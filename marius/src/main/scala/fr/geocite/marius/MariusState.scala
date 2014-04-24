@@ -25,7 +25,7 @@ import fr.geocite.simpuzzle._
 import scala.reflect.ClassTag
 
 object MariusState {
-  case class City(population: Double, wealth: Double, region: String, capital: Boolean)
+  case class City(population: Double, wealth: Double, region: String, nation: String, capital: Boolean)
   case class State(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
 
 }
@@ -46,6 +46,7 @@ trait MariusState <: PopulationDistribution
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
   def capital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(capital = v), _.capital)
   def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
+  def nation = Lens.lensu[CITY, String]((c, v) => c.copy(nation = v), _.nation)
 
   def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
   def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
@@ -57,11 +58,12 @@ trait MariusState <: PopulationDistribution
 
   def initialCities(implicit rng: Random) =
     for {
-      ((p, r), c) <- populations zip regions zip capitals
+      (p, r, n, c) <- populations zip regions zip nations zip capitals map (flatten)
     } yield {
       MariusState.City(
         population = p,
         region = r,
+        nation = n,
         capital = c,
         wealth = initialWealth(p)
       )

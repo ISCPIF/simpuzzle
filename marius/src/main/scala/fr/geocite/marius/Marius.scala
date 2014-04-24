@@ -46,6 +46,7 @@ trait Marius <: StepByStep
   def population: Lens[CITY, Double]
   def wealth: Lens[CITY, Double]
   def region: Lens[CITY, String]
+  def nation: Lens[CITY, String]
   def capital: Lens[CITY, Boolean]
   def distanceMatrix: Lens[STATE, DistanceMatrix]
 
@@ -138,28 +139,3 @@ trait Marius <: StepByStep
 
 }
 
-// Un autre niveau de péréquation fiscale : les Etats
-/*
-def nationalBalance(s: Seq[CITY]): Seq[Double] = {
-val deltas =
-for {
-(p, cs) <- s.zipWithIndex.groupBy(c => nations.get(c._1))
-(cities, indexes) = cs.unzip
-} yield {
-val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
-val capitalShare = capitalShareOfTaxes * taxes.sum
-val taxesLeft = taxes.sum - capitalShare
-val nationPopulation = cities.map(c => population.get(c)).sum
-
-val nationalDeltas = (cities zip taxes).map {
-case (city, cityTaxes) =>
-val populationShare = population.get(city) / nationPopulation
-
-val delta =
-(if (nationalCapital.get(city)) taxesLeft * populationShare + capitalShare
-else taxesLeft * populationShare) - cityTaxes
-delta
-}
-indexes zip nationalDeltas
-}
-*/

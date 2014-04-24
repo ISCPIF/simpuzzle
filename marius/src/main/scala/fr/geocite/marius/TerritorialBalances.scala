@@ -22,10 +22,12 @@ trait TerritorialBalances { model: Marius =>
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
-  def territorialBalances(s: Seq[CITY]): Seq[Double] = {
-    val deltas =
+  def territorialBalances(s: Seq[CITY]): Seq[Double] = taxes(s, region.get _, capital.get _)
+
+  def taxes(s: Seq[CITY], territorialUnit: CITY => String, capital: CITY => Boolean) = {
+    def deltas =
       for {
-        (r, cs) <- s.zipWithIndex.groupBy(c => region.get(c._1))
+        (r, cs) <- s.zipWithIndex.groupBy { case (c, _) => territorialUnit(c) }
         (cities, indexes) = cs.unzip
       } yield {
         val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
@@ -38,7 +40,7 @@ trait TerritorialBalances { model: Marius =>
             val populationShare = population.get(city) / regionPopulation
 
             val delta =
-              (if (capital.get(city)) taxesLeft * populationShare + capitalShare
+              (if (capital(city)) taxesLeft * populationShare + capitalShare
               else taxesLeft * populationShare) - cityTaxes
             delta
         }
