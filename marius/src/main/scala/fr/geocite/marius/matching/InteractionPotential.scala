@@ -19,6 +19,7 @@ package fr.geocite.marius.matching
 
 import fr.geocite.marius._
 import fr.geocite.simpuzzle._
+import fr.geocite.simpuzzle.matrix.TriangularMatrix
 
 object InteractionPotential {
   case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
@@ -28,23 +29,25 @@ trait InteractionPotential <: Marius {
 
   def distanceDecay: Double
 
-  def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]]) = {
-    val citiesWithSupply = cities zip masses
-    val interactionMatrix = citiesWithSupply.zipWithIndex.toIndexedSeq.map {
-      case ((c1, s1), i) =>
-        citiesWithSupply.zipWithIndex.toIndexedSeq.map {
-          case ((c2, s2), j) =>
-            if (i == j) 0.0
-            else interactionPotential(s1, s2, distances(i)(j))
-        }
+  def interactionPotentialMatrix(cities: Seq[CITY], masses: Seq[Double], distances: Seq[Seq[Double]]): TriangularMatrix[Double] = {
+    val indexedMasses = masses.toArray
+    val nbCities = cities.size
+    val interactionLines = Array.ofDim[Array[Double]](nbCities)
 
+    var i = 0
+
+    while (i < nbCities) {
+      var j = i + 1
+      val line = Array.ofDim[Double](nbCities - 1 - i)
+      while (j < nbCities) {
+        line(j - i - 1) = interactionPotential(indexedMasses(i), indexedMasses(j), distances(i)(j))
+        j += 1
+      }
+      interactionLines(i) = line
+      i += 1
     }
-    check(
-      interactionMatrix.flatten.count(ip => ip > 0) >= 2,
-      s"Interaction potential matrix is empty",
-      InteractionPotential.InteractionPotentialException(_, interactionMatrix)
-    )
-    interactionMatrix
+
+    TriangularMatrix(interactionLines, 0.0)
   }
 
   def interactionPotential(supply1: Double, supply2: Double, distance: Double) = {

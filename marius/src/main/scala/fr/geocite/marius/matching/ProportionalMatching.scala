@@ -31,26 +31,28 @@ trait ProportionalMatching <: Matching
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
 
-    lazy val interactionMatrix =
+    val indexedSupplies = supplies.toArray
+    val indexedDemands = demands.toArray
+
+    val interactionMatrix =
       interactionPotentialMatrix(
         cities.get(s),
         supplies,
-        distanceMatrix.get(s))
+        distanceMatrix.get(s)).full
 
-    lazy val toInteractionPotentialSums = interactionMatrix.transpose.map(_.sum)
-    lazy val fromInteractionPotentialSums = interactionMatrix.map(_.sum)
+    val interactionPotentialSums: Array[Double] = interactionMatrix.map(_.sum)
 
     interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
-        val fromIPSum = fromInteractionPotentialSums(from)
+        val fromIPSum = interactionPotentialSums(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
             if (ip <= 0.0) Transaction(from, to, 0.0)
             else {
-              val fSupply = supplies(from)
-              val tDemand = demands(to)
-              val tSupply = supplies(to)
-              val toIPSum = toInteractionPotentialSums(to)
+              val fSupply = indexedSupplies(from)
+              val tDemand = indexedDemands(to)
+              val tSupply = indexedSupplies(to)
+              val toIPSum = interactionPotentialSums(to)
 
               check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
 
@@ -60,12 +62,12 @@ trait ProportionalMatching <: Matching
               val transacted = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
               check(
                 !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
-                InteractionPotential.InteractionPotentialException(_, interactionMatrix)
+                InteractionPotential.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
               )
               Transaction(from, to, transacted)
             }
-        }
-    }
+        }.toSeq
+    }.toSeq
   }
 
 }
