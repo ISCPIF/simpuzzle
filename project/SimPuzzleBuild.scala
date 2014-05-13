@@ -12,29 +12,23 @@ object SimPuzzleBuild extends Build {
      scalaVersion := "2.11.0",
      crossScalaVersions := Seq("2.10.4", "2.11.0"),
      organization := "fr.geocite",
-     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
-   ) 
-
-  lazy val globalSettings = Project.defaultSettings ++ Seq(
-     publishTo <<= 
-       isSnapshot(
-          if(_) Some("Openmole Nexus" at "http://maven.iscpif.fr/snapshots") 
-          else Some("Openmole Nexus" at "http://maven.iscpif.fr/releases")
-        ),
+     publishTo := { 
+       if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots") 
+       else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
+     },
      credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.6",
      libraryDependencies += (
-       if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.0.0" cross CrossVersion.full 
-       else "com.chuusai" %% "shapeless" % "2.0.0"),
+       if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.0.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.0.0"),
      libraryDependencies += "org.apache.commons" % "commons-math3" % "3.2",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
      libraryDependencies ++= (
        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.0")
        else Nil
-     )
-   ) ++ releaseSettings
-
+     ),
+     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
+   ) 
 
  lazy val geotools = "org.geotools" % "gt-referencing" % "9.3"
 
@@ -42,23 +36,22 @@ object SimPuzzleBuild extends Build {
 
  lazy val gexf4j = "it.uniroma1.dis.wsngroup.gexf4j" % "gexf4j" % "0.4.4-BETA"
 
- lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle")) settings (globalSettings: _*)
+ lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle")) 
 
  lazy val gis = Project(id = "gis", base = file("gis")) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
 
- lazy val marius = Project(id = "marius", base = file("marius")) dependsOn (simpuzzle, gibrat, gis) settings (globalSettings: _*)
+ lazy val marius = Project(id = "marius", base = file("marius")) dependsOn (simpuzzle, gibrat, gis)
  
- lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle) settings (globalSettings: _*)
+ lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle)
 
- lazy val schelling = Project(id = "schelling", base = file("schelling")) dependsOn(simpuzzle) settings (globalSettings: _*)
+ lazy val schelling = Project(id = "schelling", base = file("schelling")) dependsOn(simpuzzle)
  
- lazy val sugarscape = Project(id = "sugarscape", base = file("sugarscape")) dependsOn(simpuzzle) settings (globalSettings: _*)
+ lazy val sugarscape = Project(id = "sugarscape", base = file("sugarscape")) dependsOn(simpuzzle)
 
- lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle) settings (globalSettings: _*)
+ lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
  lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius")) dependsOn(marius) settings (libraryDependencies += graphstream)
 
- //lazy val all = Project(id = "all", base = file("."), settings = Project.defaultSettings ++ osgiSettings ++ globalSettings ++ Seq(geotools))  settings (publish := { }, bundleSymbolicName := "fr.geocite.simpuzzle", bundleVersion := "1.0", exportPackage := Seq("fr.geocite.*")) dependsOn(simpuzzle, marius, simpoplocal, schelling, gibrat, sugarscape) aggregate(simpuzzle, marius, simpoplocal, schelling, gibrat, gis, sugarscape)
 }
 
 
