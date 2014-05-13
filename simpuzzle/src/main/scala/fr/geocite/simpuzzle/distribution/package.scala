@@ -25,6 +25,15 @@ package object distribution {
 
     def average = sequence.sum / sequence.size
 
+    def median: Double = {
+      val sortedSerie = sequence.toArray.filterNot(_.isNaN).sorted
+      val size = sortedSerie.size
+      if (size == sequence.size)
+        if (size % 2 == 0) (sortedSerie(size / 2) + sortedSerie((size / 2) - 1)) / 2
+        else sortedSerie((size / 2))
+      else Double.NaN
+    }
+
     def mse = {
       val avg = sequence.average
       sequence.map { v ⇒ math.pow(v - avg, 2) }.average

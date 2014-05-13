@@ -47,6 +47,7 @@ trait ProportionalMatching <: Matching
         val fromIPSum = interactionPotentialSums(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
+            Transaction(from, to, 0.0)
             if (ip <= 0.0) Transaction(from, to, 0.0)
             else {
               val fSupply = indexedSupplies(from)
@@ -66,8 +67,8 @@ trait ProportionalMatching <: Matching
               )
               Transaction(from, to, transacted)
             }
-        }.toSeq
-    }.toSeq
+        }.toIndexedSeq
+    }.toIndexedSeq
   }
 
 }

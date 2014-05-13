@@ -27,8 +27,7 @@ import fr.geocite.simpuzzle.neighbourhood.GeometricDistanceNeighbourhood
 trait MariusFile <: PopulationDistribution
     with HydrocarbonDistribution
     with RegionDistribution
-    with CapitalDistribution
-    with PositionDistribution {
+    with CapitalDistribution {
 
   def minPopulation = populationValues.min
 
@@ -52,9 +51,9 @@ trait MariusFile <: PopulationDistribution
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 
   def positionDistribution =
-    Distribution(startingCities.map {
+    startingCities.map {
       l => Position(l(5).toDouble, l(4).toDouble)
-    })
+    }
 
   def regions = startingCities.map(_(2)).toIterator
 

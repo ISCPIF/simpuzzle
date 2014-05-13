@@ -32,7 +32,6 @@ object MariusState {
 
 trait MariusState <: PopulationDistribution
     with RegionDistribution
-    with PositionDistribution
     with GeodeticDistance
     with CapitalDistribution
     with MariusFile
@@ -71,8 +70,8 @@ trait MariusState <: PopulationDistribution
       )
     }
 
-  def distances(implicit rng: Random) = {
-    val positions = positionDistribution(rng).toVector
+  lazy val distances = {
+    val positions = positionDistribution.toVector
 
     positions.zipWithIndex.map {
       case (c1, i) =>

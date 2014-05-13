@@ -32,8 +32,7 @@ trait Marius <: StepByStep
     with TimeEndingCondition
     with MariusLogging
     with Balances
-    with MariusFile
-    with PositionDistribution {
+    with MariusFile {
 
   type CITY
 
