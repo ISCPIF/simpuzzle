@@ -22,6 +22,7 @@ import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import fr.geocite.simpuzzle.logging.NoLogging
+import fr.geocite.marius.state.MariusState
 
 object MariusCSV extends App {
 
