@@ -44,9 +44,17 @@ trait TriangularMatrix[@specialized(Double) T] {
 
   def full: Array[Array[T]] = {
     val side = content.size
-    (0 until side).map {
-      x => (0 until side).map(y => apply(x)(y)).toArray[T]
-    }.toArray[Array[T]]
+    val res = Array.ofDim[T](side, side)
+    var i = 0
+    while (i < side) {
+      var j = 0
+      while (j < side) {
+        res(i)(j) = apply(i)(j)
+        j += 1
+      }
+      i += 1
+    }
+    res
   }
 
 }
