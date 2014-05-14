@@ -50,9 +50,9 @@ trait InteractionPotential <: Marius {
     TriangularMatrix(interactionLines, 0.0)
   }
 
-  def interactionPotential(supply1: Double, supply2: Double, distance: Double) = {
-    val potential = (supply1 * supply2) / math.pow(distance, distanceDecay)
-    check(potential >= 0, s"Error in potential computing gave $potential for $supply1 $supply2 $distance")
+  def interactionPotential(mass1: Double, mass2: Double, distance: Double) = {
+    val potential = (mass1 * mass2) / math.pow(distance, distanceDecay)
+    check(potential >= 0, s"Error in potential computing gave $potential for $mass1 $mass2 $distance")
     potential
   }
 
