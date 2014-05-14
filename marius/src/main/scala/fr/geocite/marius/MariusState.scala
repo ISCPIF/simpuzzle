@@ -26,13 +26,12 @@ import scala.reflect.ClassTag
 
 object MariusState {
   case class City(population: Double, wealth: Double, region: String, nation: String, regionalCapital: Boolean, nationalCapital: Boolean)
-  case class State(step: Int, cities: Seq[City], distanceMatrix: DistanceMatrix)
+  case class State(step: Int, cities: Seq[City])
 
 }
 
 trait MariusState <: PopulationDistribution
     with RegionDistribution
-    with GeodeticDistance
     with CapitalDistribution
     with MariusFile
     with MariusLogging
@@ -50,11 +49,9 @@ trait MariusState <: PopulationDistribution
 
   def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
   def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
-  def distanceMatrix = Lens.lensu[STATE, DistanceMatrix]((s, v) => s.copy(distanceMatrix = v), _.distanceMatrix)
-
   def nbCities: Int
 
-  def initialState(implicit rng: Random) = MariusState.State(0, initialCities.take(nbCities).toVector, distances)
+  def initialState(implicit rng: Random) = MariusState.State(0, initialCities.take(nbCities).toVector)
 
   def initialCities(implicit rng: Random) =
     for {
@@ -69,14 +66,5 @@ trait MariusState <: PopulationDistribution
         wealth = initialWealth(_population)
       )
     }
-
-  lazy val distances = {
-    val positions = positionDistribution.toVector
-
-    positions.zipWithIndex.map {
-      case (c1, i) =>
-        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
-  }
 
 }

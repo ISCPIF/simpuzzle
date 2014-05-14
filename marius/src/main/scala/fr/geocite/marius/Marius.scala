@@ -27,12 +27,14 @@ import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 import meta._
 import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
+import fr.geocite.gis.distance.GeodeticDistance
 
 trait Marius <: StepByStep
     with TimeEndingCondition
     with MariusLogging
     with Balances
-    with MariusFile {
+    with MariusFile
+    with GeodeticDistance {
 
   type CITY
 
@@ -48,7 +50,15 @@ trait Marius <: StepByStep
   def nation: Lens[CITY, String]
   def regionalCapital: Lens[CITY, Boolean]
   def nationalCapital: Lens[CITY, Boolean]
-  def distanceMatrix: Lens[STATE, DistanceMatrix]
+
+  lazy val distanceMatrix: DistanceMatrix = {
+    val positions = positionDistribution.toVector
+
+    positions.zipWithIndex.map {
+      case (c1, i) =>
+        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
+    }
+  }
 
   def nextState(s: STATE)(implicit rng: Random) = {
     for {

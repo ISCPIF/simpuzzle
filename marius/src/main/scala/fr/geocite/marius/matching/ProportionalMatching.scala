@@ -38,7 +38,7 @@ trait ProportionalMatching <: Matching
       interactionPotentialMatrix(
         cities.get(s),
         supplies,
-        distanceMatrix.get(s)).full
+        distanceMatrix).full
 
     val interactionPotentialSums: Array[Double] = interactionMatrix.map(_.sum)
 

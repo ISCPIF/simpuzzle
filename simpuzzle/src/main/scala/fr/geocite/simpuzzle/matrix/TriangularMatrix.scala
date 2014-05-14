@@ -36,6 +36,7 @@ trait TriangularMatrix[@specialized(Double) T] {
 
   def diagonal: T
   def content: Array[Array[T]]
+  def side = content.size
   implicit val tTag: ClassTag[T]
 
   def apply(x: Int)(y: Int): T =
@@ -43,7 +44,6 @@ trait TriangularMatrix[@specialized(Double) T] {
     else if (x < y) content(x)(y - x - 1) else content(y)(x - y - 1)
 
   def full: Array[Array[T]] = {
-    val side = content.size
     val res = Array.ofDim[T](side, side)
     var i = 0
     while (i < side) {
