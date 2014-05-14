@@ -20,25 +20,24 @@ package fr.geocite.marius.balance
 import fr.geocite.marius.matching.Matching
 import scala.util.Random
 import fr.geocite.simpuzzle._
-import fr.geocite.marius.MariusLogging
+import fr.geocite.marius._
 
-trait ExchangeBalances <: Matching with NoBonus with MariusLogging {
+trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
 
   def exchangeBalances(
     s: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
 
-    val transactions = matchCities(s, supplies, demands)
-
-    val transposedTransactions = transactions.transpose
+    val transacted = matchCities(s, supplies, demands)
+    val transposedTransacted = transacted.transpose
 
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransactions(i)
+        transactionsTo = transposedTransacted(i)
       } yield {
-        val transactedSum = transactionsTo.map(_.transacted).sum
+        val transactedSum = transactionsTo.sum
         val unsatisfied = d - transactedSum
         if (unsatisfied >= 0) unsatisfied else 0
       }
@@ -46,28 +45,45 @@ trait ExchangeBalances <: Matching with NoBonus with MariusLogging {
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
-        transactionsFrom = transactions(i)
+        transactionsFrom = transacted(i)
       } yield {
-        val unsold = s - transactionsFrom.map(_.transacted).sum
+        val unsold = s - transactionsFrom.sum
         if (unsold >= 0) unsold else 0
       }
 
     def importShares =
       for {
         (demand, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransactions(i)
-      } yield transactionsTo.map(_.transacted).sum / demand
+        transactionsTo = transposedTransacted(i)
+      } yield transactionsTo.sum / demand
 
     def exportShares =
       for {
         (supply, i) <- supplies.zipWithIndex
-        transactionsFrom = transactions(i)
-      } yield transactionsFrom.map(_.transacted).sum / supply
+        transactionsFrom = transacted(i)
+      } yield transactionsFrom.sum / supply
 
-    def balances = (unsolds zip unsatisfieds zip bonuses(importShares, exportShares)).map(flatten).map {
+    def diversityBonuses = {
+      def transactedWith(transacted: Seq[Double]) =
+        transacted.zipWithIndex.filter { case (v, _) => v > 0 }.unzip._2
+
+      (transacted zip transposedTransacted) map {
+        case (from, to) =>
+          (transactedWith(from).toSet union transactedWith(to).toSet).size / cities.get(s).size.toDouble
+      }
+    }
+
+    def balances = (unsolds zip unsatisfieds zip bonuses(importShares, exportShares, diversityBonuses)).map(flatten).map {
       case (unsold, unsatisfied, bonus) => unsatisfied - unsold + bonus
     }
-    log(balances, transactions.flatten)
+
+    def transactions =
+      for {
+        (l, i) <- transacted.zipWithIndex
+        (v, j) <- l.zipWithIndex
+      } yield Transaction(i, j, v)
+
+    log(balances, transactions)
   }
 
 }

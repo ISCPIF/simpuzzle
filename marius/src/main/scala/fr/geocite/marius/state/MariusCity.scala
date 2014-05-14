@@ -49,5 +49,5 @@ trait MariusCity <: MariusFile with Marius {
         nationalCapital = _nationalCapital,
         wealth = initialWealth(_population)
       )
-    }).toVector
+    }).take(nbCities).toVector
 }

@@ -26,6 +26,6 @@ trait Matching <: State {
   def matchCities(
     s: STATE,
     supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random): Seq[Seq[Transaction]]
+    demands: Seq[Double])(implicit rng: Random): Seq[Seq[Double]]
 
 }

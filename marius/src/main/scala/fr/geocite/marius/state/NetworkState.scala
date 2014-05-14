@@ -43,7 +43,7 @@ trait NetworkState <: MariusFile
   def network = Lens.lensu[STATE, Network]((s, v) => s.copy(network = v), _.network)
 
   def initialState(implicit rng: Random) = {
-    val cities = initialCities.take(nbCities)
+    val cities = initialCities
     NetworkState.State(0, cities, network(cities))
   }
 

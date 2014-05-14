@@ -48,8 +48,7 @@ trait ProportionalMatching <: Matching
         val fromIPSum = interactionPotentialSums(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
-            Transaction(from, to, 0.0)
-            if (ip <= 0.0) Transaction(from, to, 0.0)
+            if (ip <= 0.0) 0.0
             else {
               val fSupply = indexedSupplies(from)
               val tDemand = indexedDemands(to)
@@ -66,7 +65,7 @@ trait ProportionalMatching <: Matching
                 !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
                 SymmetricPotentialMatrix.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
               )
-              Transaction(from, to, transacted)
+              transacted
             }
         }.toIndexedSeq
     }.toIndexedSeq

@@ -17,9 +17,11 @@
 
 package fr.geocite.marius.balance
 
+import fr.geocite.marius.state.Network
+
 trait Bonus <: NoBonus {
   def bonusMultiplier: Double
 
-  override def bonuses(importShares: Seq[Double], exportShares: Seq[Double]): Seq[Double] =
-    (importShares zip exportShares) map { case (is, es) => bonusMultiplier * (is + es) }
+  override def bonuses(importShares: Seq[Double], exportShares: Seq[Double], diversityBonuses: => Seq[Double]): Seq[Double] =
+    (importShares zip exportShares zip diversityBonuses) map { case ((is, es), diversityBonus) => bonusMultiplier * (is + es) * diversityBonus }
 }
