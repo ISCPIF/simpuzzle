@@ -21,18 +21,12 @@ import scala.util.Random
 import scalaz._
 import fr.geocite.marius._
 
-object MariusState {
-  case class State(step: Int, cities: Seq[MariusCity.City])
-}
+trait FullNetworkState <: NetworkState {
 
-trait MariusState <: MariusFile
-    with MariusLogging
-    with Marius
-    with MariusCity {
+  def networkShare: Double = 1.0
 
-  type STATE = MariusState.State
-
-  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
-  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
-  def initialState(implicit rng: Random) = MariusState.State(0, initialCities.take(nbCities).toVector)
+  override def initialState(implicit rng: Random) = {
+    val cities = initialCities.take(nbCities)
+    NetworkState.State(0, initialCities.take(nbCities).toVector, Network.full((0 until cities.size)))
+  }
 }

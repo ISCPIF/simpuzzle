@@ -17,15 +17,26 @@
 
 package fr.geocite.marius.matching
 
-import fr.geocite.simpuzzle._
+trait AsymmetricPotentialMatrix <: InteractionPotential {
 
-trait InteractionPotential {
+  def interactionPotentialMatrix(nbCities: Int, m1: Seq[Double], m2: Seq[Double], distances: Seq[Seq[Double]]): Array[Array[Double]] = {
+    val iM1 = m1.toArray
+    val iM2 = m2.toArray
 
-  def distanceDecay: Double
+    val potentials = Array.ofDim[Double](nbCities, nbCities)
 
-  def interactionPotential(mass1: Double, mass2: Double, distance: Double) = {
-    val potential = (mass1 * mass2) / math.pow(distance, distanceDecay)
-    check(potential >= 0, s"Error in potential computing gave $potential for $mass1 $mass2 $distance")
-    potential
+    var i = 0
+    while (i < nbCities) {
+      var j = 0
+      while (j < nbCities) {
+        potentials(i)(j) =
+          if (i != j) interactionPotential(iM1(i), iM2(j), distances(i)(j)) else 0.0
+        j += 1
+      }
+      i += 1
+    }
+
+    potentials
   }
+
 }

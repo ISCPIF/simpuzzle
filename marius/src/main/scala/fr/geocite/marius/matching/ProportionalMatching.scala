@@ -23,7 +23,7 @@ import scala.math._
 import fr.geocite.simpuzzle._
 
 trait ProportionalMatching <: Matching
-    with InteractionPotential
+    with SymmetricPotentialMatrix
     with Marius {
 
   def matchCities(
@@ -36,9 +36,10 @@ trait ProportionalMatching <: Matching
 
     val interactionMatrix =
       interactionPotentialMatrix(
-        cities.get(s),
+        nbCities,
         supplies,
-        distanceMatrix).full
+        distanceMatrix,
+        network.get(s)).full
 
     val interactionPotentialSums: Array[Double] = interactionMatrix.map(_.sum)
 
@@ -63,7 +64,7 @@ trait ProportionalMatching <: Matching
               val transacted = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
               check(
                 !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
-                InteractionPotential.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
+                SymmetricPotentialMatrix.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
               )
               Transaction(from, to, transacted)
             }

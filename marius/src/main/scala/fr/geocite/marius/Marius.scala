@@ -28,6 +28,7 @@ import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 import meta._
 import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
 import fr.geocite.gis.distance.GeodeticDistance
+import fr.geocite.marius.state.Network
 
 trait Marius <: StepByStep
     with TimeEndingCondition
@@ -50,6 +51,7 @@ trait Marius <: StepByStep
   def nation: Lens[CITY, String]
   def regionalCapital: Lens[CITY, Boolean]
   def nationalCapital: Lens[CITY, Boolean]
+  def network: Lens[STATE, Network]
 
   lazy val distanceMatrix: DistanceMatrix = {
     val positions = positionDistribution.toVector
@@ -85,15 +87,15 @@ trait Marius <: StepByStep
   }
 
   def wealths(s: STATE)(implicit rng: Random) = {
-    val supplies = cities.get(s).map(c => supply(population.get(c)))
-    val demands = cities.get(s).map(c => demand(population.get(c)))
+    val ss = supplies(cities.get(s))
+    val ds = demands(cities.get(s))
 
     for {
-      bs <- balances(s, supplies, demands)
+      bs <- balances(s, ss, ds)
     } yield {
       (cities.get(s) zip
-        supplies zip
-        demands zip
+        ss zip
+        ds zip
         bs zipWithIndex).map(flatten).map {
         case (city, supply, demand, b, i) =>
           val newWealth =
@@ -105,6 +107,9 @@ trait Marius <: StepByStep
 
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
   def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0) + gamma
+
+  def supplies(cities: Seq[CITY]) = cities.map(c => supply(population.get(c)))
+  def demands(cities: Seq[CITY]) = cities.map(c => demand(population.get(c)))
 
   def demand(population: Double) = consumption(population) * population
 

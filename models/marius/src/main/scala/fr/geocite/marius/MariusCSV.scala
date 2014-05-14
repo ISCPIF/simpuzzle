@@ -22,11 +22,11 @@ import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import fr.geocite.simpuzzle.logging.NoLogging
-import fr.geocite.marius.state.MariusState
+import fr.geocite.marius.state.FullNetworkState
 
 object MariusCSV extends App {
 
-  val m = new Marius with MariusState with ProportionalMatching with RelatedSizeEffect with NoLogging {
+  val m = new Marius with FullNetworkState with ProportionalMatching with RelatedSizeEffect with NoLogging {
     def distanceDecay = 0.1
     def inversionPoint: Double = 103
     def popMax: Double = 20000

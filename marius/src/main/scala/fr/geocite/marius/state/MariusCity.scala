@@ -38,7 +38,7 @@ trait MariusCity <: MariusFile with Marius {
   def nationalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(nationalCapital = v), _.nationalCapital)
 
   def initialCities(implicit rng: Random) =
-    for {
+    (for {
       (_population, _region, _nation, _regionalCapital, _nationalCapital) <- populations zip regions zip nations zip regionCapitals zip nationalCapitals map (flatten)
     } yield {
       MariusCity.City(
@@ -49,5 +49,5 @@ trait MariusCity <: MariusFile with Marius {
         nationalCapital = _nationalCapital,
         wealth = initialWealth(_population)
       )
-    }
+    }).toVector
 }

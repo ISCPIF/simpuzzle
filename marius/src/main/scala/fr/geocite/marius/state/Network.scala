@@ -15,17 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.matching
+package fr.geocite.marius.state
 
-import fr.geocite.simpuzzle._
+object Network {
 
-trait InteractionPotential {
+  def apply(outLinks: Seq[Seq[Int]]) =
+    new Network {
+      lazy val indexedOut = outLinks.map(_.toSet)
+      override def outNode(i: Int) = outLinks(i)
+      override def existsOut(from: Int, to: Int): Boolean = outNode(from).contains(to)
+    }
 
-  def distanceDecay: Double
+  def full(nodes: Seq[Int]) =
+    new Network {
+      override def outNode(c: Int): Iterable[Int] = nodes.slice(0, c - 1) ++ nodes.slice(c, nodes.size)
+      override def existsOut(from: Int, to: Int): Boolean = true
+    }
 
-  def interactionPotential(mass1: Double, mass2: Double, distance: Double) = {
-    val potential = (mass1 * mass2) / math.pow(distance, distanceDecay)
-    check(potential >= 0, s"Error in potential computing gave $potential for $mass1 $mass2 $distance")
-    potential
-  }
+}
+
+trait Network {
+  def outNode(c: Int): Iterable[Int]
+  def existsOut(from: Int, to: Int): Boolean
 }
