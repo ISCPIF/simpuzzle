@@ -23,13 +23,13 @@ import fr.geocite.simpuzzle.flatten
 import fr.geocite.simpuzzle.distribution._
 import fr.geocite.marius._
 
-object City {
+object MariusCity {
   case class City(population: Double, wealth: Double, region: String, nation: String, regionalCapital: Boolean, nationalCapital: Boolean)
 }
 
-trait City <: MariusFile with Marius {
+trait MariusCity <: MariusFile with Marius {
 
-  type CITY = City.City
+  type CITY = MariusCity.City
   def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
   def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
   def regionalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(regionalCapital = v), _.regionalCapital)
@@ -41,7 +41,7 @@ trait City <: MariusFile with Marius {
     for {
       (_population, _region, _nation, _regionalCapital, _nationalCapital) <- populations zip regions zip nations zip regionCapitals zip nationalCapitals map (flatten)
     } yield {
-      City.City(
+      MariusCity.City(
         population = _population,
         region = _region,
         nation = _nation,

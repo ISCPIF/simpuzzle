@@ -19,23 +19,20 @@ package fr.geocite.marius.state
 
 import scala.util.Random
 import scalaz._
-import fr.geocite.simpuzzle.distribution._
-import fr.geocite.simpuzzle._
 import fr.geocite.marius._
 
 object MariusState {
-  case class State(step: Int, cities: Seq[City.City])
+  case class State(step: Int, cities: Seq[MariusCity.City])
 }
 
 trait MariusState <: MariusFile
     with MariusLogging
     with Marius
-    with City {
+    with MariusCity {
 
   type STATE = MariusState.State
 
   def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
   def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
   def initialState(implicit rng: Random) = MariusState.State(0, initialCities.take(nbCities).toVector)
-
 }
