@@ -24,6 +24,27 @@ import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.simpuzzle.distance.GeometricDistance
 import fr.geocite.simpuzzle.neighbourhood.GeometricDistanceNeighbourhood
 
+object MariusFile {
+
+  lazy val content = {
+    val input =
+      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocite/marius/marius.csv"))
+
+    try input.getLines.drop(1).map {
+      l => l.split(",").toSeq
+    }.toList
+    finally input.close
+  }
+
+  def startingCities =
+    content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
+
+  def positionDistribution =
+    startingCities.map {
+      l => Position(l(5).toDouble, l(4).toDouble)
+    }
+}
+
 trait MariusFile <: PopulationDistribution
     with HydrocarbonDistribution
     with RegionDistribution
@@ -33,8 +54,7 @@ trait MariusFile <: PopulationDistribution
 
   def nbCities = startingCities.size
 
-  def startingCities =
-    content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
+  def startingCities = MariusFile.startingCities
 
   def rokato = startingCities.map(_(0))
 
@@ -50,10 +70,7 @@ trait MariusFile <: PopulationDistribution
 
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 
-  def positionDistribution =
-    startingCities.map {
-      l => Position(l(5).toDouble, l(4).toDouble)
-    }
+  def positionDistribution = MariusFile.positionDistribution
 
   def regions = startingCities.map(_(2)).toIterator
 
@@ -63,15 +80,7 @@ trait MariusFile <: PopulationDistribution
 
   def nations = startingCities.map(_(3)).toIterator
 
-  lazy val content = {
-    val input =
-      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocite/marius/marius.csv"))
-
-    try input.getLines.drop(1).map {
-      l => l.split(",").toSeq
-    }.toList
-    finally input.close
-  }
+  lazy val content = MariusFile.content
 
   def toBoolean(s: String) =
     s match {

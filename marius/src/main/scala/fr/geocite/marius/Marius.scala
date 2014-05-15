@@ -30,12 +30,23 @@ import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
 import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.marius.state.Network
 
+object Marius extends GeodeticDistance {
+  lazy val distanceMatrix: DistanceMatrix = {
+    val positions = MariusFile.positionDistribution.toVector
+
+    positions.zipWithIndex.map {
+      case (c1, i) =>
+        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
+    }
+  }
+
+}
+
 trait Marius <: StepByStep
     with TimeEndingCondition
     with MariusLogging
     with Balances
-    with MariusFile
-    with GeodeticDistance {
+    with MariusFile {
 
   type CITY
 
@@ -53,14 +64,7 @@ trait Marius <: StepByStep
   def nationalCapital: Lens[CITY, Boolean]
   def network: Lens[STATE, Network]
 
-  lazy val distanceMatrix: DistanceMatrix = {
-    val positions = positionDistribution.toVector
-
-    positions.zipWithIndex.map {
-      case (c1, i) =>
-        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
-  }
+  lazy val distanceMatrix: DistanceMatrix = Marius.distanceMatrix
 
   def nextState(s: STATE)(implicit rng: Random) = {
     for {
