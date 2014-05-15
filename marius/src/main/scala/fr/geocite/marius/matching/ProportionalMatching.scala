@@ -42,34 +42,34 @@ trait ProportionalMatching <: Matching
         distanceMatrix,
         network.get(s))
 
-    val fromInteractionPotentialSum: Array[Double] = interactionMatrix.map(_.sum)
-    val toInteractionPotentialSum: Array[Double] = interactionMatrix.transpose.map(_.sum)
+    val fromInteractionPotentialSum = interactionMatrix.linesContent.map(_.sum)
+    val toInteractionPotentialSum = interactionMatrix.transpose.linesContent.map(_.sum)
 
-    interactionMatrix.zipWithIndex.map {
-      case (interactions, from) =>
-        val fromIPSum = fromInteractionPotentialSum(from)
-        interactions.zipWithIndex.map {
-          case (ip, to) =>
-            if (ip <= 0.0) 0.0
-            else {
-              val fSupply = indexedSupplies(from)
-              val tDemand = indexedDemands(to)
-              val toIPSum = toInteractionPotentialSum(to)
+    val transacted = SparseMatrix.builder(nbCities)
 
-              check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
+    for {
+      (tos, from) <- interactionMatrix.lines.zipWithIndex
+      fromIPSum = fromInteractionPotentialSum(from)
+      SparseMatrix.Cell(to, ip) <- tos
+    } {
+      val fSupply = indexedSupplies(from)
+      val tDemand = indexedDemands(to)
+      val toIPSum = toInteractionPotentialSum(to)
 
-              val normalisedIPFrom = ip / fromIPSum
-              val normalisedIPTo = ip / toIPSum
+      check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
 
-              val transacted = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
-              check(
-                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
-                PotentialMatrix.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
-              )
-              transacted
-            }
-        }.toIndexedSeq
-    }.toIndexedSeq
+      val normalisedIPFrom = ip / fromIPSum
+      val normalisedIPTo = ip / toIPSum
+
+      val t = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
+      check(
+        !t.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
+        PotentialMatrix.InteractionPotentialException(_, interactionMatrix)
+      )
+      transacted += (from, to, t)
+    }
+
+    transacted.toMatrix
   }
 
 }

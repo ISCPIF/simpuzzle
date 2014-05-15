@@ -20,22 +20,23 @@ package fr.geocite.marius.matching
 import fr.geocite.marius.state.Network
 
 object PotentialMatrix {
-  case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
+  case class InteractionPotentialException(message: String, matrix: SparseMatrix) extends AssertionError(message)
 }
 
 trait PotentialMatrix <: InteractionPotential {
 
-  def interactionPotentialMatrix(nbCities: Int, m1: Seq[Double], m2: Seq[Double], distances: Seq[Seq[Double]], network: Network): Array[Array[Double]] = {
+  def interactionPotentialMatrix(nbCities: Int, m1: Seq[Double], m2: Seq[Double], distances: Seq[Seq[Double]], network: Network) = {
     val iM1 = m1.toArray
     val iM2 = m2.toArray
 
-    val potentials = Array.fill[Double](nbCities, nbCities)(0.0)
+    val potentials = SparseMatrix.builder(nbCities)
 
     for {
       i <- 0 until nbCities
       j <- network.outNode(i)
-    } potentials(i)(j) = interactionPotential(iM1(i), iM2(j), distances(i)(j))
-    potentials
+    } potentials += (i, j, interactionPotential(iM1(i), iM2(j), distances(i)(j)))
+
+    potentials.toMatrix
   }
 
 }

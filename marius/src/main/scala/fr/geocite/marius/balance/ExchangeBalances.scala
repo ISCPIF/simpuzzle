@@ -17,7 +17,7 @@
 
 package fr.geocite.marius.balance
 
-import fr.geocite.marius.matching.Matching
+import fr.geocite.marius.matching.{ SparseMatrix, Matching }
 import scala.util.Random
 import fr.geocite.simpuzzle._
 import fr.geocite.marius._
@@ -32,42 +32,40 @@ trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
     val transacted = matchCities(s, supplies, demands)
     val transposedTransacted = transacted.transpose
 
+    val transactedFromSum = transacted.linesContent.map(_.sum)
+    val transactedToSum = transposedTransacted.linesContent.map(_.sum)
+
     def unsatisfieds =
       for {
         (d, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransacted(i)
       } yield {
-        val transactedSum = transactionsTo.sum
-        val unsatisfied = d - transactedSum
+        val unsatisfied = d - transactedToSum(i)
         if (unsatisfied >= 0) unsatisfied else 0
       }
 
     def unsolds =
       for {
         (s, i) <- supplies.zipWithIndex
-        transactionsFrom = transacted(i)
       } yield {
-        val unsold = s - transactionsFrom.sum
+        val unsold = s - transactedFromSum(i)
         if (unsold >= 0) unsold else 0
       }
 
     def importShares =
       for {
         (demand, i) <- demands.zipWithIndex
-        transactionsTo = transposedTransacted(i)
-      } yield transactionsTo.sum / demand
+      } yield transactedToSum(i) / demand
 
     def exportShares =
       for {
         (supply, i) <- supplies.zipWithIndex
-        transactionsFrom = transacted(i)
-      } yield transactionsFrom.sum / supply
+      } yield transactedFromSum(i) / supply
 
     def diversityBonuses = {
-      def transactedWith(transacted: Seq[Double]) =
-        transacted.zipWithIndex.filter { case (v, _) => v > 0 }.unzip._2
+      def transactedWith(transacted: Seq[SparseMatrix.Cell]) =
+        transacted.filter { case SparseMatrix.Cell(_, v) => v > 0 }.map { case SparseMatrix.Cell(to, _) => to }
 
-      (transacted zip transposedTransacted) map {
+      (transacted.lines zip transposedTransacted.lines) map {
         case (from, to) =>
           (transactedWith(from).toSet union transactedWith(to).toSet).size / cities.get(s).size.toDouble
       }
@@ -79,8 +77,8 @@ trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
 
     def transactions =
       for {
-        (l, i) <- transacted.zipWithIndex
-        (v, j) <- l.zipWithIndex
+        (l, i) <- transacted.lines.zipWithIndex
+        SparseMatrix.Cell(j, v) <- l
       } yield Transaction(i, j, v)
 
     log(balances, transactions)

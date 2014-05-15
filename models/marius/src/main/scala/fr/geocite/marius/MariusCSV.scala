@@ -22,21 +22,23 @@ import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import fr.geocite.simpuzzle.logging.NoLogging
-import fr.geocite.marius.state.FullNetworkState
+import fr.geocite.marius.state._
 
 object MariusCSV extends App {
 
-  val m = new Marius with FullNetworkState with ProportionalMatching with RelatedSizeEffect with NoLogging {
-    def distanceDecay = 0.1
-    def inversionPoint: Double = 103
+  val m = new Marius with NetworkState with ProportionalMatching with NoLogging {
+    def distanceDecay = 5
+    def inversionPoint: Double = 100
     def popMax: Double = 20000
     def popMin: Double = 0
-    def wMax: Double = 880000
+    def wMax: Double = 60000
     def wMin: Double = 0
-    def bonusMultiplier: Double = 1.0
-    def consumptionProductivityRatio = 0.0087
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
+    def sizeEffectOnProductivity = 0.118828737969146
+    def sizeEffectOnConsumption = 0.00633657779460902
+
+    override def networkShare: Double = 0.01
 
     def maxStep = 30
   }
