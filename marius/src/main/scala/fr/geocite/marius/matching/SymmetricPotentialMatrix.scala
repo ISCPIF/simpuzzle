@@ -22,10 +22,6 @@ import fr.geocite.simpuzzle._
 import fr.geocite.simpuzzle.matrix.TriangularMatrix
 import fr.geocite.marius.state.Network
 
-object SymmetricPotentialMatrix {
-  case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
-}
-
 trait SymmetricPotentialMatrix <: InteractionPotential {
 
   def interactionPotentialMatrix(nbCities: Int, masses: Seq[Double], distances: Seq[Seq[Double]], network: Network): TriangularMatrix[Double] = {

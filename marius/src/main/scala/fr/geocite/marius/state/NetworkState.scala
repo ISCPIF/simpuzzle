@@ -20,7 +20,7 @@ package fr.geocite.marius.state
 import fr.geocite.marius.{ Marius, MariusLogging, MariusFile }
 import scalaz.Lens
 import scala.util.Random
-import fr.geocite.marius.matching.AsymmetricPotentialMatrix
+import fr.geocite.marius.matching.PotentialMatrix
 import fr.geocite.simpuzzle._
 import scala.collection.mutable.ListBuffer
 
@@ -32,7 +32,7 @@ trait NetworkState <: MariusFile
     with MariusLogging
     with Marius
     with MariusCity
-    with AsymmetricPotentialMatrix {
+    with PotentialMatrix {
 
   def networkShare: Double
 
@@ -49,7 +49,7 @@ trait NetworkState <: MariusFile
 
   def network(cities: Seq[CITY]) = {
     def matrix =
-      interactionPotentialMatrix(nbCities, supplies(cities), demands(cities), distanceMatrix)
+      interactionPotentialMatrix(nbCities, supplies(cities), demands(cities), distanceMatrix, Network.full((0 until cities.size)))
 
     def indexedMatrix =
       for {

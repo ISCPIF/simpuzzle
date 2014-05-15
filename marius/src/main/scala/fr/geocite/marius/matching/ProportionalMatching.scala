@@ -23,7 +23,7 @@ import scala.math._
 import fr.geocite.simpuzzle._
 
 trait ProportionalMatching <: Matching
-    with SymmetricPotentialMatrix
+    with PotentialMatrix
     with Marius {
 
   def matchCities(
@@ -38,22 +38,23 @@ trait ProportionalMatching <: Matching
       interactionPotentialMatrix(
         nbCities,
         supplies,
+        demands,
         distanceMatrix,
-        network.get(s)).full
+        network.get(s))
 
-    val interactionPotentialSums: Array[Double] = interactionMatrix.map(_.sum)
+    val fromInteractionPotentialSum: Array[Double] = interactionMatrix.map(_.sum)
+    val toInteractionPotentialSum: Array[Double] = interactionMatrix.transpose.map(_.sum)
 
     interactionMatrix.zipWithIndex.map {
       case (interactions, from) =>
-        val fromIPSum = interactionPotentialSums(from)
+        val fromIPSum = fromInteractionPotentialSum(from)
         interactions.zipWithIndex.map {
           case (ip, to) =>
             if (ip <= 0.0) 0.0
             else {
               val fSupply = indexedSupplies(from)
               val tDemand = indexedDemands(to)
-              val tSupply = indexedSupplies(to)
-              val toIPSum = interactionPotentialSums(to)
+              val toIPSum = toInteractionPotentialSum(to)
 
               check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
 
@@ -62,8 +63,8 @@ trait ProportionalMatching <: Matching
 
               val transacted = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
               check(
-                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum suppllies du to $tSupply",
-                SymmetricPotentialMatrix.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
+                !transacted.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
+                PotentialMatrix.InteractionPotentialException(_, interactionMatrix.map(_.toSeq).toSeq)
               )
               transacted
             }

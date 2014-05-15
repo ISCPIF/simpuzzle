@@ -17,25 +17,24 @@
 
 package fr.geocite.marius.matching
 
-trait AsymmetricPotentialMatrix <: InteractionPotential {
+import fr.geocite.marius.state.Network
 
-  def interactionPotentialMatrix(nbCities: Int, m1: Seq[Double], m2: Seq[Double], distances: Seq[Seq[Double]]): Array[Array[Double]] = {
+object PotentialMatrix {
+  case class InteractionPotentialException(message: String, matrix: Seq[Seq[Double]]) extends AssertionError(message)
+}
+
+trait PotentialMatrix <: InteractionPotential {
+
+  def interactionPotentialMatrix(nbCities: Int, m1: Seq[Double], m2: Seq[Double], distances: Seq[Seq[Double]], network: Network): Array[Array[Double]] = {
     val iM1 = m1.toArray
     val iM2 = m2.toArray
 
-    val potentials = Array.ofDim[Double](nbCities, nbCities)
+    val potentials = Array.fill[Double](nbCities, nbCities)(0.0)
 
-    var i = 0
-    while (i < nbCities) {
-      var j = 0
-      while (j < nbCities) {
-        potentials(i)(j) =
-          if (i != j) interactionPotential(iM1(i), iM2(j), distances(i)(j)) else 0.0
-        j += 1
-      }
-      i += 1
-    }
-
+    for {
+      i <- 0 until nbCities
+      j <- network.outNode(i)
+    } potentials(i)(j) = interactionPotential(iM1(i), iM2(j), distances(i)(j))
     potentials
   }
 

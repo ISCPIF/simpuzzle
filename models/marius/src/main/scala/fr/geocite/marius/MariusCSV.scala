@@ -43,9 +43,9 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  (0 until 10).foreach { i => println(i); m.run }
+  //(0 until 10).foreach { i => println(i); m.run }
 
-  /*val path = "/tmp/mariusmodel_log.csv"
+  val path = "/tmp/mariusmodel_log.csv"
 
   val out = Resource.fromFile(path)
 
@@ -69,9 +69,7 @@ object MariusCSV extends App {
       val totalPop = cities.map(_.population).sum
 
       println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
-    case m.InvalidState(e: InteractionPotential.InteractionPotentialException) =>
-      println(s"${e.message} with matrix ${e.matrix}")
     case m.InvalidState(e) => println(s"Invadid State $e")
-  }*/
+  }
 
 }

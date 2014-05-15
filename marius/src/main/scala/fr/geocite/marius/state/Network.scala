@@ -28,7 +28,7 @@ object Network {
 
   def full(nodes: Seq[Int]) =
     new Network {
-      override def outNode(c: Int): Iterable[Int] = nodes.slice(0, c - 1) ++ nodes.slice(c, nodes.size)
+      override def outNode(c: Int): Iterable[Int] = nodes.slice(0, c) ++ nodes.slice(c + 1, nodes.size)
       override def existsOut(from: Int, to: Int): Boolean = true
     }
 
