@@ -26,7 +26,7 @@ import fr.geocite.marius.state._
 
 object MariusCSV extends App {
 
-  val m = new Marius with NetworkState with ProportionalMatching with NoLogging {
+  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
     def distanceDecay = 5
     def inversionPoint: Double = 100
     def popMax: Double = 20000

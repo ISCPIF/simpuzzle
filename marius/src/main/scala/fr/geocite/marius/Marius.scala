@@ -28,7 +28,7 @@ import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 import meta._
 import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
 import fr.geocite.gis.distance.GeodeticDistance
-import fr.geocite.marius.state.Network
+import fr.geocite.marius.structure.Network
 
 object Marius extends GeodeticDistance {
   lazy val distanceMatrix: DistanceMatrix = {

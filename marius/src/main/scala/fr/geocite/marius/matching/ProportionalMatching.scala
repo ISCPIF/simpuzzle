@@ -21,6 +21,7 @@ import scala.util.Random
 import fr.geocite.marius.{ Transaction, Marius }
 import scala.math._
 import fr.geocite.simpuzzle._
+import fr.geocite.marius.structure.Matrix._
 
 trait ProportionalMatching <: Matching
     with PotentialMatrix
@@ -45,12 +46,30 @@ trait ProportionalMatching <: Matching
     val fromInteractionPotentialSum = interactionMatrix.linesContent.map(_.sum)
     val toInteractionPotentialSum = interactionMatrix.transpose.linesContent.map(_.sum)
 
-    val transacted = SparseMatrix.builder(nbCities)
+    interactionMatrix.map {
+      (from, to, ip) =>
+        if (ip > 0) {
+          val fSupply = indexedSupplies(from)
+          val tDemand = indexedDemands(to)
+          val toIPSum = toInteractionPotentialSum(to)
+          val fromIPSum = fromInteractionPotentialSum(from)
+          check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
 
-    for {
+          val normalisedIPFrom = ip / fromIPSum
+          val normalisedIPTo = ip / toIPSum
+
+          val t = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
+          check(
+            !t.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
+            PotentialMatrix.InteractionPotentialException(_, interactionMatrix)
+          )
+          t
+        } else 0.0
+    }
+    /*for {
       (tos, from) <- interactionMatrix.lines.zipWithIndex
       fromIPSum = fromInteractionPotentialSum(from)
-      SparseMatrix.Cell(to, ip) <- tos
+      Cell(to, ip) <- tos
     } {
       val fSupply = indexedSupplies(from)
       val tDemand = indexedDemands(to)
@@ -69,7 +88,7 @@ trait ProportionalMatching <: Matching
       transacted += (from, to, t)
     }
 
-    transacted.toMatrix
+    transacted.toMatrix*/
   }
 
 }

@@ -20,6 +20,7 @@ package fr.geocite.marius.state
 import scala.util.Random
 import scalaz._
 import fr.geocite.marius._
+import fr.geocite.marius.structure.Network
 
 trait FullNetworkState <: NetworkState {
 

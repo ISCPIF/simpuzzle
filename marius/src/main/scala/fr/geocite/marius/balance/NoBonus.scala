@@ -17,7 +17,7 @@
 
 package fr.geocite.marius.balance
 
-import fr.geocite.marius.state.Network
+import fr.geocite.marius.structure.Network
 
 trait NoBonus {
   def bonuses(importShares: Seq[Double], exportShares: Seq[Double], diversityBonuses: => Seq[Double]): Seq[Double] =

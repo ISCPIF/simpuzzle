@@ -20,9 +20,10 @@ package fr.geocite.marius.state
 import fr.geocite.marius.{ Marius, MariusLogging, MariusFile }
 import scalaz.Lens
 import scala.util.Random
-import fr.geocite.marius.matching.{ SparseMatrix, PotentialMatrix }
+import fr.geocite.marius.matching.PotentialMatrix
 import fr.geocite.simpuzzle._
 import scala.collection.mutable.ListBuffer
+import fr.geocite.marius.structure._
 
 object NetworkState {
   case class State(step: Int, cities: Seq[MariusCity.City], network: Network)
@@ -54,7 +55,7 @@ trait NetworkState <: MariusFile
     def indexedMatrix =
       for {
         (l, i) <- matrix.lines.zipWithIndex
-        SparseMatrix.Cell(j, v) <- l
+        Matrix.Cell(j, v) <- l
       } yield (i, j, v)
 
     def nbKeep = math.ceil(networkShare * nbCities * (nbCities - 1)).toInt

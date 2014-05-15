@@ -15,26 +15,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.state
+package fr.geocite.marius.structure
 
-object Network {
-
-  def apply(outLinks: Seq[Seq[Int]]) =
-    new Network {
-      lazy val indexedOut = outLinks.map(_.toSet)
-      override def outNode(i: Int) = outLinks(i)
-      override def existsOut(from: Int, to: Int): Boolean = outNode(from).contains(to)
-    }
-
-  def full(nodes: Seq[Int]) =
-    new Network {
-      override def outNode(c: Int): Iterable[Int] = nodes.slice(0, c) ++ nodes.slice(c + 1, nodes.size)
-      override def existsOut(from: Int, to: Int): Boolean = true
-    }
-
+object Matrix {
+  case class Cell(row: Int, value: Double)
 }
 
-trait Network {
-  def outNode(c: Int): Iterable[Int]
-  def existsOut(from: Int, to: Int): Boolean
+import Matrix._
+
+trait Matrix {
+  def side: Int
+  def lines: Seq[Seq[Cell]]
+  def transpose: Matrix
+  def linesContent: Seq[Seq[Double]]
+  def map(f: (Int, Int, Double) => Double): Matrix
 }

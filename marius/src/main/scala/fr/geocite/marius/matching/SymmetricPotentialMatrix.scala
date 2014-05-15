@@ -20,7 +20,7 @@ package fr.geocite.marius.matching
 import fr.geocite.marius._
 import fr.geocite.simpuzzle._
 import fr.geocite.simpuzzle.matrix.TriangularMatrix
-import fr.geocite.marius.state.Network
+import fr.geocite.marius.structure.Network
 
 trait SymmetricPotentialMatrix <: InteractionPotential {
 

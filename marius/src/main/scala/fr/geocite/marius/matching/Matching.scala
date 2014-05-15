@@ -20,12 +20,13 @@ package fr.geocite.marius.matching
 import scala.util.Random
 import fr.geocite.marius.Transaction
 import fr.geocite.simpuzzle.state.State
+import fr.geocite.marius.structure._
 
 trait Matching <: State {
 
   def matchCities(
     s: STATE,
     supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random): SparseMatrix
+    demands: Seq[Double])(implicit rng: Random): Matrix
 
 }

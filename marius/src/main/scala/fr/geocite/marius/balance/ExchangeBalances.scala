@@ -17,10 +17,11 @@
 
 package fr.geocite.marius.balance
 
-import fr.geocite.marius.matching.{ SparseMatrix, Matching }
+import fr.geocite.marius.matching.Matching
 import scala.util.Random
 import fr.geocite.simpuzzle._
 import fr.geocite.marius._
+import fr.geocite.marius.structure.Matrix._
 
 trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
 
@@ -62,8 +63,8 @@ trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
       } yield transactedFromSum(i) / supply
 
     def diversityBonuses = {
-      def transactedWith(transacted: Seq[SparseMatrix.Cell]) =
-        transacted.filter { case SparseMatrix.Cell(_, v) => v > 0 }.map { case SparseMatrix.Cell(to, _) => to }
+      def transactedWith(transacted: Seq[Cell]) =
+        transacted.filter { case Cell(_, v) => v > 0 }.map { case Cell(to, _) => to }
 
       (transacted.lines zip transposedTransacted.lines) map {
         case (from, to) =>
@@ -78,7 +79,7 @@ trait ExchangeBalances <: Matching with NoBonus { this: Marius =>
     def transactions =
       for {
         (l, i) <- transacted.lines.zipWithIndex
-        SparseMatrix.Cell(j, v) <- l
+        Cell(j, v) <- l
       } yield Transaction(i, j, v)
 
     log(balances, transactions)

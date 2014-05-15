@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocite.marius.matching
+package fr.geocite.marius.structure
+
+import Matrix._
 
 object SparseMatrix {
-  case class Cell(row: Int, value: Double)
 
   def builder(_side: Int) =
     new SparseMatrixBuilder {
@@ -30,10 +31,9 @@ object SparseMatrix {
   }
 }
 
-import SparseMatrix._
 import scala.collection.mutable.ListBuffer
 
-trait SparseMatrix {
+trait SparseMatrix <: Matrix {
   def side = lines.size
   def lines: Seq[Seq[Cell]]
   def transpose: SparseMatrix = {
@@ -45,6 +45,17 @@ trait SparseMatrix {
     builder.toMatrix
   }
   def linesContent = lines.map(_.map(_.value))
+
+  def map(f: (Int, Int, Double) => Double) = {
+    val content =
+      lines.zipWithIndex.map {
+        case (line, i) =>
+          line.map {
+            case c @ Cell(j, v) => c.copy(value = f(i, j, v))
+          }
+      }
+    SparseMatrix(content)
+  }
 }
 
 trait SparseMatrixBuilder {
@@ -52,7 +63,7 @@ trait SparseMatrixBuilder {
   lazy val lines: Seq[ListBuffer[Cell]] = IndexedSeq.fill(side)(ListBuffer.empty)
 
   def +=(i: Int, j: Int, value: Double) {
-    lines(i) += SparseMatrix.Cell(j, value)
+    lines(i) += Cell(j, value)
   }
 
   def toMatrix = SparseMatrix(lines.map(_.toIndexedSeq))
