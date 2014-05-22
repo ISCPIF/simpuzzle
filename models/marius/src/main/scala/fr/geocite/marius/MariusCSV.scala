@@ -26,17 +26,19 @@ import fr.geocite.marius.state._
 
 object MariusCSV extends App {
 
-  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
-    def distanceDecay = 5
-    def inversionPoint: Double = 100
+  val m = new Marius with NetworkState with ProportionalMatching with NoLogging with RelatedSizeEffect {
+
     def popMax: Double = 20000
     def popMin: Double = 0
     def wMax: Double = 60000
     def wMin: Double = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
-    def sizeEffectOnProductivity = 0.118828737969146
-    def sizeEffectOnConsumption = 0.00633657779460902
+    def consumptionProductivityRatio: Double = 4.770560411778249
+    def distanceDecay = 10.308275810335358
+    def inversionPoint = 911.5810290018701
+    //def sizeEffectOnProductivity = 0.118828737969146
+    //def sizeEffectOnConsumption = 0.00633657779460902
 
     override def networkShare: Double = 0.01
 
@@ -45,9 +47,9 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  //(0 until 10).foreach { i => println(i); m.run }
+  (0 until 10).foreach { i => println(i); m.run }
 
-  val path = "/tmp/mariusmodel_log.csv"
+  /* val path = "/tmp/mariusmodel_log.csv"
 
   val out = Resource.fromFile(path)
 
@@ -73,5 +75,5 @@ object MariusCSV extends App {
       println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
     case m.InvalidState(e) => println(s"Invadid State $e")
   }
-
+*/
 }

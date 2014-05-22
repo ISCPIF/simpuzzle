@@ -21,7 +21,7 @@ object Network {
 
   def apply(outLinks: Seq[Seq[Int]]) =
     new Network {
-      lazy val indexedOut = outLinks.map(_.toSet)
+      lazy val indexedOut = outLinks.map(_.toVector)
       override def outNode(i: Int) = outLinks(i)
       override def existsOut(from: Int, to: Int): Boolean = outNode(from).contains(to)
       override def map(f: (Int, Int) => Double) = {
