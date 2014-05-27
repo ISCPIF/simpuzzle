@@ -19,7 +19,7 @@ package fr.geocite.marius.balance
 
 import fr.geocite.marius.Marius
 
-trait FixedCost <: ExchangeBalances { m: Marius =>
+trait FixedCost <: Exchange { m: Marius =>
 
   def fixedCost: Double
 

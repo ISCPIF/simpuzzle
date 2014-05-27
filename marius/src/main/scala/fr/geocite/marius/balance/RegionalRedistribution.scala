@@ -19,9 +19,11 @@ package fr.geocite.marius.balance
 
 import fr.geocite.marius.Marius
 
-trait RegionalRedistribution <: NoRegionalRedistribution with Redistribution { model: Marius =>
+trait RegionalRedistribution <: Redistribution { model: Marius =>
 
-  override def regionalBalances(s: Seq[CITY]): Seq[Double] =
-    redistribution(s, region.get _, regionalCapital.get _)
+  override def redistributionBalances(s: Seq[CITY]): Seq[Double] = {
+    def regionalBalances = redistribution(s, region.get _, regionalCapital.get _)
+    (super.redistributionBalances(s) zip regionalBalances).map { case (g, l) => g + l }
+  }
 
 }

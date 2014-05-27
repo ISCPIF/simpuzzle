@@ -22,7 +22,7 @@ import fr.geocite.marius.structure.Matrix.Cell
 import fr.geocite.marius.Marius
 import fr.geocite.simpuzzle._
 
-trait Bonus <: ExchangeBalances { marius: Marius =>
+trait Bonus <: Exchange { marius: Marius =>
   def bonusMultiplier: Double
 
   override def transactedBalances(t: Transacted): Seq[Double] = {

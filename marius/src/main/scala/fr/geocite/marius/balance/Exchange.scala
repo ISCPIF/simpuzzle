@@ -24,7 +24,7 @@ import fr.geocite.marius._
 import fr.geocite.marius.structure.Matrix._
 import fr.geocite.marius.structure.Matrix
 
-trait ExchangeBalances <: Matching { this: Marius =>
+trait Exchange <: Matching { this: Marius =>
 
   case class Transacted(val s: STATE, val supplies: Seq[Double], val demands: Seq[Double], val transacted: Matrix) {
     lazy val transposedTransacted = transacted.transpose

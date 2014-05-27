@@ -21,7 +21,7 @@ import scala.util.Random
 import fr.geocite.marius.Marius
 import fr.geocite.simpuzzle._
 
-trait Balances <: NoRegionalRedistribution with NoNationalRedistribution with ExchangeBalances { model: Marius =>
+trait Balances <: Exchange with Redistribution { model: Marius =>
 
   def balances(s: STATE,
     supplies: Seq[Double],
@@ -29,8 +29,8 @@ trait Balances <: NoRegionalRedistribution with NoNationalRedistribution with Ex
     for {
       eb <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
     } yield {
-      (eb zip regionalBalances(cities.get(s)) zip nationalBalances(cities.get(s))).map(flatten).map {
-        case (exchangeBalance, regionalBalance, nationalBalance) => exchangeBalance + regionalBalance + nationalBalance
+      (eb zip redistributionBalances(cities.get(s))).map(flatten).map {
+        case (exchangeBalance, redistribution) => exchangeBalance + redistribution
       }
     }
   }

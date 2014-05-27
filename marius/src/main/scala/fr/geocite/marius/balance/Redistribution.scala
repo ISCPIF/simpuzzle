@@ -24,6 +24,8 @@ trait Redistribution { model: Marius =>
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
+  def redistributionBalances(s: Seq[CITY]) = s.map(_ => 0.0)
+
   def redistribution(s: Seq[CITY], territorialUnit: CITY => String, capital: CITY => Boolean) = {
     def deltas =
       for {

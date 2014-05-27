@@ -26,7 +26,7 @@ import scala.util.Random
 import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
 import meta._
-import fr.geocite.marius.balance.{ Balances, ExchangeBalances }
+import fr.geocite.marius.balance.{ Balances, Exchange }
 import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.marius.structure.Network
 
