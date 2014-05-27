@@ -22,6 +22,7 @@ import fr.geocite.marius.{ Transaction, Marius }
 import scala.math._
 import fr.geocite.simpuzzle._
 import fr.geocite.marius.structure.Matrix._
+import fr.geocite.marius.structure.Network
 
 trait ProportionalMatching <: Matching
     with PotentialMatrix
@@ -32,21 +33,14 @@ trait ProportionalMatching <: Matching
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
 
-    val indexedSupplies = supplies.toArray
-    val indexedDemands = demands.toArray
+    val indexedSupplies = supplies.toIndexedSeq
+    val indexedDemands = demands.toIndexedSeq
 
-    val interactionMatrix =
-      interactionPotentialMatrix(
-        nbCities,
-        supplies,
-        demands,
-        distanceMatrix,
-        network.get(s))
+    val interactionMatrixValue = interactionMatrix(indexedSupplies, indexedDemands, network.get(s))
+    val fromInteractionPotentialSum = interactionMatrixValue.linesContent.map(_.sum)
+    val toInteractionPotentialSum = interactionMatrixValue.transpose.linesContent.map(_.sum)
 
-    val fromInteractionPotentialSum = interactionMatrix.linesContent.map(_.sum)
-    val toInteractionPotentialSum = interactionMatrix.transpose.linesContent.map(_.sum)
-
-    interactionMatrix.map {
+    interactionMatrixValue.map {
       (from, to, ip) =>
         if (ip > 0) {
           val fSupply = indexedSupplies(from)
@@ -61,11 +55,19 @@ trait ProportionalMatching <: Matching
           val t = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
           check(
             !t.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
-            PotentialMatrix.InteractionPotentialException(_, interactionMatrix)
+            PotentialMatrix.InteractionPotentialException(_, interactionMatrixValue)
           )
           t
         } else 0.0
     }
   }
+
+  def interactionMatrix(supplies: Seq[Double], demands: Seq[Double], network: Network) =
+    interactionPotentialMatrix(
+      nbCities,
+      supplies,
+      demands,
+      distanceMatrix,
+      network)
 
 }

@@ -40,7 +40,7 @@ object MariusCSV extends App {
     def sizeEffectOnProductivity = 0.0623952569
     def sizeEffectOnConsumption = 0.0050156088
 
-    def fixedCost = 0.0
+    def fixedCost = 100.0
     override def networkShare: Double = 0.01
 
     def maxStep = 30

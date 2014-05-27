@@ -17,78 +17,25 @@
 
 package fr.geocite.marius.matching
 
-import scala.util.Random
 import fr.geocite.marius._
-import structure.Matrix._
-import scala.collection.mutable.ListBuffer
-import fr.geocite.marius.structure.SparseMatrix
+import fr.geocite.marius.structure.{ Network, Matrix }
 import fr.geocite.marius.balance.FixedCost
 
-trait FixedCostMatching <: Matching with InteractionPotential with FixedCost { this: Marius =>
+trait FixedCostMatching <: ProportionalMatching with FixedCost { this: Marius =>
 
-  override def matchCities(
-    s: STATE,
-    supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random) = {
+  override def interactionMatrix(supplies: Seq[Double], demands: Seq[Double], network: Network): Matrix = {
+    val interactionMatrixValue = super.interactionMatrix(supplies, demands, network)
+    val fromInteractionPotentialSum = interactionMatrixValue.transpose.linesContent.map(_.sum)
 
-    def splitTheCake(neighbours: Seq[(Int, Double)], cakeSize: Double) = {
-      val nPI = neighbours.unzip._2
-      val totalNeighboursPI = nPI.sum
-      val relativeNeighboursPI = nPI.map { _ / totalNeighboursPI }
-      (neighbours zip relativeNeighboursPI).map { case ((n, pi), rpi) => (n, pi, rpi * cakeSize) }
+    interactionMatrixValue.map {
+      (from, to, ip) =>
+        if (ip > 0) {
+          val fSupply = supplies(from)
+          val fromIPSum = fromInteractionPotentialSum(from)
+          val normalisedIPFrom = ip / fromIPSum
+
+          if (normalisedIPFrom * fSupply > fixedCost) ip else 0.0
+        } else 0.0
     }
-
-    val supplied =
-      for {
-        (city, cityId) <- cities.get(s).zipWithIndex
-      } yield {
-        val outNeighbours = network.get(s).outNodes(cityId)
-
-        // Interaction potential is not symmetric but has the same expression for both ways
-        val neighboursPI =
-          outNeighbours.map {
-            neighbourId =>
-              interactionPotential(supplies(cityId), demands(neighbourId), distanceMatrix(cityId)(neighbourId))
-          }.toIndexedSeq
-
-        val supply = supplies(cityId)
-
-        val viableTransactingNeighbours = splitTheCake(outNeighbours zip neighboursPI, supply).filter { case (_, _, r) => r >= fixedCost }
-        splitTheCake(
-          viableTransactingNeighbours.map { case (n, pi, _) => (n, pi) },
-          supply)
-      }
-
-    case class SuppliedToDestination(from: Int, interactionPotential: Double, supplied: Double)
-
-    val suppliedIndexedByDestination = Vector.fill(cities.get(s).size)(ListBuffer[SuppliedToDestination]())
-    for {
-      (from, to, pi, supply) <- supplied.zipWithIndex.map { case (s, from) => s.map { case (to, pi, s) => (from, to, pi, s) } }.flatten
-    } suppliedIndexedByDestination(to) += SuppliedToDestination(from, pi, supply)
-
-    val demanded =
-      for {
-        (supplied, cityId) <- suppliedIndexedByDestination.zipWithIndex
-      } yield splitTheCake(supplied.map(s => (s.from, s.interactionPotential)), demands(cityId)).map { case (n, _, d) => (n, d) }
-
-    val cells =
-      for {
-        (suppliesForCity, demandsForCity) <- supplied zip demanded
-      } yield {
-        def generateCells(supplies: List[(Int, Double, _)], demands: List[(Int, Double)], res: List[Cell]): List[Cell] =
-          (supplies, demands) match {
-            case (Nil, _) => res
-            case (_, Nil) => res
-            case ((ns, qs, _) :: tails, (nd, qd) :: taild) =>
-              if (ns == nd) generateCells(tails, taild, Cell(ns, math.min(ns, nd)) :: res)
-              else if (ns < nd) generateCells(tails, demands, res)
-              else generateCells(supplies, taild, res)
-          }
-
-        generateCells(suppliesForCity.toList, demandsForCity.toList, Nil)
-      }
-
-    SparseMatrix(cells)
-
   }
 }
