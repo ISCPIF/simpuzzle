@@ -9,8 +9,8 @@ object SimPuzzleBuild extends Build {
 
  override def settings = 
    super.settings ++ Seq(
-     scalaVersion := "2.11.0",
-     crossScalaVersions := Seq("2.10.4", "2.11.0"),
+     scalaVersion := "2.11.1",
+     crossScalaVersions := Seq("2.10.4", "2.11.1"),
      organization := "fr.geocite",
      publishTo := { 
        if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots") 

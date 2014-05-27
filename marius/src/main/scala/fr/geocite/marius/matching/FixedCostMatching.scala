@@ -80,17 +80,17 @@ trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
       for {
         (suppliesForCity, demandsForCity) <- supplied zip demanded
       } yield {
-        def generateCells(supplies: List[(Int, Double, _)], demands: List[(Int, Double)]): List[Cell] =
+        def generateCells(supplies: List[(Int, Double, _)], demands: List[(Int, Double)], res: List[Cell]): List[Cell] =
           (supplies, demands) match {
-            case (Nil, _) => Nil
-            case (_, Nil) => Nil
+            case (Nil, _) => res
+            case (_, Nil) => res
             case ((ns, qs, _) :: tails, (nd, qd) :: taild) =>
-              if (ns == nd) Cell(ns, math.min(ns, nd)) :: generateCells(tails, taild)
-              else if (ns < nd) generateCells(tails, demands)
-              else generateCells(supplies, taild)
+              if (ns == nd) generateCells(tails, taild, Cell(ns, math.min(ns, nd)) :: res)
+              else if (ns < nd) generateCells(tails, demands, res)
+              else generateCells(supplies, taild, res)
           }
 
-        generateCells(suppliesForCity.toList, demandsForCity.toList)
+        generateCells(suppliesForCity.toList, demandsForCity.toList, Nil)
       }
 
     SparseMatrix(cells)
