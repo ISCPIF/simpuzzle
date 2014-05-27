@@ -63,15 +63,13 @@ trait FixedCostMatching <: Matching with InteractionPotential with FixedCost { t
 
     val suppliedIndexedByDestination = Vector.fill(cities.get(s).size)(ListBuffer[SuppliedToDestination]())
     for {
-      (from, to, supply, pi) <- supplied.zipWithIndex.map { case (s, from) => s.map { case (to, pi, s) => (from, to, s, pi) } }.flatten
+      (from, to, pi, supply) <- supplied.zipWithIndex.map { case (s, from) => s.map { case (to, pi, s) => (from, to, pi, s) } }.flatten
     } suppliedIndexedByDestination(to) += SuppliedToDestination(from, pi, supply)
 
     val demanded =
       for {
         (supplied, cityId) <- suppliedIndexedByDestination.zipWithIndex
-      } yield {
-        splitTheCake(supplied.map(s => (s.from, s.interactionPotential)), demands(cityId)).map { case (n, _, d) => (n, d) }
-      }
+      } yield splitTheCake(supplied.map(s => (s.from, s.interactionPotential)), demands(cityId)).map { case (n, _, d) => (n, d) }
 
     val cells =
       for {

@@ -26,22 +26,21 @@ import fr.geocite.marius.state._
 
 object MariusCSV extends App {
 
-  val m = new Marius with NetworkState with FixedCostMatching with NoLogging with RelatedSizeEffect {
+  val m = new Marius with NetworkState with FixedCostMatching with NoLogging {
 
-    def popMax: Double = 20000
+    def popMax: Double = 11005.3173124776
     def popMin: Double = 0
-    def wMax: Double = 60000
+    def wMax: Double = 195414.92562309
     def wMin: Double = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def consumptionProductivityRatio: Double = 4.770560411778249
-    def distanceDecay = 10.308275810335358
-    def inversionPoint = 911.5810290018701
-    //def sizeEffectOnProductivity = 0.118828737969146
-    //def sizeEffectOnConsumption = 0.00633657779460902
+    def distanceDecay = 4.4007451235
+    def inversionPoint = 179.0416594111
+    def sizeEffectOnProductivity = 0.0623952569
+    def sizeEffectOnConsumption = 0.0050156088
 
-    def fixedCost = 1.0
-
+    def fixedCost = 0.0
     override def networkShare: Double = 0.01
 
     def maxStep = 30
@@ -49,9 +48,9 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
-  (0 until 10).foreach { i => println(i); m.run }
+  //(0 until 10).foreach { i => println(i); m.run }
 
-  /* val path = "/tmp/mariusmodel_log.csv"
+  val path = "/tmp/mariusmodel_log.csv"
 
   val out = Resource.fromFile(path)
 
@@ -77,5 +76,5 @@ object MariusCSV extends App {
       println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
     case m.InvalidState(e) => println(s"Invadid State $e")
   }
-*/
+
 }
