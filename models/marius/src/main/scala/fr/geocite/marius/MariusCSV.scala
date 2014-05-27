@@ -26,7 +26,7 @@ import fr.geocite.marius.state._
 
 object MariusCSV extends App {
 
-  val m = new Marius with NetworkState with ProportionalMatching with NoLogging with RelatedSizeEffect {
+  val m = new Marius with NetworkState with FixedCostMatching with NoLogging with RelatedSizeEffect {
 
     def popMax: Double = 20000
     def popMin: Double = 0
@@ -39,6 +39,8 @@ object MariusCSV extends App {
     def inversionPoint = 911.5810290018701
     //def sizeEffectOnProductivity = 0.118828737969146
     //def sizeEffectOnConsumption = 0.00633657779460902
+
+    def fixedCost = 1.0
 
     override def networkShare: Double = 0.01
 

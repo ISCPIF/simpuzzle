@@ -21,7 +21,6 @@ import scala.util.Random
 import fr.geocite.marius._
 import structure.Matrix._
 import scala.collection.mutable.ListBuffer
-import fr.geocite.simpuzzle._
 import fr.geocite.marius.structure.SparseMatrix
 
 trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
@@ -37,7 +36,7 @@ trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
       val nPI = neighbours.unzip._2
       val totalNeighboursPI = nPI.sum
       val relativeNeighboursPI = nPI.map { _ / totalNeighboursPI }
-      (neighbours.unzip._1 zip relativeNeighboursPI).map { case (n, pi) => (n, pi * cakeSize) }
+      (neighbours.unzip._1 zip relativeNeighboursPI).map { case (n, pi) => (n, pi, pi * cakeSize) }
     }
 
     val supplied =
@@ -55,41 +54,44 @@ trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
 
         val supply = supplies(cityId)
 
-        val viableTransactingNeighbours = splitTheCake(outNeighbours zip neighboursPI, supply).filter { case (_, r) => r >= fixedCost }.unzip._1
-        val supplied = splitTheCake(viableTransactingNeighbours.map(n => (n, neighboursPI(n))), supply)
-        supplied.map { case (neighbour, supplied) => (neighbour, supplied, neighboursPI(neighbour)) }
+        val viableTransactingNeighbours = splitTheCake(outNeighbours zip neighboursPI, supply).filter { case (_, _, r) => r >= fixedCost }
+        val supplied = splitTheCake(
+          viableTransactingNeighbours.map { case (n, pi, _) => (n, pi) },
+          supply)
+
+        supplied.map { case (neighbour, pi, supplied) => (neighbour, pi, supplied) }
       }
 
     case class SuppliedToDestination(from: Int, interactionPotential: Double, supplied: Double)
 
     val suppliedIndexedByDestination = Vector.fill(cities.get(s).size)(ListBuffer[SuppliedToDestination]())
     for {
-      (from, to, supply, pi) <- supplied.zipWithIndex.map { case (s, from) => s.map { s => from -> s }.map(flatten) }.flatten
+      (from, to, supply, pi) <- supplied.zipWithIndex.map { case (s, from) => s.map { case (n, pi, s) => (from, n, pi, s) } }.flatten
     } suppliedIndexedByDestination(to) += SuppliedToDestination(from, pi, supply)
 
     val demanded =
       for {
         (supplied, cityId) <- suppliedIndexedByDestination.zipWithIndex
       } yield {
-        splitTheCake(supplied.map(s => (s.from, s.interactionPotential)), demands(cityId))
+        splitTheCake(supplied.map(s => (s.from, s.interactionPotential)), demands(cityId)).map { case (n, _, d) => (n, d) }
       }
 
     val cells =
       for {
         (suppliesForCity, demandsForCity) <- supplied zip demanded
       } yield {
-        val supplies = Array.fill[Double](cities.get(s).size)(0.0)
-        for ((n, q, _) <- suppliesForCity) supplies(n) = q
+        def generateCells(supplies: List[(Int, Double, _)], demands: List[(Int, Double)]): List[Cell] =
+          (supplies, demands) match {
+            case (Nil, _) => Nil
+            case (_, Nil) => Nil
+            case ((ns, qs, _) :: tails, (nd, qd) :: taild) =>
+              if (ns == nd) Cell(ns, math.min(ns, nd)) :: generateCells(tails, taild)
+              else if (ns < nd) generateCells(tails, demands)
+              else generateCells(supplies, taild)
+          }
 
-        val demands = Array.fill[Double](cities.get(s).size)(0.0)
-        for ((n, q) <- demandsForCity) demands(n) = q
-
-        (supplies zip demands zipWithIndex).map(flatten).flatMap {
-          case (s, d, j) =>
-            if (s == 0.0 || d == 0.0) None
-            else Some(Cell(j, math.min(s, d)))
-        }
-      }.toSeq
+        generateCells(suppliesForCity.toList, demandsForCity.toList)
+      }
 
     SparseMatrix(cells)
 
