@@ -36,7 +36,7 @@ trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
       val nPI = neighbours.unzip._2
       val totalNeighboursPI = nPI.sum
       val relativeNeighboursPI = nPI.map { _ / totalNeighboursPI }
-      (neighbours.unzip._1 zip relativeNeighboursPI).map { case (n, pi) => (n, pi, pi * cakeSize) }
+      (neighbours zip relativeNeighboursPI).map { case ((n, pi), rpi) => (n, pi, rpi * cakeSize) }
     }
 
     val supplied =
