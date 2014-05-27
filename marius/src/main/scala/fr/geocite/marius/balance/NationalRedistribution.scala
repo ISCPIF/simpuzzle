@@ -21,9 +21,6 @@ import fr.geocite.marius.Marius
 
 trait NationalRedistribution <: Redistribution { model: Marius =>
 
-  override def redistributionBalances(s: Seq[CITY]): Seq[Double] = {
-    def nationalRedistribution = redistribution(s, nation.get _, nationalCapital.get _)
-    (super.redistributionBalances(s) zip nationalRedistribution).map { case (g, l) => g + l }
-  }
+  override def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get _, nationalCapital.get _)
 
 }

@@ -25,8 +25,7 @@ import fr.geocite.simpuzzle._
 trait Bonus <: Exchange { marius: Marius =>
   def bonusMultiplier: Double
 
-  override def transactedBalances(t: Transacted): Seq[Double] = {
-
+  override def bonuses(t: Transacted): Seq[Double] = {
     def diversityBonuses = {
       def transactedWith(transacted: Seq[Cell]) =
         transacted.filter { case Cell(_, v) => v > 0 }.map { case Cell(to, _) => to }
@@ -47,9 +46,9 @@ trait Bonus <: Exchange { marius: Marius =>
         (supply, i) <- t.supplies.zipWithIndex
       } yield t.transactedFromSum(i) / supply
 
-    (super.transactedBalances(t) zip importShares zip exportShares zip diversityBonuses).map(flatten) map {
-      case (balance, is, es, diversityBonus) =>
-        balance + bonusMultiplier * (is + es) * diversityBonus
+    (importShares zip exportShares zip diversityBonuses).map(flatten) map {
+      case (is, es, diversityBonus) =>
+        bonusMultiplier * (is + es) * diversityBonus
     }
   }
 

@@ -23,7 +23,6 @@ trait FixedCost <: Exchange { m: Marius =>
 
   def fixedCost: Double
 
-  override def transactedBalances(t: Transacted): Seq[Double] =
-    super.transactedBalances(t).map(_ - fixedCost)
+  override def fixedCosts(t: Transacted): Seq[Double] = t.supplies.map(_ => -fixedCost)
 
 }

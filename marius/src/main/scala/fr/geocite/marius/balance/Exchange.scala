@@ -66,9 +66,12 @@ trait Exchange <: Matching { this: Marius =>
         if (unsold >= 0) unsold else 0
       }
 
-    (unsolds zip unsatisfieds).map(flatten).map {
-      case (unsold, unsatisfied) => unsatisfied - unsold
+    (unsolds zip unsatisfieds zip bonuses(transacted) zip fixedCosts(transacted)).map(flatten).map {
+      case (unsold, unsatisfied, bonus, fixedCost) => unsatisfied - unsold + bonus - fixedCost
     }
   }
+
+  def bonuses(transacted: Transacted): Seq[Double] = transacted.supplies.map(_ => 0.0)
+  def fixedCosts(transacted: Transacted): Seq[Double] = transacted.supplies.map(_ => 0.0)
 
 }

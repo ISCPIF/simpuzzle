@@ -23,10 +23,11 @@ import fr.geocite.simpuzzle._
 import scalax.io.Resource
 import fr.geocite.simpuzzle.logging.NoLogging
 import fr.geocite.marius.state._
+import fr.geocite.marius.balance.Bonus
 
 object MariusCSV extends App {
 
-  val m = new Marius with NetworkState with FixedCostMatching with NoLogging {
+  val m = new Marius with NetworkState with FixedCostMatching with Bonus with NoLogging {
 
     def popMax: Double = 11005.3173124776
     def popMin: Double = 0
@@ -39,8 +40,8 @@ object MariusCSV extends App {
     def inversionPoint = 179.0416594111
     def sizeEffectOnProductivity = 0.0623952569
     def sizeEffectOnConsumption = 0.0050156088
-
-    def fixedCost = 100.0
+    def bonusMultiplier = 0.0
+    def fixedCost = 1.0
     override def networkShare: Double = 0.01
 
     def maxStep = 30

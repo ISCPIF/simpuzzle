@@ -24,7 +24,10 @@ trait Redistribution { model: Marius =>
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
-  def redistributionBalances(s: Seq[CITY]) = s.map(_ => 0.0)
+  def redistributionBalances(s: Seq[CITY]) = (regionalRedistributions(s) zip nationalRedistributions((s))).map { case (r, s) => r + s }
+
+  def regionalRedistributions(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)
+  def nationalRedistributions(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)
 
   def redistribution(s: Seq[CITY], territorialUnit: CITY => String, capital: CITY => Boolean) = {
     def deltas =
@@ -53,4 +56,5 @@ trait Redistribution { model: Marius =>
       case (i, _) => i
     }.unzip._2
   }
+
 }
