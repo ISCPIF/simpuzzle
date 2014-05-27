@@ -27,7 +27,7 @@ trait Balances <: NoRegionalRedistribution with NoNationalRedistribution with Ex
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
     for {
-      eb <- exchangeBalances(s, supplies, demands)
+      eb <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
     } yield {
       (eb zip regionalBalances(cities.get(s)) zip nationalBalances(cities.get(s))).map(flatten).map {
         case (exchangeBalance, regionalBalance, nationalBalance) => exchangeBalance + regionalBalance + nationalBalance

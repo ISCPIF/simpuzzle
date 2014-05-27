@@ -25,7 +25,7 @@ import fr.geocite.marius.structure.Matrix._
 
 trait ProportionalMatching <: Matching
     with PotentialMatrix
-    with Marius {
+    with Marius { this: Marius =>
 
   def matchCities(
     s: STATE,
@@ -66,29 +66,6 @@ trait ProportionalMatching <: Matching
           t
         } else 0.0
     }
-    /*for {
-      (tos, from) <- interactionMatrix.lines.zipWithIndex
-      fromIPSum = fromInteractionPotentialSum(from)
-      Cell(to, ip) <- tos
-    } {
-      val fSupply = indexedSupplies(from)
-      val tDemand = indexedDemands(to)
-      val toIPSum = toInteractionPotentialSum(to)
-
-      check(fSupply >= 0 && tDemand >= 0, s"supply or demand not good, $fSupply $tDemand")
-
-      val normalisedIPFrom = ip / fromIPSum
-      val normalisedIPTo = ip / toIPSum
-
-      val t = min(normalisedIPFrom * fSupply, normalisedIPTo * tDemand)
-      check(
-        !t.isNaN, s"Transacted is NaN: from $from to $to , ip%from : $normalisedIPFrom supplyfrom  $fSupply todemand $tDemand ip%to $normalisedIPTo  fromipsum $fromIPSum toipsum $toIPSum",
-        PotentialMatrix.InteractionPotentialException(_, interactionMatrix)
-      )
-      transacted += (from, to, t)
-    }
-
-    transacted.toMatrix*/
   }
 
 }
