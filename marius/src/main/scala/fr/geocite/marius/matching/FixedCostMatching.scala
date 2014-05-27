@@ -22,10 +22,9 @@ import fr.geocite.marius._
 import structure.Matrix._
 import scala.collection.mutable.ListBuffer
 import fr.geocite.marius.structure.SparseMatrix
+import fr.geocite.marius.balance.FixedCost
 
-trait FixedCostMatching <: Matching with InteractionPotential { this: Marius =>
-
-  def fixedCost: Double
+trait FixedCostMatching <: Matching with InteractionPotential with FixedCost { this: Marius =>
 
   override def matchCities(
     s: STATE,

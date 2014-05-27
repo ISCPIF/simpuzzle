@@ -17,11 +17,40 @@
 
 package fr.geocite.marius.balance
 
-import fr.geocite.marius.structure.Network
+import fr.geocite.marius.structure.{ Matrix, Network }
+import fr.geocite.marius.structure.Matrix.Cell
+import fr.geocite.marius.Marius
+import fr.geocite.simpuzzle._
 
-trait Bonus <: NoBonus {
+trait Bonus <: ExchangeBalances { marius: Marius =>
   def bonusMultiplier: Double
 
-  override def bonuses(importShares: Seq[Double], exportShares: Seq[Double], diversityBonuses: => Seq[Double]): Seq[Double] =
-    (importShares zip exportShares zip diversityBonuses) map { case ((is, es), diversityBonus) => bonusMultiplier * (is + es) * diversityBonus }
+  override def transactedBalances(t: Transacted): Seq[Double] = {
+
+    def diversityBonuses = {
+      def transactedWith(transacted: Seq[Cell]) =
+        transacted.filter { case Cell(_, v) => v > 0 }.map { case Cell(to, _) => to }
+
+      (t.transacted.lines zip t.transposedTransacted.lines) map {
+        case (from, to) =>
+          (transactedWith(from).toSet union transactedWith(to).toSet).size / t.nbCities.toDouble
+      }
+    }
+
+    def importShares =
+      for {
+        (demand, i) <- t.demands.zipWithIndex
+      } yield t.transactedToSum(i) / demand
+
+    def exportShares =
+      for {
+        (supply, i) <- t.supplies.zipWithIndex
+      } yield t.transactedFromSum(i) / supply
+
+    (super.transactedBalances(t) zip importShares zip exportShares zip diversityBonuses).map(flatten) map {
+      case (balance, is, es, diversityBonus) =>
+        balance + bonusMultiplier * (is + es) * diversityBonus
+    }
+  }
+
 }

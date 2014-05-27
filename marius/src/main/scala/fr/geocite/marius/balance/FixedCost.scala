@@ -17,9 +17,13 @@
 
 package fr.geocite.marius.balance
 
-import fr.geocite.marius.structure.Network
+import fr.geocite.marius.Marius
 
-trait NoBonus {
-  def bonuses(importShares: Seq[Double], exportShares: Seq[Double], diversityBonuses: => Seq[Double]): Seq[Double] =
-    (importShares zip exportShares) map (_ => 0.0)
+trait FixedCost <: ExchangeBalances { m: Marius =>
+
+  def fixedCost: Double
+
+  override def transactedBalances(t: Transacted): Seq[Double] =
+    super.transactedBalances(t).map(_ - fixedCost)
+
 }
