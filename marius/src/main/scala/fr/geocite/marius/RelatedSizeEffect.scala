@@ -17,14 +17,12 @@
 
 package fr.geocite.marius
 
-import fr.geocite.simpuzzle.meta.Domain
-
 trait RelatedSizeEffect {
 
   def consumptionProductivityRatio: Double
 
   private def x: Double = (consumptionProductivityRatio - 1.0) / (1.0 + consumptionProductivityRatio)
 
-  def sizeEffectOnConsumption = (1.0 - x) / 2
-  def sizeEffectOnProductivity = (1.0 + x) / 2
+  lazy val sizeEffectOnConsumption = (1.0 - x) / 2
+  lazy val sizeEffectOnProductivity = (1.0 + x) / 2
 }

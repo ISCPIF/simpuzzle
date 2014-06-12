@@ -37,9 +37,12 @@ trait MariusCity <: MariusFile with Marius {
   def nation = Lens.lensu[CITY, String]((c, v) => c.copy(nation = v), _.nation)
   def nationalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(nationalCapital = v), _.nationalCapital)
 
-  def initialCities(implicit rng: Random) =
+  def initialCities(implicit rng: Random) = {
+    val initialPopulations = populations.toSeq
+    val initialWealths = rescaleWealth(initialPopulations.map(initialWealth), initialPopulations)
+
     (for {
-      (_population, _region, _nation, _regionalCapital, _nationalCapital) <- populations zip regions zip nations zip regionCapitals zip nationalCapitals map (flatten)
+      (_population, _region, _nation, _regionalCapital, _nationalCapital, _initialWealth) <- initialPopulations.toIterator zip regions zip nations zip regionCapitals zip nationalCapitals zip initialWealths.toIterator map (flatten)
     } yield {
       MariusCity.City(
         population = _population,
@@ -47,7 +50,8 @@ trait MariusCity <: MariusFile with Marius {
         nation = _nation,
         regionalCapital = _regionalCapital,
         nationalCapital = _nationalCapital,
-        wealth = initialWealth(_population)
+        wealth = _initialWealth
       )
     }).take(nbCities).toVector
+  }
 }

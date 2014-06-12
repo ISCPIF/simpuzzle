@@ -52,8 +52,7 @@ trait Marius <: StepByStep
 
   def sizeEffectOnConsumption: Double
   def sizeEffectOnProductivity: Double
-
-  def gamma: Double = 0.0
+  def sizeEffectOnInitialWealth: Double
 
   def cities: Lens[STATE, Seq[CITY]]
   def population: Lens[CITY, Double]
@@ -109,8 +108,8 @@ trait Marius <: StepByStep
     }
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0) + gamma
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0) + gamma
+  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0)
+  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0)
 
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(population.get(c)))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(population.get(c)))
@@ -145,11 +144,14 @@ trait Marius <: StepByStep
     (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
   }
 
-  def initialWealth(population: Double)(implicit rng: Random): Double = {
-    val wealthInit = a * pow(population, 2) + b * population + c
-    check(wealthInit >= 0, s"Negative wealth $wealth")
-    wealthInit
+
+  def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
+    val factor = population.sum / wealth.sum.toDouble
+    wealth.map(_ * factor)
   }
+
+  def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, sizeEffectOnInitialWealth)
+
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")
     (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
