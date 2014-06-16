@@ -25,13 +25,16 @@ object Test extends App {
 
   implicit val rng = new Random
 
-  //  println(Calibration.fitness(
-  //    sizeEffectOnProductivity = 0.118828737969146,
-  //    sizeEffectOnConsumption = 0.00633657779460902,
-  //    distanceDecay = 3.94794499219735,
-  //    inversionPoint = 56.4235530249516,
-  //    popMax = 20000,
-  //    wMax = 10000))
+  val m = new CompleteModel(
+    sizeEffectOnProductivity = 1,
+    sizeEffectOnConsumption = 1,
+    distanceDecay = 1,
+    inversionPoint = 100,
+    popMax = 20000,
+    wMax = 60000,
+    sizeEffectOnInitialWealth = 1.3)
+
+    println(Calibration.fitness(m))
 
   //0,0030635465	1,1006449254	176,8439810029
 
