@@ -51,50 +51,31 @@ object MariusCSV extends App {
 
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
+  val path = "/tmp/mariusmodel_log.csv"
 
-  val outNet = Resource.fromFile("/tmp/test.csv")
-  val nbCities = m.initialCities.size
-  for{
+  val out = Resource.fromFile(path)
 
-    i <- (0 until nbCities)
-  } {
-    //
-    outNet.append(m.network.get(m.initialState.value).outNodes(i).mkString("", ",", "\n"))
+  out.append("step, arokato, population, wealth \n")
 
+  for {
+    (log, cptr) <- m.logs zipWithIndex
+  } log.value match {
+    case m.ValidState(s) =>
+      val cities = s.cities
+      val transacted = log.written
+
+      for {
+        (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
+      } {
+        def uneligne = Seq(cptr, rokato, city.population, city.wealth)
+        out.append(uneligne.mkString("", ",", "\n"))
+
+      }
+      val totalWealth = cities.map(_.wealth).sum
+      val totalPop = cities.map(_.population).sum
+
+      println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+    case m.InvalidState(e) => println(s"Invadid State $e")
   }
-
- /* m.run match {
-    case  m.ValidState(s) => println(s.cities.map(_.population).sum)
-    case _ =>
-  }*/
-
-  //(0 until 10).foreach { i => println(i); m.run }
-
-//  val path = "/tmp/mariusmodel_log.csv"
-//
-//  val out = Resource.fromFile(path)
-//
-//  out.append("step, arokato, population, wealth \n")
-//
-//  for {
-//    (log, cptr) <- m.logs zipWithIndex
-//  } log.value match {
-//    case m.ValidState(s) =>
-//      val cities = s.cities
-//      val transacted = log.written
-//
-//      for {
-//        (city, rokato, name, lat, long, i) <- (cities zip m.rokato zip m.names zip m.lat zip m.long).zipWithIndex.map(flatten)
-//      } {
-//        def uneligne = Seq(cptr, rokato, city.population, city.wealth)
-//        out.append(uneligne.mkString("", ",", "\n"))
-//
-//      }
-//      val totalWealth = cities.map(_.wealth).sum
-//      val totalPop = cities.map(_.population).sum
-//
-//      println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
-//    case m.InvalidState(e) => println(s"Invadid State $e")
-//  }
 
 }
