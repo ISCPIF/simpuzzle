@@ -25,26 +25,27 @@ import fr.geocite.simpuzzle.logging.NoLogging
 import fr.geocite.marius.state._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
+import java.io.File
 
 object MariusCSV extends App {
 
 
   val m = new Marius with NetworkState with ProportionalMatching with NoLogging {
-    def popMax: Double = 10000
+    def popMax: Double = 16224.499741457
     def popMin: Double = 0
-    def wMax: Double = 200000
+    def wMax: Double = 111566.103413883
     def wMin: Double = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
    // def consumptionProductivityRatio: Double = 4.770560411778249
-    def distanceDecay = 11.0203832033
-    def inversionPoint = 254.7501681869
-    def sizeEffectOnProductivity =  18.9135801928
-    def sizeEffectOnConsumption = 18.9021944702
+    def distanceDecay = 0.0008986697
+    def inversionPoint = 1000
+    def sizeEffectOnProductivity =  0.001883073
+    def sizeEffectOnConsumption = 0.0914792156
     def bonusMultiplier = 0.0
     def fixedCost = 0.0
     def networkShare: Double = 0.01
-    def sizeEffectOnInitialWealth: Double = 1.3
+    def sizeEffectOnInitialWealth: Double = 1.1
 
     def maxStep = 30
   }
@@ -52,6 +53,8 @@ object MariusCSV extends App {
   implicit val rng = fr.geocite.simpuzzle.random(42)
 
   val path = "/tmp/mariusmodel_log.csv"
+
+  new File (path).delete
 
   val out = Resource.fromFile(path)
 
