@@ -50,7 +50,14 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
- lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius")) dependsOn(marius) settings (libraryDependencies += graphstream)
+ lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius/run")) dependsOn(marius) settings (libraryDependencies += graphstream)
+
+ lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = settings ++ osgiSettings) dependsOn(marius) settings (
+    OsgiKeys.exportPackage := Seq("fr.geocites.marius.target.*"),
+    OsgiKeys.importPackage := Seq("*;resolution:=optional"),
+    OsgiKeys.privatePackage := Seq("!scala.*", "*")
+   )
+
 
 }
 
