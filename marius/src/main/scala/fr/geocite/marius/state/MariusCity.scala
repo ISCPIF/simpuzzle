@@ -38,11 +38,11 @@ trait MariusCity <: MariusFile with Marius {
   def nationalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(nationalCapital = v), _.nationalCapital)
 
   def initialCities(implicit rng: Random) = {
-    val initialPopulations = populations.toSeq
-    val initialWealths = rescaleWealth(initialPopulations.map(initialWealth), initialPopulations)
+    val pop = initialPopulations.toSeq
+    val initialWealths = rescaleWealth(initialPopulations.map(initialWealth), pop)
 
     (for {
-      (_population, _region, _nation, _regionalCapital, _nationalCapital, _initialWealth) <- initialPopulations.toIterator zip regions zip nations zip regionCapitals zip nationalCapitals zip initialWealths.toIterator map (flatten)
+      (_population, _region, _nation, _regionalCapital, _nationalCapital, _initialWealth) <- pop.toIterator zip regions zip nations zip regionCapitals zip nationalCapitals zip initialWealths.toIterator map (flatten)
     } yield {
       MariusCity.City(
         population = _population,

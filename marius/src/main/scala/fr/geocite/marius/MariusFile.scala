@@ -62,7 +62,7 @@ trait MariusFile <: PopulationDistribution
     with RegionDistribution
     with CapitalDistribution {
 
-  def population(date: Int) =
+  def populations(date: Int) =
     (dates.indexOf(date) match {
       case -1 => None
       case i => Some(i + columnsBeforeDates)
@@ -70,7 +70,7 @@ trait MariusFile <: PopulationDistribution
       c => startingCities.map(_(c).toDouble)
     }
 
-  def minPopulation = populationValues.min
+  //def minPopulation = populationValues.min
 
   def nbCities = startingCities.size
 
@@ -84,9 +84,9 @@ trait MariusFile <: PopulationDistribution
 
   def long = startingCities.map(_(5))
 
-  def populationValues = population(dates.head).get
+  def initialPopulations = populations(dates.head).get
 
-  def populationDistribution = Distribution(populationValues)
+  def populationDistribution = Distribution(initialPopulations)
 
   def hydrocarbonDistribution = Distribution(startingCities.map(l => toBoolean(l(8))))
 
