@@ -40,17 +40,19 @@ object SimPuzzleBuild extends Build {
 
  lazy val gis = Project(id = "gis", base = file("gis")) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
 
- lazy val marius = Project(id = "marius", base = file("marius")) dependsOn (simpuzzle, gibrat, gis)
+
+ lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal")) dependsOn(simpuzzle)
+
+ lazy val schelling = Project(id = "schelling", base = file("models/schelling")) dependsOn(simpuzzle)
  
- lazy val simpoplocal = Project(id = "simpoplocal", base = file("simpoplocal")) dependsOn(simpuzzle)
+ lazy val sugarscape = Project(id = "sugarscape", base = file("models/sugarscape")) dependsOn(simpuzzle)
 
- lazy val schelling = Project(id = "schelling", base = file("schelling")) dependsOn(simpuzzle)
- 
- lazy val sugarscape = Project(id = "sugarscape", base = file("sugarscape")) dependsOn(simpuzzle)
+ lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat")) dependsOn(simpuzzle)
 
- lazy val gibrat = Project(id = "gibrat", base = file("gibrat")) dependsOn(simpuzzle)
 
- lazy val mariusmodel = Project(id = "mariusmodel", base = file("models/marius/run")) dependsOn(marius) settings (libraryDependencies += graphstream)
+ lazy val marius = Project(id = "marius", base = file("models/marius/model")) dependsOn (simpuzzle, gibrat, gis)
+
+ lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run")) dependsOn(marius) settings (libraryDependencies += graphstream)
 
  lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = settings ++ osgiSettings) dependsOn(marius) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.target.*"),
