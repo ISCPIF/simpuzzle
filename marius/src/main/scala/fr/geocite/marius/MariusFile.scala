@@ -26,29 +26,49 @@ import fr.geocite.simpuzzle.neighbourhood.GeometricDistanceNeighbourhood
 
 object MariusFile {
 
-  lazy val content = {
+  lazy val rawContent = {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocite/marius/marius.csv"))
 
-    try input.getLines.drop(1).map {
+    try input.getLines.map {
       l => l.split(",").toSeq
     }.toList
     finally input.close
   }
 
+  lazy val content = rawContent.drop(1)
+
+  lazy val header = rawContent.take(1).head
+
+  def columnsBeforeDates = 12
+
+  lazy val dates = MariusFile.header.drop(12).map(_.toInt)
+
   def startingCities =
-    content.filterNot(l => l(12).isEmpty || l(17).isEmpty)
+    content.filter { _.drop(columnsBeforeDates).forall(!_.isEmpty) }
 
   def positionDistribution =
     startingCities.map {
       l => Position(l(5).toDouble, l(4).toDouble)
     }
+
 }
+
+
+import MariusFile._
 
 trait MariusFile <: PopulationDistribution
     with HydrocarbonDistribution
     with RegionDistribution
     with CapitalDistribution {
+
+  def population(date: Int) =
+    (dates.indexOf(date) match {
+      case -1 => None
+      case i => Some(i + columnsBeforeDates)
+    }).map {
+      c => startingCities.map(_(c).toDouble)
+    }
 
   def minPopulation = populationValues.min
 
@@ -64,7 +84,7 @@ trait MariusFile <: PopulationDistribution
 
   def long = startingCities.map(_(5))
 
-  def populationValues = startingCities.map(_(12).toDouble)
+  def populationValues = population(dates.head).get
 
   def populationDistribution = Distribution(populationValues)
 
@@ -79,8 +99,6 @@ trait MariusFile <: PopulationDistribution
   def nationalCapitals = startingCities.map(l => toBoolean(l(11))).toIterator
 
   def nations = startingCities.map(_(3)).toIterator
-
-  lazy val content = MariusFile.content
 
   def toBoolean(s: String) =
     s match {
