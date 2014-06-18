@@ -33,7 +33,7 @@ trait TargetDistribution <: Target {
        initialCities.map { _.population }
       )
 
-    (for { (state, step) <- marius.states.zipWithIndex} yield {
+    val fitness = (for { (state, step) <- marius.states.zipWithIndex} yield {
       state match {
         case marius.ValidState(s) =>
           marius.populations(MariusFile.dates.head + step).map {
@@ -42,6 +42,7 @@ trait TargetDistribution <: Target {
         case marius.InvalidState(_) => Some(Double.PositiveInfinity)
       }
     }).flatten.sum + wealthFitness
+    if(fitness.isNaN) Double.PositiveInfinity else fitness
   }
 
 }
