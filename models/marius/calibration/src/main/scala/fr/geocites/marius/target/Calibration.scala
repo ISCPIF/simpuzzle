@@ -8,11 +8,7 @@ import matching._
 
 object Calibration {
 
-  def fitness(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) = {
-    evaluate(marius, new TargetDistribution {})
-  }
-
-  def evaluate(marius: Marius with MariusFile with MariusCity, target: Target)(implicit rng: Random): Double =
-    target.distribution(marius)
+  def fitness(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) =
+    (new TargetDistribution {}).distribution(marius)
 
 }

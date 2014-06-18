@@ -33,15 +33,15 @@ trait TargetDistribution <: Target {
        initialCities.map { _.population }
       )
 
-    (for {
-      (state, s) <- marius.states.zipWithIndex
-      empirical <- marius.populations(MariusFile.dates.head + s)
-    } yield {
+    (for { (state, step) <- marius.states.zipWithIndex} yield {
       state match {
-        case marius.ValidState(s) => statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
-        case marius.InvalidState(_) => Double.PositiveInfinity
+        case marius.ValidState(s) =>
+          marius.populations(MariusFile.dates.head + step).map {
+            empirical => statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
+          }
+        case marius.InvalidState(_) => Some(Double.PositiveInfinity)
       }
-    }).sum + wealthFitness
+    }).flatten.sum + wealthFitness
   }
 
 }
