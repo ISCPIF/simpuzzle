@@ -1,6 +1,9 @@
 package fr.geocites.marius.target
 
-import fr.geocite.marius.MariusFile
+import fr.geocite.marius.state.MariusCity
+import fr.geocite.marius.{Marius, MariusFile}
+
+import scala.util.Random
 
 /*
  * Copyright (C) 01/12/13 Romain Reuillon
@@ -20,10 +23,6 @@ import fr.geocite.marius.MariusFile
  */
 
 trait Target {
-  lazy val data = new MariusFile {}
   def date(step: Int) = MariusFile.dates.head + step
-
-  type Dynamic = Iterator[(Int, Seq[Double])]
-
-  def target(d: Dynamic): Double
+  def distribution(marius: Marius with MariusFile with MariusCity)(implicit rng: Random): Double
 }

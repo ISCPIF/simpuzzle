@@ -23,16 +23,20 @@ object Test extends App {
   //sizeEffectOnConsumption,sizeEffectOnProductivity,gamma,inversionPoint
   //127.1156496908556,38.621747226024965,63.49223984156123,11173.859183000295
 
+  //islandGeneration	sizeEffectOnProductivity	sizeEffectOnConsumption	popMax	wMax	distanceDecay	inversionPoint	sizeEffectOnInitialWealths	distribution
+  //8637	0.7582331422	0.1203719503	27549.1333059367	200000	0	967.3001475163	1.1690734226	4.6699534535
+
+
   implicit val rng = new Random
 
   val m = new CompleteModel(
-    sizeEffectOnProductivity = 1,
-    sizeEffectOnConsumption = 1,
-    distanceDecay = 1,
-    inversionPoint = 100,
-    popMax = 20000,
-    wMax = 60000,
-    sizeEffectOnInitialWealth = 1.3)
+    sizeEffectOnProductivity = 0.7582331422,
+    sizeEffectOnConsumption = 0.1203719503,
+    distanceDecay = 0,
+    inversionPoint = 967.3001475163,
+    popMax = 27549.1333059367,
+    wMax = 200000,
+    sizeEffectOnInitialWealth = 1.1690734226)
 
     println(Calibration.fitness(m))
 

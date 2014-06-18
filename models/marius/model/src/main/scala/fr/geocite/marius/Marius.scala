@@ -150,6 +150,8 @@ trait Marius <: StepByStep
     wealth.map(_ * factor)
   }
 
+
+
   def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, sizeEffectOnInitialWealth)
 
   def wealthToPopulation(wealth: Double) = {

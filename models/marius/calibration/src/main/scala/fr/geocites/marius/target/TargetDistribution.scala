@@ -18,16 +18,30 @@
 
 package fr.geocites.marius.target
 
-import fr.geocite.marius.MariusFile
+import fr.geocite.marius.state.MariusCity
+import fr.geocite.marius.{Marius, MariusFile}
+import scala.util.Random
 
 trait TargetDistribution <: Target {
 
-  def target(d: Dynamic) =
+  def distribution(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) = {
+    val initialCities = marius.initialCities
+
+    val wealthFitness =
+      statistics.logSquaresError(
+        initialCities.map { c => marius.wealthToPopulation(c.wealth) },
+       initialCities.map { _.population }
+      )
+
     (for {
-      (s, populations) <- d
-      empirical <- data.populations(MariusFile.dates.head + s)
+      (state, s) <- marius.states.zipWithIndex
+      empirical <- marius.populations(MariusFile.dates.head + s)
     } yield {
-      statistics.logSquaresError(populations.sorted, empirical.sorted)
-    }).sum
+      state match {
+        case marius.ValidState(s) => statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
+        case marius.InvalidState(_) => Double.PositiveInfinity
+      }
+    }).sum + wealthFitness
+  }
 
 }

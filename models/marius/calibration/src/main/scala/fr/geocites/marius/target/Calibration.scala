@@ -8,20 +8,11 @@ import matching._
 
 object Calibration {
 
-  def fitness(model: Marius)(implicit rng: Random) = {
-    evaluate(model, new TargetDistribution {})
+  def fitness(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) = {
+    evaluate(marius, new TargetDistribution {})
   }
 
-  def evaluate(model: Marius, target: Target)(implicit rng: Random): Double = {
-    import model._
-    val dynamic =
-      model.states.map {
-        _ match {
-          case ValidState(s) => step.get(s) -> cities.get(s).map(population.get)
-          case _ => return Double.PositiveInfinity
-        }
-      }
-    target.target(dynamic)
-  }
+  def evaluate(marius: Marius with MariusFile with MariusCity, target: Target)(implicit rng: Random): Double =
+    target.distribution(marius)
 
 }
