@@ -135,12 +135,10 @@ trait Marius <: StepByStep
   def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double = 2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
 
   def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    assert(inversionPoint < popMax / 2.0)
     (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
   }
 
   def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    assert(inversionPoint < popMax / 2.0)
     (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
   }
 
