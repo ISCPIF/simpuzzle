@@ -67,19 +67,20 @@ trait Marius <: StepByStep
 
   def nextState(s: STATE)(implicit rng: Random) = {
     for {
-      ws <- wealths(s)
+      newWealths <-  wealths(s)
     } yield {
       def populations =
-        ws.zipWithIndex.map {
-          case (w, i) =>
-            check(w >= 0, s"City $i error in wealth before conversion toPop $w")
-            val p = wealthToPopulation(w)
-            check(p >= 0, s"Error in wealth $w $p")
-            p
+        (cities.get(s) zip newWealths).zipWithIndex.map {
+          case ((city, newWealth), i) =>
+            check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
+            val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(wealth.get(city))
+            val newPopulation = population.get(city) + deltaPopulation
+            check(newPopulation >= 0, s"Error in wealth $newWealth $newPopulation")
+            newPopulation
         }
 
       def newCities =
-        (cities.get(s) zip populations zip ws).map(flatten).map {
+        (cities.get(s) zip populations zip newWealths).map(flatten).map {
           case (c, p, w) =>
             check(p >= 0, s"The population of $c is negative $p, $w")
             wealth.set(population.set(c, p), w)

@@ -28,21 +28,17 @@ trait TargetDistribution <: Target {
   def distribution(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) = Try {
     val initialCities = marius.initialCities
 
-    val wealthFitness =
-      statistics.logSquaresError(
-        initialCities.map { c => marius.wealthToPopulation(c.wealth) },
-       initialCities.map { _.population }
-      )
-
     val fitness = (for { (state, step) <- marius.states.zipWithIndex} yield {
       state match {
         case marius.ValidState(s) =>
           marius.populations(MariusFile.dates.head + step).map {
-            empirical => statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
+            empirical =>
+              statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
           }
         case marius.InvalidState(_) => Some(Double.PositiveInfinity)
       }
-    }).flatten.sum + wealthFitness
+    }).flatten.sum
+
     if(fitness.isNaN) Double.PositiveInfinity else fitness
   }.getOrElse(Double.PositiveInfinity)
 

@@ -30,22 +30,18 @@ import java.io.File
 object MariusCSV extends App {
 
 
-  val m = new Marius with NetworkState with ProportionalMatching with NoLogging {
-    def popMax: Double = 29835.7799506298
+  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
+    def popMax: Double = 10099.098575427905
     def popMin: Double = 0
-    def wMax: Double = 35543.5002237277
+    def wMax: Double = 301947.6957048669
     def wMin: Double = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
-   // def consumptionProductivityRatio: Double = 4.770560411778249
-    def distanceDecay = 8.2724479947
-    def inversionPoint = 9370.6392654878
-    def sizeEffectOnProductivity =  1
-    def sizeEffectOnConsumption = 0.0015110482
-    def bonusMultiplier = 0.0
-    def fixedCost = 0.0
-    def networkShare: Double = 0.01
-    def sizeEffectOnInitialWealth: Double = 1.1165760217
+    def distanceDecay = 1.5967071678927165
+    def inversionPoint = 12129.353702459795
+    def sizeEffectOnProductivity =  968.7964553906668
+    def sizeEffectOnConsumption = 967.4257815954343
+    def sizeEffectOnInitialWealth: Double = 42.604314040794556
 
     def maxStep = 30
   }
