@@ -18,17 +18,14 @@
 package fr.geocite.marius
 
 import fr.geocite.simpuzzle._
-import distribution._
-import fr.geocite.marius.matching.Matching
-import fr.geocite.simpuzzle.distribution.PositionDistribution
-import scalaz._
 import scala.util.Random
 import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
-import meta._
 import fr.geocite.marius.balance.{ Balances, Exchange }
 import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.marius.structure.Network
+import monocle._
+import monocle.syntax._
 
 object Marius extends GeodeticDistance {
   lazy val distanceMatrix: DistanceMatrix = {
@@ -54,14 +51,14 @@ trait Marius <: StepByStep
   def sizeEffectOnProductivity: Double
   def sizeEffectOnInitialWealth: Double
 
-  def cities: Lens[STATE, Seq[CITY]]
-  def population: Lens[CITY, Double]
-  def wealth: Lens[CITY, Double]
-  def region: Lens[CITY, String]
-  def nation: Lens[CITY, String]
-  def regionalCapital: Lens[CITY, Boolean]
-  def nationalCapital: Lens[CITY, Boolean]
-  def network: Lens[STATE, Network]
+  def cities: SimpleLens[STATE, Seq[CITY]]
+  def population: SimpleLens[CITY, Double]
+  def wealth: SimpleLens[CITY, Double]
+  def region: SimpleLens[CITY, String]
+  def nation: SimpleLens[CITY, String]
+  def regionalCapital: SimpleLens[CITY, Boolean]
+  def nationalCapital: SimpleLens[CITY, Boolean]
+  def network: SimpleLens[STATE, Network]
 
   lazy val distanceMatrix: DistanceMatrix = Marius.distanceMatrix
 
@@ -86,7 +83,7 @@ trait Marius <: StepByStep
             wealth.set(population.set(c, p), w)
         }
 
-      cities.set(step.mod(_ + 1, s), newCities)
+      (s |-> cities set newCities) |-> step modify (_ + 1)
     }
   }
 

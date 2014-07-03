@@ -19,8 +19,8 @@ package fr.geocite.simpoplocal
 
 import fr.geocite.simpuzzle.city.{ Id, Radius, Position }
 import scala.collection.immutable.{ TreeSet, TreeMap }
-import scalaz.Lens
 import fr.geocite.simpuzzle.state._
+import monocle.Macro._
 
 trait SimpopLocalState <: State {
 
@@ -34,7 +34,7 @@ trait SimpopLocalState <: State {
    */
   case class SimpopLocalState(step: Int, settlements: Seq[Settlement], currentInnovationId: Int = 0)
 
-  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
+  def step = mkLens[STATE, Int]("step")
 
   /**
    *

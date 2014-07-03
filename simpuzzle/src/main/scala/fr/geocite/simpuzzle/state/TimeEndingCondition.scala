@@ -17,12 +17,11 @@
 
 package fr.geocite.simpuzzle.state
 
-import scalaz._
-import fr.geocite.simpuzzle.state
+import monocle._
 
 trait TimeEndingCondition extends EndingCondition with State {
   def maxStep: Int
   def ended(state: STATE) = step.get(state) >= maxStep
 
-  def step: Lens[STATE, Int]
+  def step: SimpleLens[STATE, Int]
 }
