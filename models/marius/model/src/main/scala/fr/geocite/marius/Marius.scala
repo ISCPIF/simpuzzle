@@ -75,7 +75,7 @@ trait Marius <: StepByStep
             check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
             val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(wealth.get(city))
             val newPopulation = population.get(city) + deltaPopulation
-            check(newPopulation >= 0, s"Error in wealth $newWealth $newPopulation")
+            check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
             newPopulation
         }
 
@@ -143,13 +143,10 @@ trait Marius <: StepByStep
     (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
   }
 
-
   def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
     val factor = population.sum / wealth.sum.toDouble
     wealth.map(_ * factor)
   }
-
-
 
   def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, sizeEffectOnInitialWealth)
 

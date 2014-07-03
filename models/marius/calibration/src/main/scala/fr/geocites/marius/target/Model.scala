@@ -17,7 +17,7 @@
 
 package fr.geocites.marius.target
 
-import fr.geocite.marius.balance.Bonus
+import fr.geocite.marius.balance.{FixedCost, Bonus}
 import fr.geocite.marius.{ RelatedSizeEffect, Marius }
 import fr.geocite.marius.state._
 import fr.geocite.marius.matching.ProportionalMatching
@@ -50,4 +50,16 @@ class BonusModel(
     val wMax: Double,
     val sizeEffectOnInitialWealth: Double,
     val bonusMultiplier: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues
+
+
+class BonusFixedCostModel(
+    val sizeEffectOnProductivity: Double,
+    val sizeEffectOnConsumption: Double,
+    val distanceDecay: Double,
+    val inversionPoint: Double,
+    val popMax: Double,
+    val wMax: Double,
+    val sizeEffectOnInitialWealth: Double,
+    val bonusMultiplier: Double,
+    val fixedCost: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues with FixedCost
 

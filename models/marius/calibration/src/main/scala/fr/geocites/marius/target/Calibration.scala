@@ -9,6 +9,6 @@ import matching._
 object Calibration {
 
   def fitness(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) =
-    (new TargetDistribution {}).distribution(marius)
+    (new TargetDistribution {}).distribution(marius).toArray
 
 }

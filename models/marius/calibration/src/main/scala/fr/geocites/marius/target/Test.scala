@@ -64,7 +64,7 @@ object Test extends App {
     wMax = 12084.2530594478,
     sizeEffectOnInitialWealth = 0.9575024563)*/
 
-    println(Calibration.fitness(m))
+    println(Calibration.fitness(m).deep)
 
   //0,0030635465	1,1006449254	176,8439810029
 

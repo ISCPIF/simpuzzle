@@ -23,23 +23,26 @@ import fr.geocite.marius.{Marius, MariusFile}
 import scala.util.Random
 import util.Try
 
-trait TargetDistribution <: Target {
+trait TargetDistribution {
+
+  def date(step: Int) = MariusFile.dates.head + step
 
   def distribution(marius: Marius with MariusFile with MariusCity)(implicit rng: Random) = Try {
-    val initialCities = marius.initialCities
-
     val fitness = (for { (state, step) <- marius.states.zipWithIndex} yield {
       state match {
         case marius.ValidState(s) =>
+          val deadCities = marius.cities.get(s).count(_.wealth <= 0.0)
+
           marius.populations(MariusFile.dates.head + step).map {
             empirical =>
-              statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
-          }
-        case marius.InvalidState(_) => Some(Double.PositiveInfinity)
+              val distance = statistics.logSquaresError(marius.cities.get(s).map(_.population).sorted, empirical.sorted)
+              Seq(deadCities, distance)
+          }.getOrElse(Seq(deadCities, 0.0))
+        case marius.InvalidState(_) => Seq(Double.PositiveInfinity, Double.PositiveInfinity)
       }
-    }).flatten.sum
+    }).foldLeft(Seq(0.0, 0.0)){ (s, v) => (s zip v).map{ case(x, y) => x + y } }
 
-    if(fitness.isNaN) Double.PositiveInfinity else fitness
-  }.getOrElse(Double.PositiveInfinity)
+    fitness.map(x => if(x.isNaN) Double.PositiveInfinity else x)
+  }.getOrElse(Seq(Double.PositiveInfinity, Double.PositiveInfinity))
 
 }
