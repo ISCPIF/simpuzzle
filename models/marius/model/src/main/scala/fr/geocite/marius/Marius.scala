@@ -77,7 +77,7 @@ trait Marius <: StepByStep
         }
 
       def newCities =
-        (cities.get(s) zip populations zip newWealths).map(flatten).map {
+        ((s |-> cities get) zip populations zip newWealths).map(flatten).map {
           case (c, p, w) =>
             check(p >= 0, s"The population of $c is negative $p, $w")
             (c |-> wealth set w) |-> population set p
