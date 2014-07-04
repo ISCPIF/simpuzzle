@@ -67,11 +67,11 @@ trait Marius <: StepByStep
       newWealths <-  wealths(s)
     } yield {
       def populations =
-        (cities.get(s) zip newWealths).zipWithIndex.map {
+        ((s |-> cities get) zip newWealths).zipWithIndex.map {
           case ((city, newWealth), i) =>
             check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
-            val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(wealth.get(city))
-            val newPopulation = population.get(city) + deltaPopulation
+            val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(city |-> wealth get)
+            val newPopulation = (city |-> population get) + deltaPopulation
             check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
             newPopulation
         }
@@ -80,7 +80,7 @@ trait Marius <: StepByStep
         (cities.get(s) zip populations zip newWealths).map(flatten).map {
           case (c, p, w) =>
             check(p >= 0, s"The population of $c is negative $p, $w")
-            wealth.set(population.set(c, p), w)
+            (c |-> wealth set w) |-> population set p
         }
 
       (s |-> cities set newCities) |-> step modify (_ + 1)
@@ -100,7 +100,7 @@ trait Marius <: StepByStep
         bs zipWithIndex).map(flatten).map {
         case (city, supply, demand, b, i) =>
           val newWealth =
-            wealth.get(city) + supply - demand + b
+            (city |-> wealth get) + supply - demand + b
           if (newWealth <= 0.0) 0.0 else newWealth
       }
     }
@@ -109,8 +109,8 @@ trait Marius <: StepByStep
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0)
   def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0)
 
-  def supplies(cities: Seq[CITY]) = cities.map(c => supply(population.get(c)))
-  def demands(cities: Seq[CITY]) = cities.map(c => demand(population.get(c)))
+  def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
+  def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
   def demand(population: Double) = consumption(population) * population
 
