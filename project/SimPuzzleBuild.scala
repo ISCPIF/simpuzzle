@@ -68,13 +68,10 @@ object SimPuzzleBuild extends Build {
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
 
-  
 
- 
+ lazy val flocking = Project(id = "flocking", base = file("models/flocking/model")) 
 
-  
+ lazy val flockingbse = Project(id = "flockingbse", base = file("models/flocking/behaviourSpaceExploration")) dependsOn (flocking)
 
 }
-
-
 
