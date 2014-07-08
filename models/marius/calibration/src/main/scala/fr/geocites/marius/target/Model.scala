@@ -17,6 +17,7 @@
 
 package fr.geocites.marius.target
 
+import fr.geocite.marius.balance.{FixedCost, Bonus}
 import fr.geocite.marius.{ RelatedSizeEffect, Marius }
 import fr.geocite.marius.state._
 import fr.geocite.marius.matching.ProportionalMatching
@@ -40,19 +41,25 @@ class CompleteModel(
     val wMax: Double,
     val sizeEffectOnInitialWealth: Double) extends Marius with FullNetworkState with ProportionalMatching with NoLogging with DefaultValues
 
-class SimpleModel(
-    val consumptionProductivityRatio: Double,
-    val distanceDecay: Double,
-    val inversionPoint: Double,
-    val popMax: Double,
-    val wMax: Double,
-    val sizeEffectOnInitialWealth: Double) extends Marius with FullNetworkState with ProportionalMatching with RelatedSizeEffect with NoLogging with DefaultValues
-
-class FastModel(
-    val consumptionProductivityRatio: Double,
+class BonusModel(
+    val sizeEffectOnProductivity: Double,
+    val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
     val inversionPoint: Double,
     val popMax: Double,
     val wMax: Double,
     val sizeEffectOnInitialWealth: Double,
-    val networkShare: Double) extends Marius with NetworkState with ProportionalMatching with RelatedSizeEffect with NoLogging with DefaultValues
+    val bonusMultiplier: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues
+
+
+class BonusFixedCostModel(
+    val sizeEffectOnProductivity: Double,
+    val sizeEffectOnConsumption: Double,
+    val distanceDecay: Double,
+    val inversionPoint: Double,
+    val popMax: Double,
+    val wMax: Double,
+    val sizeEffectOnInitialWealth: Double,
+    val bonusMultiplier: Double,
+    val fixedCost: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues with FixedCost
+

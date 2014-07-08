@@ -21,11 +21,11 @@ import math._
 import fr.geocite.simpuzzle._
 import statistics._
 
-trait TargetFinalDistribution <: Target {
+/*trait TargetFinalDistribution <: Target {
 
-  def target(d: Dynamic) = {
+  def distribution(d: Dynamic) = {
     val last = d.last
     logSquaresError(last._2.sorted, data.populations(last._1).get)
   }
 
-}
+}*/

@@ -18,12 +18,12 @@
 package fr.geocite.marius.state
 
 import fr.geocite.marius.{ Marius, MariusLogging, MariusFile }
-import scalaz.Lens
 import scala.util.Random
 import fr.geocite.marius.matching.PotentialMatrix
-import fr.geocite.simpuzzle._
 import scala.collection.mutable.ListBuffer
 import fr.geocite.marius.structure._
+import monocle.Macro._
+import monocle._
 
 object NetworkState {
   case class State(step: Int, cities: Seq[MariusCity.City], network: Network)
@@ -39,9 +39,10 @@ trait NetworkState <: MariusFile
 
   type STATE = NetworkState.State
 
-  def step = Lens.lensu[STATE, Int]((s, v) => s.copy(step = v), _.step)
-  def cities = Lens.lensu[STATE, Seq[CITY]]((s, v) => s.copy(cities = v.toVector), _.cities)
-  def network = Lens.lensu[STATE, Network]((s, v) => s.copy(network = v), _.network)
+  def step = mkLens[STATE, Int]("step")
+
+  def cities = SimpleLens[STATE, Seq[CITY]](_.cities, (s, v) => s.copy(cities = v.toVector))
+  def network = mkLens[STATE, Network]("network")
 
   def initialState(implicit rng: Random) = {
     val cities = initialCities

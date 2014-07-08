@@ -36,17 +36,17 @@ trait Bonus <: Exchange { marius: Marius =>
       }
     }
 
-    def importShares =
+    def importVolumes =
       for {
         (demand, i) <- t.demands.zipWithIndex
-      } yield t.transactedToSum(i) / demand
+      } yield t.transactedToSum(i)
 
-    def exportShares =
+    def exportVolumes =
       for {
         (supply, i) <- t.supplies.zipWithIndex
-      } yield t.transactedFromSum(i) / supply
+      } yield t.transactedFromSum(i)
 
-    (importShares zip exportShares zip diversityBonuses).map(flatten) map {
+    (importVolumes zip exportVolumes zip diversityBonuses).map(flatten) map {
       case (is, es, diversityBonus) =>
         bonusMultiplier * (is + es) * diversityBonus
     }

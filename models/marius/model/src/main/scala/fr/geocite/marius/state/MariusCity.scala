@@ -17,11 +17,11 @@
 
 package fr.geocite.marius.state
 
-import scalaz.Lens
 import scala.util.Random
 import fr.geocite.simpuzzle.flatten
 import fr.geocite.simpuzzle.distribution._
 import fr.geocite.marius._
+import monocle.Macro._
 
 object MariusCity {
   case class City(population: Double, wealth: Double, region: String, nation: String, regionalCapital: Boolean, nationalCapital: Boolean)
@@ -30,12 +30,12 @@ object MariusCity {
 trait MariusCity <: MariusFile with Marius {
 
   type CITY = MariusCity.City
-  def population = Lens.lensu[CITY, Double]((c, v) => c.copy(population = v), _.population)
-  def wealth = Lens.lensu[CITY, Double]((c, v) => c.copy(wealth = v), _.wealth)
-  def regionalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(regionalCapital = v), _.regionalCapital)
-  def region = Lens.lensu[CITY, String]((c, v) => c.copy(region = v), _.region)
-  def nation = Lens.lensu[CITY, String]((c, v) => c.copy(nation = v), _.nation)
-  def nationalCapital = Lens.lensu[CITY, Boolean]((c, v) => c.copy(nationalCapital = v), _.nationalCapital)
+  def population = mkLens[CITY, Double]("population")
+  def wealth = mkLens[CITY, Double]("wealth")
+  def regionalCapital = mkLens[CITY, Boolean]("regionalCapital")
+  def region = mkLens[CITY, String]("region")
+  def nation = mkLens[CITY, String]("nation")
+  def nationalCapital = mkLens[CITY, Boolean]("nationalCapital")
 
   def initialCities(implicit rng: Random) = {
     val pop = initialPopulations.toSeq

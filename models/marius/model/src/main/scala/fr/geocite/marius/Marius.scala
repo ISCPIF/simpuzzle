@@ -18,17 +18,14 @@
 package fr.geocite.marius
 
 import fr.geocite.simpuzzle._
-import distribution._
-import fr.geocite.marius.matching.Matching
-import fr.geocite.simpuzzle.distribution.PositionDistribution
-import scalaz._
 import scala.util.Random
 import scala.math._
 import fr.geocite.simpuzzle.state.{ TimeEndingCondition, StepByStep }
-import meta._
 import fr.geocite.marius.balance.{ Balances, Exchange }
 import fr.geocite.gis.distance.GeodeticDistance
 import fr.geocite.marius.structure.Network
+import monocle._
+import monocle.syntax._
 
 object Marius extends GeodeticDistance {
   lazy val distanceMatrix: DistanceMatrix = {
@@ -54,38 +51,39 @@ trait Marius <: StepByStep
   def sizeEffectOnProductivity: Double
   def sizeEffectOnInitialWealth: Double
 
-  def cities: Lens[STATE, Seq[CITY]]
-  def population: Lens[CITY, Double]
-  def wealth: Lens[CITY, Double]
-  def region: Lens[CITY, String]
-  def nation: Lens[CITY, String]
-  def regionalCapital: Lens[CITY, Boolean]
-  def nationalCapital: Lens[CITY, Boolean]
-  def network: Lens[STATE, Network]
+  def cities: SimpleLens[STATE, Seq[CITY]]
+  def population: SimpleLens[CITY, Double]
+  def wealth: SimpleLens[CITY, Double]
+  def region: SimpleLens[CITY, String]
+  def nation: SimpleLens[CITY, String]
+  def regionalCapital: SimpleLens[CITY, Boolean]
+  def nationalCapital: SimpleLens[CITY, Boolean]
+  def network: SimpleLens[STATE, Network]
 
   lazy val distanceMatrix: DistanceMatrix = Marius.distanceMatrix
 
   def nextState(s: STATE)(implicit rng: Random) = {
     for {
-      ws <- wealths(s)
+      newWealths <-  wealths(s)
     } yield {
       def populations =
-        ws.zipWithIndex.map {
-          case (w, i) =>
-            check(w >= 0, s"City $i error in wealth before conversion toPop $w")
-            val p = wealthToPopulation(w)
-            check(p >= 0, s"Error in wealth $w $p")
-            p
+        ((s |-> cities get) zip newWealths).zipWithIndex.map {
+          case ((city, newWealth), i) =>
+            check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
+            val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(city |-> wealth get)
+            val newPopulation = (city |-> population get) + deltaPopulation
+            check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
+            newPopulation
         }
 
       def newCities =
-        (cities.get(s) zip populations zip ws).map(flatten).map {
+        ((s |-> cities get) zip populations zip newWealths).map(flatten).map {
           case (c, p, w) =>
             check(p >= 0, s"The population of $c is negative $p, $w")
-            wealth.set(population.set(c, p), w)
+            (c |-> wealth set w) |-> population set p
         }
 
-      cities.set(step.mod(_ + 1, s), newCities)
+      (s |-> cities set newCities) |-> step modify (_ + 1)
     }
   }
 
@@ -102,7 +100,7 @@ trait Marius <: StepByStep
         bs zipWithIndex).map(flatten).map {
         case (city, supply, demand, b, i) =>
           val newWealth =
-            wealth.get(city) + supply - demand + b
+            (city |-> wealth get) + supply - demand + b
           if (newWealth <= 0.0) 0.0 else newWealth
       }
     }
@@ -111,8 +109,8 @@ trait Marius <: StepByStep
   def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0)
   def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0)
 
-  def supplies(cities: Seq[CITY]) = cities.map(c => supply(population.get(c)))
-  def demands(cities: Seq[CITY]) = cities.map(c => demand(population.get(c)))
+  def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
+  def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
   def demand(population: Double) = consumption(population) * population
 
@@ -135,15 +133,12 @@ trait Marius <: StepByStep
   def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double = 2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
 
   def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    assert(inversionPoint < popMax / 2.0)
     (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
   }
 
   def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    assert(inversionPoint < popMax / 2.0)
     (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
   }
-
 
   def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
     val factor = population.sum / wealth.sum.toDouble

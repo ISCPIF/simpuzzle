@@ -1,13 +1,17 @@
 
 import sbt._
-import Keys._
+import sbt.Keys._
 import com.typesafe.sbt.osgi.OsgiKeys._
 import com.typesafe.sbt.osgi.SbtOsgi._
 import sbtrelease.ReleasePlugin._
 
 object SimPuzzleBuild extends Build {
 
- override def settings = 
+
+  val monocleVersion = "0.4.0"  // or "0.5-SNAPSHOT"
+
+
+  override def settings = 
    super.settings ++ Seq(
      scalaVersion := "2.11.1",
      crossScalaVersions := Seq("2.10.4", "2.11.1"),
@@ -16,9 +20,13 @@ object SimPuzzleBuild extends Build {
        if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots") 
        else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
      },
-     credentials += Credentials(Path.userHome / ".sbt" / "iscpif.credentials"),
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.6",
+     libraryDependencies ++= Seq(
+       "com.github.julien-truffaut"  %%  "monocle-core"    % monocleVersion,
+       "com.github.julien-truffaut"  %%  "monocle-generic" % monocleVersion,
+       "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion
+     ),
      libraryDependencies += (
        if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.0.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.0.0"),
      libraryDependencies += "org.apache.commons" % "commons-math3" % "3.2",
@@ -59,6 +67,7 @@ object SimPuzzleBuild extends Build {
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
+
 
  lazy val flocking = Project(id = "flocking", base = file("models/flocking/model")) 
 
