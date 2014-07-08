@@ -18,6 +18,7 @@
 package fr.geocites.marius.target
 
 import fr.geocite.marius.Marius
+import fr.geocite.marius.balance.{FixedCost, Bonus}
 import fr.geocite.marius.matching.ProportionalMatching
 import fr.geocite.marius.state.FullNetworkState
 import fr.geocite.simpuzzle.logging.NoLogging
@@ -39,19 +40,21 @@ object Test extends App {
 
   implicit val rng = new Random
 
-  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
-    def popMax: Double = 10099.098575427905
+  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging with Bonus with FixedCost {
+    def popMax: Double = 10000
     def popMin: Double = 0
-    def wMax: Double = 301947.6957048669
+    def wMax: Double = 647026.717899979
     def wMin: Double = 0
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
-    def distanceDecay = 1.5967071678927165
-    def inversionPoint = 12129.353702459795
-    def sizeEffectOnProductivity =  968.7964553906668
-    def sizeEffectOnConsumption = 967.4257815954343
-    def sizeEffectOnInitialWealth: Double = 42.604314040794556
+    def distanceDecay =  2.0220171414239
+    def inversionPoint = 2569.83656967133
+    def sizeEffectOnProductivity = 668279.1977789
+    def sizeEffectOnConsumption =   0.00132415047686369
+    def sizeEffectOnInitialWealth: Double =          1.44083648815752
+    def fixedCost: Double = 0.0
 
+    def bonusMultiplier : Double =         107.219936151126
     def maxStep = 30
   }
 

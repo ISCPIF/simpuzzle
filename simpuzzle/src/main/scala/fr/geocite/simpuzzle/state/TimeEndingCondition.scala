@@ -18,10 +18,11 @@
 package fr.geocite.simpuzzle.state
 
 import monocle._
+import monocle.syntax._
 
 trait TimeEndingCondition extends EndingCondition with State {
   def maxStep: Int
-  def ended(state: STATE) = step.get(state) >= maxStep
+  def ended(state: STATE) = (state |-> step get) >= maxStep
 
   def step: SimpleLens[STATE, Int]
 }
