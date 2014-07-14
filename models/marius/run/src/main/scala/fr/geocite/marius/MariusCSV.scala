@@ -31,17 +31,14 @@ object MariusCSV extends App {
 
 
   val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
-    def popMax: Double = 10099.098575427905
-    def popMin: Double = 0
-    def wMax: Double = 301947.6957048669
-    def wMin: Double = 0
+    def wealthToPopulationExponent: Double = 1.717899979
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
-    def distanceDecay = 1.5967071678927165
-    def inversionPoint = 12129.353702459795
-    def sizeEffectOnProductivity =  968.7964553906668
-    def sizeEffectOnConsumption = 967.4257815954343
-    def sizeEffectOnInitialWealth: Double = 42.604314040794556
+    def distanceDecay =  2.0220171414239
+    def sizeEffectOnProductivity = 668279.1977789
+    def sizeEffectOnConsumption =   0.00132415047686369
+    def sizeEffectOnInitialWealth: Double =          1.44083648815752
+    def fixedCost: Double = 0.0
 
     def maxStep = 30
   }

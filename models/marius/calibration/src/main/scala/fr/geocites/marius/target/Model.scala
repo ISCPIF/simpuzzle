@@ -25,8 +25,6 @@ import fr.geocite.simpuzzle.logging.NoLogging
 
 
 trait DefaultValues {
-  def popMin: Double = 0
-  def wMin: Double = 0
   def territorialTaxes = 0.0
   def capitalShareOfTaxes = 0.0
   def maxStep = 30
@@ -36,29 +34,14 @@ class CompleteModel(
     val sizeEffectOnProductivity: Double,
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
-    val inversionPoint: Double,
-    val popMax: Double,
-    val wMax: Double,
+    val wealthToPopulationExponent: Double,
     val sizeEffectOnInitialWealth: Double) extends Marius with FullNetworkState with ProportionalMatching with NoLogging with DefaultValues
-
-class BonusModel(
-    val sizeEffectOnProductivity: Double,
-    val sizeEffectOnConsumption: Double,
-    val distanceDecay: Double,
-    val inversionPoint: Double,
-    val popMax: Double,
-    val wMax: Double,
-    val sizeEffectOnInitialWealth: Double,
-    val bonusMultiplier: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues
-
 
 class BonusFixedCostModel(
     val sizeEffectOnProductivity: Double,
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
-    val inversionPoint: Double,
-    val popMax: Double,
-    val wMax: Double,
+    val wealthToPopulationExponent: Double,
     val sizeEffectOnInitialWealth: Double,
     val bonusMultiplier: Double,
     val fixedCost: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues with FixedCost

@@ -41,14 +41,10 @@ object Test extends App {
   implicit val rng = new Random
 
   val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging with Bonus with FixedCost {
-    def popMax: Double = 10000
-    def popMin: Double = 0
-    def wMax: Double = 647026.717899979
-    def wMin: Double = 0
+    def wealthToPopulationExponent: Double = 1.717899979
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceDecay =  2.0220171414239
-    def inversionPoint = 2569.83656967133
     def sizeEffectOnProductivity = 668279.1977789
     def sizeEffectOnConsumption =   0.00132415047686369
     def sizeEffectOnInitialWealth: Double =          1.44083648815752

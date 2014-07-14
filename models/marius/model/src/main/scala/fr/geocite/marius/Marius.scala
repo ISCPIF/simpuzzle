@@ -120,36 +120,18 @@ trait Marius <: StepByStep
     s
   }
 
-  private lazy val a = coeffA(popMin, popMax, wMin, wMax, inversionPoint)
-  private lazy val b = coeffB(popMin, popMax, wMin, wMax, inversionPoint)
-  private lazy val c = 0
-
-  def popMin: Double
-  def popMax: Double
-  def inversionPoint: Double
-  def wMin: Double
-  def wMax: Double
-
-  def denominator(popMin: Double, popMax: Double, inversionPoint: Double): Double = 2 * inversionPoint * popMin - 2 * inversionPoint * popMax - pow(popMin, 2) + pow(popMax, 2)
-
-  def coeffA(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    (popMin - popMax - wMin + wMax) / denominator(popMin, popMax, inversionPoint)
-  }
-
-  def coeffB(popMin: Double, popMax: Double, wMin: Double, wMax: Double, inversionPoint: Double): Double = {
-    (2 * inversionPoint * wMin - 2 * inversionPoint * wMax - pow(popMin, 2) + pow(popMax, 2)) / denominator(popMin, popMax, inversionPoint)
-  }
-
   def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
     val factor = population.sum / wealth.sum.toDouble
     wealth.map(_ * factor)
   }
 
+  def wealthToPopulationExponent: Double
+
   def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, sizeEffectOnInitialWealth)
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")
-    (-b + sqrt(pow(b, 2) - 4 * a * (c - wealth))) / (2 * a)
+    pow(wealth, wealthToPopulationExponent)
   }
 
 }
