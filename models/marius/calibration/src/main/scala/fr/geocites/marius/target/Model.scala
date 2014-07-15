@@ -36,7 +36,7 @@ class CompleteModel(
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
     val wealthToPopulationExponent: Double,
-    val sizeEffectOnInitialWealth: Double) extends Marius with FullNetworkState with ProportionalMatching with NoLogging with DefaultValues
+    val populationToWealthExponent: Double) extends Marius with FullNetworkState with ProportionalMatching with NoLogging with DefaultValues
 
 class BonusFixedCostModel(
     val economicMultiplier: Double,
@@ -44,7 +44,7 @@ class BonusFixedCostModel(
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
     val wealthToPopulationExponent: Double,
-    val sizeEffectOnInitialWealth: Double,
+    val populationToWealthExponent: Double,
     val bonusMultiplier: Double,
     val fixedCost: Double) extends Marius with FullNetworkState with ProportionalMatching with Bonus with NoLogging with DefaultValues with FixedCost
 
