@@ -50,7 +50,7 @@ trait Marius <: StepByStep
   def economicMultiplier: Double
   def sizeEffectOnConsumption: Double
   def sizeEffectOnProductivity: Double
-  def sizeEffectOnInitialWealth: Double
+  def populationToWealthExponent: Double
 
   def cities: SimpleLens[STATE, Seq[CITY]]
   def population: SimpleLens[CITY, Double]
@@ -120,7 +120,7 @@ trait Marius <: StepByStep
 
   def wealthToPopulationExponent: Double
 
-  def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, sizeEffectOnInitialWealth)
+  def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, populationToWealthExponent)
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")
