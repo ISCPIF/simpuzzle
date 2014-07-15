@@ -48,7 +48,7 @@ object Test extends App {
     def economicMultiplier = 1.0
     def sizeEffectOnProductivity = 668279.1977789
     def sizeEffectOnConsumption =   0.00132415047686369
-    def sizeEffectOnInitialWealth: Double =          1.44083648815752
+    def populationToWealthExponent: Double =          1.44083648815752
     def fixedCost: Double = 0.0
 
 
