@@ -35,6 +35,7 @@ object MariusCSV extends App {
     def territorialTaxes = 0.0
     def capitalShareOfTaxes = 0.0
     def distanceDecay =  2.0220171414239
+    def economicMultiplier: Double = 1
     def sizeEffectOnProductivity = 668279.1977789
     def sizeEffectOnConsumption =   0.00132415047686369
     def sizeEffectOnInitialWealth: Double =          1.44083648815752

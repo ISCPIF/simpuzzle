@@ -69,9 +69,9 @@ object SimPuzzleBuild extends Build {
    )
 
 
- lazy val flocking = Project(id = "flocking", base = file("models/flocking/model")) 
+ lazy val flocking = Project(id = "flocking", base = file("models/flocking/model"))
 
- lazy val flockingbse = Project(id = "flockingbse", base = file("models/flocking/behaviourSpaceExploration")) dependsOn (flocking)
+ //lazy val flockingbse = Project(id = "flockingbse", base = file("models/flocking/behaviourSpaceExploration")) dependsOn (flocking)
 
 }
 

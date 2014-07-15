@@ -47,6 +47,7 @@ trait Marius <: StepByStep
 
   type CITY
 
+  def economicMultiplier: Double
   def sizeEffectOnConsumption: Double
   def sizeEffectOnProductivity: Double
   def sizeEffectOnInitialWealth: Double
@@ -106,19 +107,11 @@ trait Marius <: StepByStep
     }
   }
 
-  def consumption(population: Double) = sizeEffectOnConsumption * math.log(population + 1.0)
-  def productivity(population: Double) = sizeEffectOnProductivity * math.log(population + 1.0)
-
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
-  def demand(population: Double) = consumption(population) * population
-
-  def supply(population: Double) = {
-    val s = productivity(population) * population
-    check(s >= 0, s"Supply is not good, $s $population")
-    s
-  }
+  def demand(population: Double) = economicMultiplier * pow(population, sizeEffectOnConsumption)
+  def supply(population: Double) = economicMultiplier * pow(population, sizeEffectOnProductivity)
 
   def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
     val factor = population.sum / wealth.sum.toDouble

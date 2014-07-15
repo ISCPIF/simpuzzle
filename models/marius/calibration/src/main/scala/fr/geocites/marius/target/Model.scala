@@ -31,6 +31,7 @@ trait DefaultValues {
 }
 
 class CompleteModel(
+    val economicMultiplier: Double,
     val sizeEffectOnProductivity: Double,
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
@@ -38,6 +39,7 @@ class CompleteModel(
     val sizeEffectOnInitialWealth: Double) extends Marius with FullNetworkState with ProportionalMatching with NoLogging with DefaultValues
 
 class BonusFixedCostModel(
+    val economicMultiplier: Double,
     val sizeEffectOnProductivity: Double,
     val sizeEffectOnConsumption: Double,
     val distanceDecay: Double,
