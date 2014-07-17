@@ -21,7 +21,7 @@ import scala.util.Random
 import fr.geocite.marius.Marius
 import fr.geocite.simpuzzle._
 
-trait Balances <: Exchange with Redistribution { model: Marius =>
+trait Balances <: Exchange { model: Marius =>
 
   def balances(s: STATE,
     supplies: Seq[Double],
@@ -34,5 +34,6 @@ trait Balances <: Exchange with Redistribution { model: Marius =>
       }
     }
   }
-
+  def redistributionBalances(s: Seq[CITY]) = s.map(_=> 0.0)
 }
+

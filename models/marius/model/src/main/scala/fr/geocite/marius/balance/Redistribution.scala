@@ -19,12 +19,12 @@ package fr.geocite.marius.balance
 
 import fr.geocite.marius.Marius
 
-trait Redistribution { model: Marius =>
+trait Redistribution <: Balances { model: Marius =>
 
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
 
-  def redistributionBalances(s: Seq[CITY]) = (regionalRedistributions(s) zip nationalRedistributions((s))).map { case (r, s) => r + s }
+  override def redistributionBalances(s: Seq[CITY]) = (regionalRedistributions(s) zip nationalRedistributions((s))).map { case (r, s) => r + s }
 
   def regionalRedistributions(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)
   def nationalRedistributions(s: Seq[CITY]): Seq[Double] = s.map(_ => 0.0)

@@ -18,6 +18,7 @@
 package fr.geocite.marius
 
 import fr.geocite.marius._
+import fr.geocite.marius.balance._
 import fr.geocite.marius.matching._
 import fr.geocite.simpuzzle._
 import scalax.io.Resource
@@ -30,18 +31,15 @@ import java.io.File
 object MariusCSV extends App {
 
 
-  val m = new Marius with FullNetworkState with ProportionalMatching with NoLogging {
-    def popMax: Double = 10099.098575427905
-    def popMin: Double = 0
-    def wMax: Double = 301947.6957048669
-    def wMin: Double = 0
-    def territorialTaxes = 0.0
-    def capitalShareOfTaxes = 0.0
-    def distanceDecay = 1.5967071678927165
-    def inversionPoint = 12129.353702459795
-    def sizeEffectOnProductivity =  968.7964553906668
-    def sizeEffectOnConsumption = 967.4257815954343
-    def populationToWealthExponent: Double = 42.604314040794556
+  val m = new Marius with FullNetworkState with ProportionalMatching with Bonus with FixedCost with NoLogging {
+    def bonusMultiplier = 39.1721815636
+    def fixedCost = 0.0
+    def distanceDecay = 3.4904055398
+    def sizeEffectOnProductivity =  1.2010954748
+    def sizeEffectOnConsumption = 1.9538793197
+    def economicMultiplier = 0.0001913588
+    def populationToWealthExponent: Double = 1.4874860549
+    def wealthToPopulationExponent: Double = 0.9160543414
     def maxStep = 30
   }
 
