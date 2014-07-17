@@ -35,8 +35,8 @@ object MariusCSV extends App {
     def bonusMultiplier = 39.1721815636
     def fixedCost = 0.0
     def distanceDecay = 3.4904055398
-    def sizeEffectOnProductivity =  1.2010954748
-    def sizeEffectOnConsumption = 1.9538793197
+    def sizeEffectOnSupply =  1.2010954748
+    def sizeEffectOnDemand = 1.9538793197
     def economicMultiplier = 0.0001913588
     def populationToWealthExponent: Double = 1.4874860549
     def wealthToPopulationExponent: Double = 0.9160543414
