@@ -48,8 +48,8 @@ trait Marius <: StepByStep
   type CITY
 
   def economicMultiplier: Double
-  def sizeEffectOnDemand: Double
-  def sizeEffectOnSupply: Double
+  def sizeEffectOnConsumption: Double
+  def sizeEffectOnProductivity: Double
   def populationToWealthExponent: Double
 
   def cities: SimpleLens[STATE, Seq[CITY]]
@@ -110,8 +110,8 @@ trait Marius <: StepByStep
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
-  def demand(population: Double) = economicMultiplier * pow(population, 1 + sizeEffectOnDemand)
-  def supply(population: Double) = economicMultiplier * pow(population, 1 + sizeEffectOnSupply)
+  def demand(population: Double) = economicMultiplier * pow(population, 1 + sizeEffectOnConsumption)
+  def supply(population: Double) = economicMultiplier * pow(population, 1 + sizeEffectOnProductivity)
 
   def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
     val factor = population.sum / wealth.sum.toDouble
