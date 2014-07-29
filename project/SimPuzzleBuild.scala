@@ -71,6 +71,9 @@ object SimPuzzleBuild extends Build {
     libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "1.0.1"
   } dependsOn(flocking)
 
+  lazy val flockingbehaviour = Project(id = "flockingbehaviour", base = file("models/flocking/behaviour")) dependsOn(flocking)
+
+
 
  //lazy val flockingbse = Project(id = "flockingbse", base = file("models/flocking/behaviourSpaceExploration")) dependsOn (flocking)
 

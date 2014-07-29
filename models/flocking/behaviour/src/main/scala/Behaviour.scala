@@ -22,28 +22,6 @@ import fr.iscpif.flocking.model.datatypes._
 import scala.util.Random
 import scala.math._
 
-// object Behaviour {
-
-//   class Model(
-//             ) {
-//   }
-
-
-//   implicit val rng = new Random(42)
-
-//   def apply(
-//     consumptionProductivityRatio: Double,
-//     distanceDecay: Double,
-//     inversionPoint: Double): Seq[Double] = {
-
-//     val m = new Model(consumptionProductivityRatio, distanceDecay, inversionPoint)
-//     m.run match {
-//       case m.ValidState(s) => Vector[Double](s.step,totalPopulation(s),slope(s))
-//       case _ => Vector[Double]()
-//     }
-//   }
-// }
-
 
 trait Behaviour {
     // type NGroups = Int
@@ -150,7 +128,7 @@ trait Behaviour {
       }
       else collectors.map(_ match { case Val(x) => x } )
 
-    def defaultDescription = constructDescription(Vector(countGroupsCollector, relativeDiffusionCollector, velocityCollector), model.randomInit, 0)
+    def defaultDescription(implicit rng: Random) = constructDescription(Vector(countGroupsCollector, relativeDiffusionCollector, velocityCollector), model.randomInit, 0)
 
     trait DistMatrix {
       val distances: Vector[Vector[Double]]
@@ -175,7 +153,7 @@ object Behaviour{
     _maxAlignTurn: Double,
     _maxCohereTurn: Double,
     _maxSeparateTurn: Double
-    ) = {
+    )(implicit rng: Random) = {
     new Behaviour {
       val model = new Model {
         val worldWidth: Double = 1
