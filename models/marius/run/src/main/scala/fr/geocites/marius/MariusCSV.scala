@@ -17,12 +17,6 @@
 
 package fr.geocites.marius
 
-import fr.geocites.marius._
-import fr.geocites.marius.balance._
-import fr.geocites.marius.transaction._
-import fr.geocites.simpuzzle._
-import fr.geocites.simpuzzle.logging.NoLogging
-import fr.geocites.marius.state._
 import fr.geocites.simpuzzle._
 import scalax.io.Resource
 import java.io.File
@@ -42,18 +36,7 @@ object TestModel extends BonusFixedCostModel(
 
 object MariusCSV extends App {
 
-
-  val m = new Marius with FullNetworkState with ProportionalTransaction with Bonus with FixedCostTransaction with NoLogging {
-    def bonusMultiplier = 39.1721815636
-    def fixedCost = 0.0
-    def distanceDecay = 3.4904055398
-    def sizeEffectOnSupply =  1.2010954748
-    def sizeEffectOnDemand = 1.9538793197
-    def economicMultiplier = 0.0001913588
-    def populationToWealthExponent: Double = 1.4874860549
-    def wealthToPopulationExponent: Double = 0.9160543414
-    def maxStep = 30
-  }
+  val m = TestModel
 
   implicit val rng = fr.geocites.simpuzzle.random(42)
 
