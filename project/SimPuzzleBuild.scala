@@ -40,11 +40,7 @@ object SimPuzzleBuild extends Build {
 
  lazy val geotools = "org.geotools" % "gt-referencing" % "9.3"
 
- lazy val graphstream = "org.graphstream" % "gs-core" % "1.2"
-
- lazy val gexf4j = "it.uniroma1.dis.wsngroup.gexf4j" % "gexf4j" % "0.4.4-BETA"
-
- lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle")) 
+ lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"))
 
  lazy val gis = Project(id = "gis", base = file("gis")) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
 
@@ -60,9 +56,9 @@ object SimPuzzleBuild extends Build {
 
  lazy val marius = Project(id = "marius", base = file("models/marius/model")) dependsOn (simpuzzle, gibrat, gis)
 
- lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run")) dependsOn(marius) settings (libraryDependencies += graphstream)
+ lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run")) dependsOn(marius)
 
- lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = settings ++ osgiSettings) dependsOn(marius) settings (
+ lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = settings ++ osgiSettings) dependsOn(marius, mariusrun) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.target.*, monocle.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
