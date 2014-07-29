@@ -1,4 +1,4 @@
-package flocking.tools
+package fr.iscpif.flocking.model.tools
 
 //---- Base types ----//
 trait DoubleBoundsKeeper {

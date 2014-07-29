@@ -1,40 +1,19 @@
-package flocking.visu
+package fr.iscpif.flocking.visualisation
 
-import java.awt.Graphics
-import java.awt.{Point => JPoint}
-import java.awt.Graphics2D
-import java.awt.RenderingHints
-import java.awt.Color
-import java.awt.Dimension
-import java.awt.Shape
-import java.awt.geom.Line2D
-import java.awt.Rectangle
-import java.awt.geom.AffineTransform
-import java.awt.event.ActionListener
-import java.awt.event.ActionEvent
-import java.awt.Image
+import java.awt.event.{ActionEvent, ActionListener}
+import java.awt.geom.{AffineTransform, Line2D}
 import java.awt.image.BufferedImage
-import java.awt.GraphicsEnvironment
-import java.awt.GraphicsDevice
-import java.awt.GraphicsConfiguration
-import javax.imageio.ImageIO
-import java.io.File
-import java.awt.BasicStroke
-
+import java.awt.{BasicStroke, Color, Dimension, Graphics2D, GraphicsEnvironment, RenderingHints, Shape, Point => JPoint}
 import javax.swing.Timer
 
-import scala.swing._
-import scala.swing.RichWindow._
-import scala.swing.event._
-import scala.math._
+import fr.iscpif.flocking.model.datatypes._
+import fr.iscpif.flocking.model.engine._
 
-import flocking._
-import flocking.datatypes._
-import flocking.engine._
-
-// import flocking.Heading
-// import flocking.Model
-// import flocking.ModelIterator
+import scala.swing.RichWindow.Undecorated
+import swing._
+import swing.event._
+import scala.util.Random
+import math._
 
 trait Visu {
   val model: Model
@@ -43,6 +22,8 @@ trait Visu {
   val frameDelay: Int
   val birdLength:Double
   val birdWidth:Double
+
+  val seed = 42
 
   lazy val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
   lazy val gd = ge.getDefaultScreenDevice()
@@ -55,7 +36,7 @@ trait Visu {
   lazy val birdColor: Color = new Color(255,255,255)
 
   lazy val timer = new Timer(frameDelay, Surface)
-  lazy val modelStepByStep = new ModelIterator(model)
+  lazy val modelStepByStep = new ModelIterator(model)(new Random(seed))
 
   lazy val visuMainFrame = new MainFrame(gc) {
     preferredSize = new Dimension(pixelWidth, pixelHeight)

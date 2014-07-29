@@ -1,6 +1,6 @@
-package flocking.datatypes
+package fr.iscpif.flocking.model.datatypes
 
-import flocking.tools._
+import fr.iscpif.flocking.model.tools._
 
 case class Point(val x: Double, val y: Double) {
     override def toString: String = super.toString ++ s":($x, $y)"

@@ -15,10 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import flocking.engine._
-import flocking.interactions._
-import flocking.birds._
-import flocking.datatypes._
+import fr.iscpif.flocking.model.engine._
+import fr.iscpif.flocking.model.interactions._
+import fr.iscpif.flocking.model.birds._
+import fr.iscpif.flocking.model.datatypes._
 import scala.util.Random
 import scala.math._
 

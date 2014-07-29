@@ -1,12 +1,12 @@
-package flocking.birds
+package fr.iscpif.flocking.model.birds
 
 import scala.math._
 import scala.collection._
 
-import flocking.datatypes._
-import flocking.engine._
-import flocking.environment._
-import flocking.interactions._
+import fr.iscpif.flocking.model.datatypes._
+import fr.iscpif.flocking.model.engine._
+import fr.iscpif.flocking.model.environment._
+import fr.iscpif.flocking.model.interactions._
 
 
 trait Bird {

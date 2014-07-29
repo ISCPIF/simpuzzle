@@ -1,4 +1,4 @@
-package flocking.input
+package fr.iscpif.flocking.model.input
 
 import javax.swing.Timer
 import java.awt.event._

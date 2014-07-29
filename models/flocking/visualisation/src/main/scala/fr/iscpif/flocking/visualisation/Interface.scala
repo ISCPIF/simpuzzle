@@ -1,4 +1,4 @@
-package flocking
+package fr.iscpif.flocking.visualisation
 
 import scala.math._
 import java.awt.Color

@@ -1,7 +1,7 @@
-package flocking.interactions
+package fr.iscpif.flocking.model.interactions
 
-import flocking.datatypes._
-import flocking.birds._
+import fr.iscpif.flocking.model.datatypes._
+import fr.iscpif.flocking.model.birds._
 
 trait GraphBirds {
   val birds: Seq[Bird]

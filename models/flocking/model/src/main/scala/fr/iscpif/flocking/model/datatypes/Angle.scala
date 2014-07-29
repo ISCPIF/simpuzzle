@@ -1,4 +1,4 @@
-package flocking.datatypes
+package fr.iscpif.flocking.model.datatypes
 
 case class Angle(value: Double) {
   def unary_- = Angle(-value)

@@ -1,17 +1,16 @@
-package flocking.engine
+package fr.iscpif.flocking.model.engine
 
-import scala.math._
-import scala.collection._
-import scala.util.Random
+import math._
+import collection._
+import util.Random
 import java.awt.Color
 
-import flocking._
-import flocking.datatypes._
-import flocking.environment._
-import flocking.tools._
-import flocking.birds._
-import flocking.interactions._
-import flocking.birds._
+import fr.iscpif.flocking.model.datatypes._
+import fr.iscpif.flocking.model.environment._
+import fr.iscpif.flocking.model.tools._
+import fr.iscpif.flocking.model.birds._
+import fr.iscpif.flocking.model.interactions._
+import fr.iscpif.flocking.model.birds._
 
 trait Model {
   def worldWidth: Double
@@ -30,11 +29,12 @@ trait Model {
 
   lazy val env = Environment.empty(emptySpace, envDivsHorizontal, envDivsVertical, worldWidth, worldHeight)
 
-  def randomBird(id: Int): Bird = Bird(id, Position(Random.nextDouble() * worldWidth, Random.nextDouble() * worldHeight),
-    Heading.fromDouble(Random.nextDouble() * 2*Pi))
-  def randomInit: GraphBirds = GraphBirds((0 until populationSize).map( i => randomBird(i) ), vision, distanceBetween)
+  def randomBird(id: Int)(implicit rng: Random): Bird = Bird(id, Position(rng.nextDouble() * worldWidth, rng.nextDouble() * worldHeight),
+    Heading.fromDouble(rng.nextDouble() * 2*Pi))
 
-  def start(iterations: Int): GraphBirds = run(iterations, randomInit)
+  def randomInit(implicit rng: Random): GraphBirds = GraphBirds((0 until populationSize).map( i => randomBird(i) ), vision, distanceBetween)
+
+  def start(iterations: Int)(implicit rng: Random): GraphBirds = run(iterations, randomInit)
 
   def run(iterations: Int, g: GraphBirds): GraphBirds =
     if (iterations <= 0) g
@@ -42,7 +42,7 @@ trait Model {
 
   def oneStep(g: GraphBirds): GraphBirds = buildGraph(updateBirds(g))
 
-  def forEachState[T](maxiter: Int, f: (Model, Int, GraphBirds) => T): Seq[T] = forEachState(0, maxiter, f, randomInit)
+  def forEachState[T](maxiter: Int, f: (Model, Int, GraphBirds) => T)(implicit rng: Random): Seq[T] = forEachState(0, maxiter, f, randomInit)
   def forEachState[T](i: Int, maxiter: Int, f: (Model, Int, GraphBirds) => T, state: GraphBirds): List[T] =
     f(this, i, state) :: (if (i < maxiter) forEachState(i + 1, maxiter, f, oneStep(state)) else List())
 
@@ -61,7 +61,7 @@ trait Model {
   }
 }
 
-class ModelIterator(val model: Model) {
+class ModelIterator(val model: Model)(implicit rng: Random) {
   var currentState = model.randomInit
   def step = {
     currentState = model.oneStep(currentState)

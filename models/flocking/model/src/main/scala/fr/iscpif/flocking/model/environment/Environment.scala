@@ -1,8 +1,8 @@
-package flocking.environment
+package fr.iscpif.flocking.model.environment
 
 
-import flocking.tools._
-import flocking.datatypes._
+import fr.iscpif.flocking.model.tools._
+import fr.iscpif.flocking.model.datatypes._
 import scala.reflect.ClassTag
 
 trait Environment[T] {

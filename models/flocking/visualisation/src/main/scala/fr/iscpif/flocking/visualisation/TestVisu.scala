@@ -1,9 +1,8 @@
-package flocking
+package fr.iscpif.flocking.visualisation
 
-import scala.math._
-import flocking.visu._
-import flocking.engine._
-import flocking.datatypes._
+import math._
+import fr.iscpif.flocking.model.engine._
+import fr.iscpif.flocking.model.datatypes._
 
 object TestVisu extends App {
 

@@ -1,8 +1,8 @@
-package flocking.datatypes
+package fr.iscpif.flocking.model.datatypes
 
 import scala.math._
 
-import flocking.tools._
+import fr.iscpif.flocking.model.tools._
 
 object HeadingBoundsKeeper {
   val hbk = DoubleBoundsKeeper(0,2 * Pi)

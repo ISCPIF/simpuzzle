@@ -1,10 +1,10 @@
-package flocking.tools
+package fr.iscpif.flocking.model.tools
 
 import scala.math._
 import scala.collection._
 import scala.util.Random
 
-import flocking.datatypes._
+import fr.iscpif.flocking.model.datatypes._
 
 object Distance {
   def torus(width:Double, height:Double)(p1: Point, p2: Point): Double = sqrt(pow(min(abs(p2.x - p1.x), width - abs(p2.x - p1.x)), 2) + pow(min(abs(p2.y - p1.y), height - abs(p2.y - p1.y)),2))
