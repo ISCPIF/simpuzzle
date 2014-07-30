@@ -169,6 +169,6 @@ object Behaviour{
         val envDivsVertical: Int = 1
         val visionObstacle: Double = 1
       }
-      }.defaultDescription
+      }.defaultDescription.toArray
   }
 }
