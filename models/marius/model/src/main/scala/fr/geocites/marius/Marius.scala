@@ -81,18 +81,21 @@ trait Marius <: StepByStep
     for {
       bs <- balances(s, ss, ds)
     } yield {
-      (cities.get(s) zip
-        ss zip
-        ds zip
-        bs zipWithIndex).map(flatten).map {
-        case (city, supply, demand, b, i) =>
-          val newWealth =
-            (city |-> wealth get) + supply - demand + b
-          if (newWealth <= 0.0) 0.0 else newWealth
-      }
+      val newWealths =
+        (cities.get(s) zip
+          ss zip
+          ds zip
+          bs zipWithIndex).map(flatten).map {
+          case (city, supply, demand, b, i) =>
+            val newWealth =
+              (city |-> wealth get) + supply - demand + b
+            if (newWealth <= 0.0) 0.0 else newWealth
+        }
+        resourcesEffect(newWealths)
     }
   }
 
+  def resourcesEffect(wealths: Seq[Double]) = wealths
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
