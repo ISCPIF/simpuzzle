@@ -34,15 +34,28 @@ object BonusFixedCostTest extends BonusFixedCostModel(
   wealthToPopulationExponent = 0.906444352884275
 )
 
+object ResourceBonusTest extends ResourceBonusModel(
+  bonusMultiplier = 566.040564661515,
+  fixedCost = 0,
+  distanceDecay = 0,
+  sizeEffectOnSupply = 1.2220357365531,
+  sizeEffectOnDemand = 1.18530440441915,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1,
+  wealthToPopulationExponent = 0.906444352884275,
+  oilAndGazEffect = 0.1,
+  coalEffect = -0.1
+)
+
 
 object MariusCSV extends App {
 
-  lazy val models = List(BonusFixedCostTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest)
 
-  println(Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println(Console.GREEN + s"$i -> ${Console.WHITE} $c") }
+  println(Console.BLINK + Console.YELLOW + "Choose you model: ")
+  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println(Console.BLINK + Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
-  print(Console.WHITE)
+  print(Console.RESET)
 
   run(models(i))
 
