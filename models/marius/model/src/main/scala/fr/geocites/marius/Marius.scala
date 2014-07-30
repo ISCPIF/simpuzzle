@@ -75,16 +75,16 @@ trait Marius <: StepByStep
   }
 
   def wealths(s: STATE)(implicit rng: Random) = {
-    val supplies = supplies(cities.get(s))
-    val demands = demands(cities.get(s))
+    val suppliesOfCities = supplies(cities.get(s))
+    val demandsOfCities = demands(cities.get(s))
 
     for {
-      balances <- balances(s, supplies, demands)
+      balances <- balances(s, suppliesOfCities, demandsOfCities)
     } yield {
       val newWealths =
         (cities.get(s) zip
-          supplies zip
-          demands zip
+          suppliesOfCities zip
+          demandsOfCities zip
           balances zipWithIndex).map(flatten).map {
           case (city, supply, demand, balance, i) =>
             val newWealth =
