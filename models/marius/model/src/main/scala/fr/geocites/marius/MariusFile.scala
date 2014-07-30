@@ -93,8 +93,8 @@ object MariusFile extends GeodeticDistance {
   /** Populations of the cities at the first date */
   def initialPopulations = populations(dates.head).get
 
-  /** Cities with hydrocarbons */
-  def hydrocarbonDistribution = startingCities.map(l => toBoolean(l(8)))
+  /** Cities with oil and/or gaz */
+  def oilOrGazDistribution = startingCities.map(l => toBoolean(l(8)))
 
   /** Cities with coal */
   def coalDistribution = startingCities.map(l => toBoolean(l(6)))

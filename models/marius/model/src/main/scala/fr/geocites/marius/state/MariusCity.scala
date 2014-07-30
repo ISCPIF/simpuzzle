@@ -24,7 +24,15 @@ import MariusFile._
 import monocle.Macro._
 
 object MariusCity {
-  case class City(population: Double, wealth: Double, region: String, state: String, regionalCapital: Boolean, nationalCapital: Boolean)
+  case class City(
+    population: Double,
+    wealth: Double,
+    region: String,
+    state: String,
+    regionalCapital: Boolean,
+    nationalCapital: Boolean,
+    oilOrGaz: Boolean,
+    coal: Boolean)
 }
 
 trait MariusCity <: Marius {
@@ -36,13 +44,15 @@ trait MariusCity <: Marius {
   def region = mkLens[CITY, String]("region")
   def nation = mkLens[CITY, String]("state")
   def nationalCapital = mkLens[CITY, Boolean]("nationalCapital")
+  def oilOrGaz = mkLens[CITY, Boolean]("oilOrGaz")
+  def coal = mkLens[CITY, Boolean]("coal")
 
   def initialCities(implicit rng: Random) = {
     val pop = initialPopulations.toSeq
     val initialWealths = rescaleWealth(initialPopulations.map(initialWealth), pop)
 
     (for {
-      (_population, _region, _state, _regionalCapital, _nationalCapital, _initialWealth) <- pop.toIterator zip regions zip MariusFile.states zip regionCapitals zip nationalCapitals zip initialWealths.toIterator map (flatten)
+      (_population, _region, _state, _regionalCapital, _nationalCapital, _oilOrGaz, _coal, _initialWealth) <- pop.toIterator zip regions zip MariusFile.states zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
     } yield {
       MariusCity.City(
         population = _population,
@@ -50,7 +60,9 @@ trait MariusCity <: Marius {
         state = _state,
         regionalCapital = _regionalCapital,
         nationalCapital = _nationalCapital,
-        wealth = _initialWealth
+        wealth = _initialWealth,
+        oilOrGaz = _oilOrGaz,
+        coal = _coal
       )
     }).take(nbCities).toVector
   }

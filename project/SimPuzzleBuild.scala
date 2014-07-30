@@ -1,9 +1,8 @@
 
+import com.typesafe.sbt.SbtScalariform
 import sbt._
 import sbt.Keys._
-import com.typesafe.sbt.osgi.OsgiKeys._
 import com.typesafe.sbt.osgi.SbtOsgi._
-import sbtrelease.ReleasePlugin._
 
 object SimPuzzleBuild extends Build {
 

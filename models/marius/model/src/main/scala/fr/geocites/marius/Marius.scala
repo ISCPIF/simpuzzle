@@ -91,11 +91,11 @@ trait Marius <: StepByStep
               (city |-> wealth get) + supply - demand + b
             if (newWealth <= 0.0) 0.0 else newWealth
         }
-        resourcesEffect(newWealths)
+        resourcesEffect(s |-> cities get, newWealths)
     }
   }
 
-  def resourcesEffect(wealths: Seq[Double]) = wealths
+  def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) = newWealths
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
