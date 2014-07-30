@@ -17,7 +17,7 @@
 
 package fr.geocites.marius.calibration
 
-import fr.geocites.marius.TestModel
+import fr.geocites.marius.BonusFixedCostTest
 
 import scala.util.Random
 
@@ -26,7 +26,7 @@ object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
-  val evaluation = Evaluation.multiMacro(TestModel)
+  val evaluation = Evaluation.multiMacro(BonusFixedCostTest)
   println("nb dead\tdistribution\toverflow")
   println(evaluation.map(_.formatted("%g")).mkString("\t"))
 

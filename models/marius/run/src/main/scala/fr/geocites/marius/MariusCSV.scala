@@ -21,8 +21,9 @@ import fr.geocites.simpuzzle._
 import scalax.io.Resource
 import java.io.File
 import util.{Success, Failure}
+import monocle.syntax._
 
-object TestModel extends BonusFixedCostModel(
+object BonusFixedCostTest extends BonusFixedCostModel(
   bonusMultiplier = 566.040564661515,
   fixedCost = 0,
   distanceDecay = 0,
@@ -36,37 +37,46 @@ object TestModel extends BonusFixedCostModel(
 
 object MariusCSV extends App {
 
-  val m = TestModel
+  lazy val models = List(BonusFixedCostTest)
 
-  implicit val rng = fr.geocites.simpuzzle.random(42)
+  println(Console.YELLOW + "Choose you model: ")
+  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println(Console.GREEN + s"$i -> ${Console.WHITE} $c") }
+  val i = io.StdIn.readInt()
+  print(Console.WHITE)
 
-  val path = "/tmp/mariusmodel_log.csv"
+  run(models(i))
 
-  new File (path).delete
+  def run(m: Marius) = {
+    implicit val rng = fr.geocites.simpuzzle.random(42)
+    import m._
 
-  val out = Resource.fromFile(path)
+    val path = "/tmp/mariusmodel_log.csv"
 
-  out.append("step, arokato, population, wealth \n")
+    new File(path).delete
 
-  for {
-    (log, cptr) <- m.logs zipWithIndex
-  } log.value match {
-    case Success(s) =>
-      val cities = s.cities
-      val transacted = log.written
+    val out = Resource.fromFile(path)
 
-      for {
-        (city, arokato, i) <- (cities zip MariusFile.arokatos).zipWithIndex.map(flatten)
-      } {
-        def line = Seq(cptr, arokato, city.population, city.wealth)
-        out.append(line.mkString("", ",", "\n"))
+    out.append("step, arokato, population, wealth \n")
 
-      }
-      val totalWealth = cities.map(_.wealth).sum
-      val totalPop = cities.map(_.population).sum
+    for {
+      (log, cptr) <- m.logs zipWithIndex
+    } log.value match {
+      case Success(s) =>
+        val cs = s |-> cities get
+        val transacted = log.written
 
-      println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
-    case Failure(e) => println(s"Invadid State $e")
+        for {
+          (city, arokato, i) <- (cs zip MariusFile.arokatos).zipWithIndex.map(flatten)
+        } {
+          def line = Seq(cptr, arokato, city |-> population get, city |-> wealth get)
+          out.append(line.mkString("", ",", "\n"))
+        }
+        val totalWealth = cs.map(_ |-> wealth get).sum
+        val totalPop = cs.map(_ |-> population get).sum
+
+        println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+      case Failure(e) => println(s"Invadid State $e")
+    }
   }
 
 }
