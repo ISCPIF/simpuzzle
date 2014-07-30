@@ -17,6 +17,6 @@ class ResourceBonusModel(
     val wealthToPopulationExponent: Double,
     val populationToWealthExponent: Double,
     val bonusMultiplier: Double,
-    val fixedCost: Double
-    val oilAndGazEffect: Double
+    val fixedCost: Double,
+    val oilAndGazEffect: Double,
     val coalEffect: Double) extends Marius with Bonus with FixedCostTransaction with SubSurfaceResources with DefaultValues with FullNetworkState
