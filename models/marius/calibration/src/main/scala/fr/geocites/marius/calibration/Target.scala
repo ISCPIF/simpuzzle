@@ -23,7 +23,24 @@ import scala.util.{Random, Failure, Success, Try}
 import math._
 import monocle.syntax._
 
-object Target {
+object Evaluation {
+
+
+  def singleMacro(marius: Marius)(implicit rng: Random): Double =
+    Try {
+      import marius._
+      val fitness =
+        (for { (state, step) <- marius.states.zipWithIndex } yield state match {
+          case Success(s) => distanceToData(step, (s |-> marius.cities get) map (_ |-> population get), _.sorted)
+          case Failure(_) => Double.PositiveInfinity
+        }).sum
+      if (fitness.isNaN) Double.PositiveInfinity else fitness
+    }.getOrElse(Double.PositiveInfinity)
+
+
+  def multiMacro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, _.sorted))
+  def multiMicro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, identity))
+
 
   def logSquaresError(d1: Seq[Double], d2: Seq[Double]) =
     (d1 zip d2) map {
@@ -33,36 +50,15 @@ object Target {
 
   def date(step: Int) = MariusFile.dates.head + step
 
-  def distanceToData(step: Int, populations: Seq[Double]) =
+  def distanceToData(step: Int, populations: Seq[Double], preProcessing: Seq[Double] => Seq[Double]) =
     MariusFile.populations(dates.head + step).map {
-      empirical => logSquaresError(populations.sorted, empirical.sorted)
+      empirical => logSquaresError(preProcessing(populations), preProcessing(empirical))
     }.getOrElse(0.0)
 
   def sum(it: Iterator[Seq[Double]]) = it.foldLeft(Seq(0.0, 0.0, 0.0)) { (s, v) => (s zip v).map { case (x, y) => x + y } }
 
-}
 
-import Target._
-
-
-object Target1 {
-
-  def error(marius: Marius)(implicit rng: Random): Double =
-    Try {
-      import marius._
-      val fitness =
-        (for { (state, step) <- marius.states.zipWithIndex } yield state match {
-          case Success(s) => distanceToData(step, (s |-> marius.cities get) map (_ |-> population get))
-          case Failure(_) => Double.PositiveInfinity
-        }).sum
-      if (fitness.isNaN) Double.PositiveInfinity else fitness
-    }.getOrElse(Double.PositiveInfinity)
-}
-
-
-object Target2 {
-
-  def error(marius: Marius)(implicit rng: Random): Array[Double] = Try {
+  def multi(marius: Marius, distanceFunction: (Int, Seq[Double]) => Double)(implicit rng: Random): Array[Double] = Try {
 
     import marius._
 
@@ -85,7 +81,7 @@ object Target2 {
             case Success(s) =>
               val overflow = totalOverflowRatio(s |-> marius.cities get)
               val deadCities = (s |-> marius.cities get).count(c => (c |-> wealth get) <= 0.0)
-              val distance = distanceToData(step, (s |-> cities get) map (_ |-> population get))
+              val distance = distanceFunction(step, (s |-> cities get) map (_ |-> population get))
               Seq(deadCities, distance, overflow)
             case Failure(_) =>
               Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)

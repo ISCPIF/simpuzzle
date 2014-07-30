@@ -26,7 +26,7 @@ object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
-  val evaluation = Target2.error(TestModel)
+  val evaluation = Evaluation.multiMacro(TestModel)
   println("nb dead\tdistribution\toverflow")
   println(evaluation.map(_.formatted("%g")).mkString("\t"))
 
