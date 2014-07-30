@@ -23,14 +23,14 @@ import java.io.File
 import util.{Success, Failure}
 
 object TestModel extends BonusFixedCostModel(
-  bonusMultiplier = 39.1721815636,
-  fixedCost = 0.0,
-  distanceDecay = 3.4904055398,
-  sizeEffectOnSupply = 1.2010954748,
-  sizeEffectOnDemand = 1.9538793197,
-  economicMultiplier = 0.0001913588,
-  populationToWealthExponent = 1.4874860549,
-  wealthToPopulationExponent = 0.9160543414
+  bonusMultiplier = 566.040564661515,
+  fixedCost = 0,
+  distanceDecay = 0,
+  sizeEffectOnSupply = 1.2220357365531,
+  sizeEffectOnDemand = 1.18530440441915,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1,
+  wealthToPopulationExponent = 0.906444352884275
 )
 
 

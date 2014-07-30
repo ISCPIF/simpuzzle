@@ -42,9 +42,9 @@ trait Exchange <: Transaction { this: Marius =>
 
     def interactions =
       for {
-        (l, i) <- t.transacted.lines.zipWithIndex
-        Cell(j, v) <- l
-      } yield Interaction(i, j, v)
+        (row, i) <- t.transacted.lines.zipWithIndex
+        Cell(j, value) <- row
+      } yield Interaction(i, j, value)
 
     log(transactedBalances(t), interactions)
   }
@@ -52,17 +52,17 @@ trait Exchange <: Transaction { this: Marius =>
   def transactedBalances(transacted: Transacted) = {
     def unsatisfieds =
       for {
-        (d, i) <- transacted.demands.zipWithIndex
+        (demand, i) <- transacted.demands.zipWithIndex
       } yield {
-        val unsatisfied = d - transacted.transactedToSum(i)
+        val unsatisfied = demand - transacted.transactedToSum(i)
         if (unsatisfied >= 0) unsatisfied else 0
       }
 
     def unsolds =
       for {
-        (s, i) <- transacted.supplies.zipWithIndex
+        (supply, i) <- transacted.supplies.zipWithIndex
       } yield {
-        val unsold = s - transacted.transactedFromSum(i)
+        val unsold = supply - transacted.transactedFromSum(i)
         if (unsold >= 0) unsold else 0
       }
 
