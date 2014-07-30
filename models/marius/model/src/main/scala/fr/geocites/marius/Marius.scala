@@ -53,7 +53,7 @@ trait Marius <: StepByStep
     for {
       newWealths <-  wealths(s)
     } yield {
-      def populations =
+      def newPopulations =
         ((s |-> cities get) zip newWealths).zipWithIndex.map {
           case ((city, newWealth), i) =>
             check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
@@ -64,10 +64,10 @@ trait Marius <: StepByStep
         }
 
       def newCities =
-        ((s |-> cities get) zip populations zip newWealths).map(flatten).map {
-          case (city, population, wealth) =>
-            check(population >= 0, s"The population of $city is negative $population, $wealth")
-            (city |-> wealth set wealth) |-> population set population
+        ((s |-> cities get) zip newPopulations zip newWealths).map(flatten).map {
+          case (city, newPopulation, newWealth) =>
+            check(newPopulation >= 0, s"The population of $city is negative $newPopulation, $newWealth")
+            (city |-> wealth set newWealth) |-> population set newPopulation
         }
 
       (s |-> cities set newCities) |-> step modify (_ + 1)
