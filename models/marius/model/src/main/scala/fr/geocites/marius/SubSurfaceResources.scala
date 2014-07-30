@@ -23,7 +23,7 @@ import monocle.syntax._
 
 trait SubSurfaceResources <: Marius {
 
-  def oilOrGazEffect: Double
+  def oilAndGazEffect: Double
   def coalEffect: Double
 
   def oilOrGaz: SimpleLens[CITY, Boolean]
@@ -31,11 +31,11 @@ trait SubSurfaceResources <: Marius {
 
   override def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) =
     (cities zip newWealths).map {
-      case (c, w) =>
-        w * {
+      case (city, wealth) =>
+        wealth * {
           1 +
-            (if (c |-> oilOrGaz get) oilOrGazEffect else 0.0) +
-            (if (c |-> coal get) coalEffect else 0.0)
+            (if (city |-> oilOrGaz get) oilAndGazEffect else 0.0) +
+            (if (city |-> coal get) coalEffect else 0.0)
         }
     }
 

@@ -65,9 +65,9 @@ trait Marius <: StepByStep
 
       def newCities =
         ((s |-> cities get) zip populations zip newWealths).map(flatten).map {
-          case (c, p, w) =>
-            check(p >= 0, s"The population of $c is negative $p, $w")
-            (c |-> wealth set w) |-> population set p
+          case (city, population, wealth) =>
+            check(population >= 0, s"The population of $city is negative $population, $wealth")
+            (city |-> wealth set wealth) |-> population set population
         }
 
       (s |-> cities set newCities) |-> step modify (_ + 1)
@@ -75,20 +75,20 @@ trait Marius <: StepByStep
   }
 
   def wealths(s: STATE)(implicit rng: Random) = {
-    val ss = supplies(cities.get(s))
-    val ds = demands(cities.get(s))
+    val supplies = supplies(cities.get(s))
+    val demands = demands(cities.get(s))
 
     for {
-      bs <- balances(s, ss, ds)
+      balances <- balances(s, supplies, demands)
     } yield {
       val newWealths =
         (cities.get(s) zip
-          ss zip
-          ds zip
-          bs zipWithIndex).map(flatten).map {
-          case (city, supply, demand, b, i) =>
+          supplies zip
+          demands zip
+          balances zipWithIndex).map(flatten).map {
+          case (city, supply, demand, balance, i) =>
             val newWealth =
-              (city |-> wealth get) + supply - demand + b
+              (city |-> wealth get) + supply - demand + balance
             if (newWealth <= 0.0) 0.0 else newWealth
         }
         resourcesEffect(s |-> cities get, newWealths)

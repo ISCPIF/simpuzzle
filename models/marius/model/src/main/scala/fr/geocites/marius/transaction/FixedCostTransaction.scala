@@ -36,13 +36,13 @@ trait FixedCostTransaction <: Marius with ProportionalTransaction {
     val fromInteractionPotentialSum = interactionMatrixValue.transpose.linesContent.map(_.sum)
 
     interactionMatrixValue.map {
-      (from, to, ip) =>
-        if (ip > 0) {
+      (from, to, interactionPotential) =>
+        if (interactionPotential > 0) {
           val fSupply = supplies(from)
           val fromIPSum = fromInteractionPotentialSum(from)
-          val normalisedIPFrom = ip / fromIPSum
+          val normalisedIPFrom = interactionPotential / fromIPSum
 
-          if (normalisedIPFrom * fSupply > fixedCost) ip else 0.0
+          if (normalisedIPFrom * fSupply > fixedCost) interactionPotential else 0.0
         } else 0.0
     }
   }

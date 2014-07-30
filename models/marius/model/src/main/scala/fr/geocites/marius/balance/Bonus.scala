@@ -47,8 +47,8 @@ trait Bonus <: Exchange { marius: Marius =>
       } yield t.transactedFromSum(i)
 
     (importVolumes zip exportVolumes zip diversityBonuses).map(flatten) map {
-      case (is, es, diversityBonus) =>
-        bonusMultiplier * (is + es) * diversityBonus
+      case (importVolume, exportVolume, diversityBonus) =>
+        bonusMultiplier * (importVolume + exportVolume) * diversityBonus
     }
   }
 

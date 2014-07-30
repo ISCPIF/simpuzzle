@@ -27,9 +27,9 @@ trait Balances <: Exchange { model: Marius =>
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {
     for {
-      eb <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
+      exchangeBalance <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
     } yield {
-      (eb zip redistributionBalances(cities.get(s))).map(flatten).map {
+      (exchangeBalance zip redistributionBalances(cities.get(s))).map(flatten).map {
         case (exchangeBalance, redistribution) => exchangeBalance + redistribution
       }
     }
