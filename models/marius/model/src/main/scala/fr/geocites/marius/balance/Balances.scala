@@ -30,7 +30,7 @@ trait Balances <: Exchange { model: Marius =>
       exchangeBalance <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
     } yield {
       (exchangeBalance zip redistributionBalances(cities.get(s))).map(flatten).map {
-        case (exchangeBalance, redistribution) => exchangeBalance + redistribution
+        case (exchangeBalance, redistributionBalance) => exchangeBalance + redistributionBalance
       }
     }
   }

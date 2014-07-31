@@ -56,7 +56,7 @@ object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
   economicMultiplier = 0.589041240155966,
   populationToWealthExponent = 1.06919766558929,
   wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 1.0,
+  territorialTaxes = 0.0,
   capitalShareOfTaxes = 0.0
 )
 object MariusCSV extends App {
