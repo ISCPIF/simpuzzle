@@ -35,17 +35,17 @@ trait Redistribution <: Balances { model: Marius =>
         (territory, indexedCities) <- s.zipWithIndex.groupBy { case (c, _) => territorialUnit(c) }
         (cities, indexes) = indexedCities.unzip
       } yield {
-        val taxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
-        val capitalShare = capitalShareOfTaxes * taxes.sum
-        val taxesLeft = taxes.sum - capitalShare
-        val regionPopulation = cities.map(c => population.get(c)).sum
+        val cityTaxes = cities.map(c => supply(population.get(c)) * territorialTaxes)
+        val capitalShare = capitalShareOfTaxes * cityTaxes.sum
+        val taxesLeft = cityTaxes.sum - capitalShare
+        val territoryPopulation = cities.map(c => population.get(c)).sum
 
-        val territorialDeltas = (cities zip taxes).map {
+        val territorialDeltas = (cities zip cityTaxes).map {
           case (city, cityTaxes) =>
-            val populationShare = population.get(city) / regionPopulation
+            val populationShare = population.get(city) / territoryPopulation
 
             val delta =
-              (if (capital(city)) taxesLeft * populationShare + capitalShare
+              (if (capital(city)) (taxesLeft * populationShare) + capitalShare
               else taxesLeft * populationShare) - cityTaxes
             delta
         }
