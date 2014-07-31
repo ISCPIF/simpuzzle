@@ -24,36 +24,47 @@ import util.{Success, Failure}
 import monocle.syntax._
 
 object BonusFixedCostTest extends BonusFixedCostModel(
-  bonusMultiplier = 566.040564661515,
-  fixedCost = 0,
-  distanceDecay = 0,
-  sizeEffectOnSupply = 1.2220357365531,
-  sizeEffectOnDemand = 1.18530440441915,
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
   economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1,
-  wealthToPopulationExponent = 0.906444352884275
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697
 )
 
 object ResourceBonusTest extends ResourceBonusModel(
-  bonusMultiplier = 566.040564661515,
-  fixedCost = 0,
-  distanceDecay = 0,
-  sizeEffectOnSupply = 1.2220357365531,
-  sizeEffectOnDemand = 1.18530440441915,
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
   economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1,
-  wealthToPopulationExponent = 0.906444352884275,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
   oilAndGazEffect = 0.1,
   coalEffect = -0.1
 )
 
-
+object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 1.0,
+  capitalShareOfTaxes = 0.0
+)
 object MariusCSV extends App {
 
-  lazy val models = List(BonusFixedCostTest, ResourceBonusTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest)
 
-  println(Console.BLINK + Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println(Console.BLINK + Console.GREEN + s"$i -> ${Console.GREEN} $c") }
+  println(Console.YELLOW + "Choose you model: ")
+  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println( Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
   print(Console.RESET)
 
