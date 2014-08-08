@@ -78,7 +78,7 @@ object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
 
 object MariusCSV extends App {
 
-  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest)
 
   println(Console.YELLOW + "Choose you model: ")
   models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println( Console.GREEN + s"$i -> ${Console.GREEN} $c") }
