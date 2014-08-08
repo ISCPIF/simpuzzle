@@ -97,10 +97,10 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
   economicMultiplier = 0.589041240155966,
   populationToWealthExponent = 1.06919766558929,
   wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.5,
+  territorialTaxes = 0.1,
   capitalShareOfTaxes = 0.0,
-  oilAndGazEffect = 0.00802829621343371,
-  coalEffect = -0.0463216918040995
+  oilAndGazEffect = 0.0,
+  coalEffect = 0.0
 )
 
 
