@@ -35,16 +35,16 @@ object BonusFixedCostTest extends BonusFixedCostModel(
 )
 
 object ResourceBonusTest extends ResourceBonusModel(
-  bonusMultiplier = 564.646869914297,
-  fixedCost = 0.427446768353976,
-  distanceDecay = 0.67639638323395,
-  sizeEffectOnSupply = 1,
-  sizeEffectOnDemand = 1.0841916528743,
-  economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1.06919766558929,
-  wealthToPopulationExponent = 0.410661076332697,
-  oilAndGazEffect = 0.1,
-  coalEffect = -0.1
+  bonusMultiplier = 58.5435812361961,
+  fixedCost = 0.0793245336722257,
+  distanceDecay = 0.000291097872621446,
+  sizeEffectOnSupply = 1.00140816140032,
+  sizeEffectOnDemand = 1.14688384320373,
+  economicMultiplier = 0.406724246063534,
+  populationToWealthExponent = 1.16091624780169,
+  wealthToPopulationExponent = 0.448562632081331,
+  oilAndGazEffect = 0.00802829621343371,
+  coalEffect = -0.0463216918040995
 )
 
 object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
@@ -56,9 +56,26 @@ object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
   economicMultiplier = 0.589041240155966,
   populationToWealthExponent = 1.06919766558929,
   wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.0,
-  capitalShareOfTaxes = 10.0
+  territorialTaxes = 0.8,
+  capitalShareOfTaxes = 0.5
 )
+
+
+object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.8,
+  capitalShareOfTaxes = 0.5
+)
+
+
+
 object MariusCSV extends App {
 
   lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest)
