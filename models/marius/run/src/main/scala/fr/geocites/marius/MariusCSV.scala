@@ -24,25 +24,94 @@ import util.{Success, Failure}
 import monocle.syntax._
 
 object BonusFixedCostTest extends BonusFixedCostModel(
-  bonusMultiplier = 566.040564661515,
-  fixedCost = 0,
-  distanceDecay = 0,
-  sizeEffectOnSupply = 1.2220357365531,
-  sizeEffectOnDemand = 1.18530440441915,
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
   economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1,
-  wealthToPopulationExponent = 0.906444352884275
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697
+)
+
+object ResourceBonusTest extends ResourceBonusModel(
+  bonusMultiplier = 58.5435812361961,
+  fixedCost = 0.0793245336722257,
+  distanceDecay = 0.000291097872621446,
+  sizeEffectOnSupply = 1.00140816140032,
+  sizeEffectOnDemand = 1.14688384320373,
+  economicMultiplier = 0.406724246063534,
+  populationToWealthExponent = 1.16091624780169,
+  wealthToPopulationExponent = 0.448562632081331,
+  oilAndGazEffect = 0.00802829621343371,
+  coalEffect = -0.0463216918040995
+)
+
+object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.8,
+  capitalShareOfTaxes = 0.5
+)
+
+
+object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.5,
+  capitalShareOfTaxes = 0.0
+)
+
+
+object DoubleRedistributionBonusTest extends DoubleRedistributionBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.5,
+  capitalShareOfTaxes = 0.0
+)
+
+object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourceBonusModel(
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.5,
+  capitalShareOfTaxes = 0.0,
+  oilAndGazEffect = 0.00802829621343371,
+  coalEffect = -0.0463216918040995
 )
 
 
 object MariusCSV extends App {
 
-  lazy val models = List(BonusFixedCostTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
 
   println(Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println(Console.GREEN + s"$i -> ${Console.WHITE} $c") }
+  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println( Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
-  print(Console.WHITE)
+  print(Console.RESET)
 
   run(models(i))
 

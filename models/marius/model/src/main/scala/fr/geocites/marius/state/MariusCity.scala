@@ -28,7 +28,7 @@ object MariusCity {
     population: Double,
     wealth: Double,
     region: String,
-    state: String,
+    nation: String,
     regionalCapital: Boolean,
     nationalCapital: Boolean,
     oilOrGaz: Boolean,
@@ -42,7 +42,7 @@ trait MariusCity <: Marius {
   def wealth = mkLens[CITY, Double]("wealth")
   def regionalCapital = mkLens[CITY, Boolean]("regionalCapital")
   def region = mkLens[CITY, String]("region")
-  def nation = mkLens[CITY, String]("state")
+  def nation = mkLens[CITY, String]("nation")
   def nationalCapital = mkLens[CITY, Boolean]("nationalCapital")
   def oilOrGaz = mkLens[CITY, Boolean]("oilOrGaz")
   def coal = mkLens[CITY, Boolean]("coal")
@@ -52,12 +52,12 @@ trait MariusCity <: Marius {
     val initialWealths = rescaleWealth(initialPopulations.map(initialWealth), pop)
 
     (for {
-      (_population, _region, _state, _regionalCapital, _nationalCapital, _oilOrGaz, _coal, _initialWealth) <- pop.toIterator zip regions zip MariusFile.states zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
+      (_population, _region, _nation, _regionalCapital, _nationalCapital, _oilOrGaz, _coal, _initialWealth) <- pop.toIterator zip regions zip MariusFile.nations zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
     } yield {
       MariusCity.City(
         population = _population,
         region = _region,
-        state = _state,
+        nation = _nation,
         regionalCapital = _regionalCapital,
         nationalCapital = _nationalCapital,
         wealth = _initialWealth,

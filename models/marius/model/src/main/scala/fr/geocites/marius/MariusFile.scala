@@ -109,7 +109,7 @@ object MariusFile extends GeodeticDistance {
   def nationalCapitals = startingCities.map(l => toBoolean(l(11))).toIterator
 
   /** States cities belong to */
-  def states = startingCities.map(_(3)).toIterator
+  def nations = startingCities.map(_(3)).toIterator
 
   /** Cache of the distance matrix between */
   lazy val distanceMatrix: DistanceMatrix = {
