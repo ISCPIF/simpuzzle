@@ -70,7 +70,11 @@ object SimPuzzleBuild extends Build {
     libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "1.0.1"
   } dependsOn(flocking)
 
-  lazy val flockingbehaviour = Project(id = "flockingbehaviour", base = file("models/flocking/behaviour")) dependsOn(flocking)
+  lazy val flockingbehaviour = Project(id = "flockingbehaviour", base = file("models/flocking/behaviour"), settings = settings ++ osgiSettings) dependsOn(flocking) settings (
+    OsgiKeys.exportPackage := Seq("fr.iscpif.flocking.*"),
+    OsgiKeys.importPackage := Seq("*;resolution:=optional"),
+    OsgiKeys.privatePackage := Seq("!scala.*", "!monocle.*" , "*")
+    )
 
 
 
