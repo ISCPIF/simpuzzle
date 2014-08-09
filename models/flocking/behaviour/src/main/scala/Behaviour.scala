@@ -15,13 +15,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+package fr.iscpif.flocking.behaviour
+
 import fr.iscpif.flocking.model.engine._
 import fr.iscpif.flocking.model.interactions._
 import fr.iscpif.flocking.model.birds._
 import fr.iscpif.flocking.model.datatypes._
+import scala.annotation.tailrec
 import scala.util.Random
 import scala.math._
 
+
+class BehaviourComputing {
+  def compute(_populationSize : Int,
+              _vision: Double,
+              _minimumSeparation: Double,
+              _maxAlignTurn: Double,
+              _maxCohereTurn: Double,
+              _maxSeparateTurn: Double
+               )(implicit rng: Random): Array[Double] = {
+    new Behaviour {
+      val model = new Model {
+        val worldWidth: Double = 1
+        val worldHeight: Double = 1
+        val populationSize: Int = _populationSize
+        val vision: Double = _vision
+        val minimumSeparation: Double = _minimumSeparation
+        val maxAlignTurn: Angle = Angle(_maxAlignTurn)
+        val maxCohereTurn: Angle = Angle(_maxCohereTurn)
+        val maxSeparateTurn: Angle = Angle(_maxSeparateTurn)
+        val stepSize: Double = 0.02
+        val envDivsHorizontal: Int = 1
+        val envDivsVertical: Int = 1
+        val visionObstacle: Double = 1
+      }
+    }.defaultDescription.toArray
+  }
+}
 
 trait Behaviour {
     // type NGroups = Int
@@ -118,17 +148,17 @@ trait Behaviour {
         Collector(300, { (s2:GraphBirds) => Val(collectVelocity(s1)(s2))})
         })
 
-    def constructDescription(collectors: Seq[AbstractCollector[GraphBirds, Double]], gb: GraphBirds, iter: Int): Seq[Double] =
+    @tailrec final def constructDescription(gb: GraphBirds, iter: Int, collectors: AbstractCollector[GraphBirds, Double]*): Seq[Double] =
       if (collectors.exists(x => x match {case Collector(_,_) => true
         case Val(_) => false })) {
         val updatedCollectors: Seq[AbstractCollector[GraphBirds, Double]] = collectors.map(x => x match {case Collector(i,f) => if (i == iter) f(gb) else x
          case Val(_) => x})
         val updatedState = model.oneStep(gb)
-        constructDescription(updatedCollectors, updatedState, iter + 1)
+        constructDescription(updatedState, iter + 1, updatedCollectors: _*)
       }
       else collectors.map(_ match { case Val(x) => x } )
 
-    def defaultDescription(implicit rng: Random) = constructDescription(Vector(countGroupsCollector, relativeDiffusionCollector, velocityCollector), model.randomInit, 0)
+    def defaultDescription(implicit rng: Random) = constructDescription(model.randomInit, 0, countGroupsCollector, relativeDiffusionCollector, velocityCollector)
 
     trait DistMatrix {
       val distances: Vector[Vector[Double]]
@@ -146,29 +176,3 @@ trait Behaviour {
 
 }
 
-object Behaviour{
-  def apply(_populationSize : Int,
-    _vision: Double,
-    _minimumSeparation: Double,
-    _maxAlignTurn: Double,
-    _maxCohereTurn: Double,
-    _maxSeparateTurn: Double
-    )(implicit rng: Random) = {
-    new Behaviour {
-      val model = new Model {
-        val worldWidth: Double = 1
-        val worldHeight: Double = 1
-        val populationSize: Int = _populationSize
-        val vision: Double = _vision
-        val minimumSeparation: Double = _minimumSeparation
-        val maxAlignTurn: Angle = Angle(_maxAlignTurn)
-        val maxCohereTurn: Angle = Angle(_maxCohereTurn)
-        val maxSeparateTurn: Angle = Angle(_maxSeparateTurn)
-        val stepSize: Double = 0.02
-        val envDivsHorizontal: Int = 1
-        val envDivsVertical: Int = 1
-        val visionObstacle: Double = 1
-      }
-      }.defaultDescription.toArray
-  }
-}
