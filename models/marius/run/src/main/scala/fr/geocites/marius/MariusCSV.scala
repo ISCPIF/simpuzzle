@@ -70,7 +70,7 @@ object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
   economicMultiplier = 0.589041240155966,
   populationToWealthExponent = 1.06919766558929,
   wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.5,
+  territorialTaxes = 0.0,
   capitalShareOfTaxes = 0.0
 )
 

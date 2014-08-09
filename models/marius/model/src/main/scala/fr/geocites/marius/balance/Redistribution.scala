@@ -37,6 +37,7 @@ trait Redistribution <: Balances { model: Marius =>
         (cities, indexes) = indexedCities.unzip
       } yield {
         val numberOfCapitals = cities.map(c => if (capital(c)) 1 else 0).sum
+        if (numberOfCapitals < 1.0) 1.0 else numberOfCapitals
         val cityTaxes = cities.map(c => wealth.get(c) * territorialTaxes)
         val capitalShare = (capitalShareOfTaxes * cityTaxes.sum) / numberOfCapitals
         val taxesLeft = cityTaxes.sum - (capitalShare * numberOfCapitals)
