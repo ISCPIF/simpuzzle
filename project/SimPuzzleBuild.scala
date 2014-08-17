@@ -6,9 +6,7 @@ import com.typesafe.sbt.osgi.SbtOsgi._
 
 object SimPuzzleBuild extends Build {
 
-
   val monocleVersion = "0.4.0"  // or "0.5-SNAPSHOT"
-
 
   override def settings = 
    super.settings ++ Seq(
@@ -60,7 +58,7 @@ object SimPuzzleBuild extends Build {
  lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = settings ++ osgiSettings) dependsOn(marius, mariusrun) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
-    OsgiKeys.privatePackage := Seq("!scala.*", "!monocle.*" , "*")
+    OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
 
 
@@ -73,7 +71,7 @@ object SimPuzzleBuild extends Build {
   lazy val flockingbehaviour = Project(id = "flockingbehaviour", base = file("models/flocking/behaviour"), settings = settings ++ osgiSettings) dependsOn(flocking) settings (
     OsgiKeys.exportPackage := Seq("fr.iscpif.flocking.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
-    OsgiKeys.privatePackage := Seq("!scala.*", "!monocle.*" , "*")
+    OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
 
 
