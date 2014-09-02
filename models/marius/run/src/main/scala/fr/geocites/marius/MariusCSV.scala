@@ -56,8 +56,8 @@ object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
   economicMultiplier = 0.589041240155966,
   populationToWealthExponent = 1.06919766558929,
   wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.8,
-  capitalShareOfTaxes = 0.5
+  territorialTaxes = 0.0,
+  capitalShareOfTaxes = 0.0
 )
 
 
@@ -104,18 +104,18 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
 )
 
 object SingleRedistributionResourceBonusTest extends SingleRedistributionResourceBonusModel(
-  bonusMultiplier = 564.646869914297,
-  fixedCost = 0.427446768353976,
-  distanceDecay = 0.67639638323395,
-  sizeEffectOnSupply = 1,
-  sizeEffectOnDemand = 1.0841916528743,
-  economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1.06919766558929,
-  wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 1.0,
-  capitalShareOfTaxes = 0.0,
-  oilAndGazEffect = 0.0,
-  coalEffect = 0.0
+  bonusMultiplier = 0.0498867709721966,
+  fixedCost = 0.0,
+  distanceDecay = 1.71096292939843,
+  sizeEffectOnSupply = 1.21235697965534,
+  sizeEffectOnDemand = 1.2917251270043,
+  economicMultiplier = 0.00503765259863239,
+  populationToWealthExponent = 1.02056404239236,
+  wealthToPopulationExponent = 1.39356202032083,
+  territorialTaxes = 0.000247016758568942,
+  capitalShareOfTaxes = 0.0012796662370865,
+  oilAndGazEffect = -0.0744294923529989,
+  coalEffect = 0.00308798222180062
 )
 
 
