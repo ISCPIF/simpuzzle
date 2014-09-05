@@ -35,28 +35,28 @@ object BonusFixedCostTest extends BonusFixedCostModel(
 )
 
 object ResourceBonusTest extends ResourceBonusModel(
-  bonusMultiplier = 58.5435812361961,
-  fixedCost = 0.0793245336722257,
-  distanceDecay = 0.000291097872621446,
-  sizeEffectOnSupply = 1.00140816140032,
-  sizeEffectOnDemand = 1.14688384320373,
-  economicMultiplier = 0.406724246063534,
-  populationToWealthExponent = 1.16091624780169,
-  wealthToPopulationExponent = 0.448562632081331,
-  oilAndGazEffect = 0.00802829621343371,
-  coalEffect = -0.0463216918040995
+  bonusMultiplier = 92.450713956686,
+  fixedCost = 0.000378558734773219,
+  distanceDecay = 0.000477019616908816,
+  sizeEffectOnSupply = 1.61102159300671,
+  sizeEffectOnDemand = 1.08953233750212,
+  economicMultiplier = 0.00610893407538784,
+  populationToWealthExponent = 1.23133919109546,
+  wealthToPopulationExponent = 0.555223734975376,
+  oilAndGazEffect = -0.00256055211048378,
+  coalEffect = -0.022116545015663
 )
 
 object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
-  bonusMultiplier = 564.646869914297,
-  fixedCost = 0.427446768353976,
-  distanceDecay = 0.67639638323395,
-  sizeEffectOnSupply = 1,
-  sizeEffectOnDemand = 1.0841916528743,
-  economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1.06919766558929,
-  wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.0,
+  bonusMultiplier = 427.5248642847163,
+  fixedCost = 283.3037716981452,
+  distanceDecay = 5.163495482844931,
+  sizeEffectOnSupply = 1.5414957182929494,
+  sizeEffectOnDemand = 9.814965767224715,
+  economicMultiplier = 0.0,
+  populationToWealthExponent = 1.389243762417773,
+  wealthToPopulationExponent = 0.9143309383981182,
+  territorialTaxes = 0.04106670424962933,
   capitalShareOfTaxes = 0.0
 )
 
@@ -104,18 +104,18 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
 )
 
 object SingleRedistributionResourceBonusTest extends SingleRedistributionResourceBonusModel(
-  bonusMultiplier = 0.0498867709721966,
-  fixedCost = 0.0,
-  distanceDecay = 1.71096292939843,
-  sizeEffectOnSupply = 1.21235697965534,
-  sizeEffectOnDemand = 1.2917251270043,
-  economicMultiplier = 0.00503765259863239,
-  populationToWealthExponent = 1.02056404239236,
-  wealthToPopulationExponent = 1.39356202032083,
-  territorialTaxes = 0.000247016758568942,
-  capitalShareOfTaxes = 0.0012796662370865,
-  oilAndGazEffect = -0.0744294923529989,
-  coalEffect = 0.00308798222180062
+  bonusMultiplier = 564.646869914297,
+  fixedCost = 0.427446768353976,
+  distanceDecay = 0.67639638323395,
+  sizeEffectOnSupply = 1,
+  sizeEffectOnDemand = 1.0841916528743,
+  economicMultiplier = 0.589041240155966,
+  populationToWealthExponent = 1.06919766558929,
+  wealthToPopulationExponent = 0.410661076332697,
+  territorialTaxes = 0.001,
+  capitalShareOfTaxes = 0.001,
+  oilAndGazEffect = 0.03,
+  coalEffect = -0.04
 )
 
 
@@ -159,6 +159,8 @@ object MariusCSV extends App {
         val totalPop = cs.map(_ |-> population get).sum
 
         println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+
+
       case Failure(e) => println(s"Invadid State $e")
     }
   }
