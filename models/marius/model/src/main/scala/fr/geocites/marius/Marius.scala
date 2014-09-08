@@ -113,7 +113,7 @@ trait Marius <: StepByStep
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")
-    pow(wealth, wealthToPopulationExponent)
+    pow(wealth / economicMultiplier, wealthToPopulationExponent)
   }
 
 }
