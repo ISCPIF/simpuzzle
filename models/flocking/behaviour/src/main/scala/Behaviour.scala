@@ -34,9 +34,9 @@ class BehaviourComputing {
         _stepSize: Double,
         _vision: Double,
         _minimumSeparation: Double,
-        _maxAlignTurn: Angle,
-        _maxCohereTurn: Angle,
-        _maxSeparateTurn: Angle
+        _maxAlignTurn: Double,
+        _maxCohereTurn: Double,
+        _maxSeparateTurn: Double
                )(implicit rng: Random): Array[Double] = {
     new Behaviour {
       val model = new Model {
@@ -132,7 +132,7 @@ trait Behaviour {
     def collectCountGroups(state: GraphBirds): Double =
       countGroups(state) / (model.populationSize: Double)
     val countGroupsCollector: Collector[GraphBirds, Double] =
-      Collector(500, { (s: GraphBirds) => Val(collectCountGroups(s)) })
+      Collector(1000, { (s: GraphBirds) => Val(collectCountGroups(s)) })
 
     def collectRelativeDiffusion(state1: GraphBirds)(state2: GraphBirds): Double = {
       val dm = DistMatrix(state1.birds.map(_.position), model.distanceBetween)
@@ -141,16 +141,26 @@ trait Behaviour {
       relativeDiffusion(dist1, distBetween(neighbs, DistMatrix(state2.birds.map(_.position), model.distanceBetween)))
     }
     val relativeDiffusionCollector: Collector[GraphBirds, Double] =
-      Collector(400, { (s1:GraphBirds) =>
-        Collector(500, { (s2: GraphBirds) => Val(collectRelativeDiffusion(s1)(s2))})
+      Collector(950, { (s1:GraphBirds) =>
+        Collector(1000, { (s2: GraphBirds) => Val(collectRelativeDiffusion(s1)(s2))})
         })
 
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
       (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 100.0).sum / (state1.birds.size: Double) 
     val velocityCollector: Collector[GraphBirds, Double] =
-      Collector(400, { (s1:GraphBirds) =>
-        Collector(500, { (s2:GraphBirds) => Val(collectVelocity(s1)(s2))})
-        })
+      Collector(600, { (s1:GraphBirds) =>
+      Collector(1000, { (s2:GraphBirds) =>  Val(
+           collectVelocity(s1)(s2)
+         ) })})
+//    val velocityCollector: Collector[GraphBirds, Double] =
+//      Collector(500, { (s0:GraphBirds) =>
+//      Collector(600, { (s1:GraphBirds) =>
+//      Collector(700, { (s2:GraphBirds) =>
+//      Collector(800, { (s3:GraphBirds) =>
+//      Collector(900, { (s4:GraphBirds) =>
+//      Collector(1000, { (s5:GraphBirds) =>  Val(
+//           (collectVelocity(s0)(s1) + collectVelocity(s1)(s2) + collectVelocity(s2)(s3) +collectVelocity(s3)(s4) +collectVelocity(s4)(s5)) / 5.0 
+//         ) })})})})})})
 
     @tailrec final def constructDescription(gb: GraphBirds, iter: Int, collectors: AbstractCollector[GraphBirds, Double]*): Seq[Double] =
       if (collectors.exists(x => x match {case Collector(_,_) => true

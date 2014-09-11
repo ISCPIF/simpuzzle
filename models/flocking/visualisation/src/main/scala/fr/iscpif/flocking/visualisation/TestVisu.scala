@@ -13,12 +13,12 @@ object TestVisu extends App {
     val envDivsVertical: Int = 32
     val populationSize: Int = 128
     val vision: Double = 3
-    val visionObstacle: Double = 5/3
-    val minimumSeparation: Double = 1/3
+    val visionObstacle: Double = 5/3.0
+    val minimumSeparation: Double = 1/3.0
     val maxAlignTurn: Angle = Angle(toRadians(5))
     val maxCohereTurn: Angle = Angle(toRadians(3))
     val maxSeparateTurn: Angle = Angle(toRadians(1.5))
-    val stepSize: Double = 0.05
+    val stepSize: Double = 0.5
   }
 
 
@@ -26,7 +26,7 @@ object TestVisu extends App {
         lazy val model: Model = TestVisu.model
         lazy val pixelWidth: Int = 500
         lazy val pixelHeight: Int = 500
-        lazy val frameDelay: Int = 1000 / 24
+        lazy val frameDelay: Int = 0//1000 / 24
         lazy val birdLength:Double = 0.02 * min(pixelWidth, pixelHeight)
         lazy val birdWidth: Double = 2
   } 

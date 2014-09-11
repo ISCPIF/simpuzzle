@@ -124,7 +124,11 @@ trait Visu {
       }
     }
 
+
+    var iteration=0
     def actionPerformed(e: ActionEvent) {
+      println(iteration)
+      iteration += 1
       modelStepByStep.step
       repaint()
     }
