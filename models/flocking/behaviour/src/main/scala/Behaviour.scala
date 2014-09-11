@@ -27,24 +27,28 @@ import scala.math._
 
 
 class BehaviourComputing {
-  def compute(_populationSize : Int,
-              _vision: Double,
-              _minimumSeparation: Double,
-              _maxAlignTurn: Double,
-              _maxCohereTurn: Double,
-              _maxSeparateTurn: Double
+  def compute(
+        _worldWidth: Double,
+        _worldHeight: Double,
+        _populationSize: Int,
+        _stepSize: Double,
+        _vision: Double,
+        _minimumSeparation: Double,
+        _maxAlignTurn: Angle,
+        _maxCohereTurn: Angle,
+        _maxSeparateTurn: Angle
                )(implicit rng: Random): Array[Double] = {
     new Behaviour {
       val model = new Model {
-        val worldWidth: Double = 1
-        val worldHeight: Double = 1
+        val worldWidth: Double = _worldWidth //32
+        val worldHeight: Double = _worldHeight //32
         val populationSize: Int = _populationSize
         val vision: Double = _vision
         val minimumSeparation: Double = _minimumSeparation
         val maxAlignTurn: Angle = Angle(_maxAlignTurn)
         val maxCohereTurn: Angle = Angle(_maxCohereTurn)
         val maxSeparateTurn: Angle = Angle(_maxSeparateTurn)
-        val stepSize: Double = 0.02
+        val stepSize: Double = _stepSize // 0.05
         val envDivsHorizontal: Int = 1
         val envDivsVertical: Int = 1
         val visionObstacle: Double = 1
@@ -128,7 +132,7 @@ trait Behaviour {
     def collectCountGroups(state: GraphBirds): Double =
       countGroups(state) / (model.populationSize: Double)
     val countGroupsCollector: Collector[GraphBirds, Double] =
-      Collector(300, { (s: GraphBirds) => Val(collectCountGroups(s)) })
+      Collector(500, { (s: GraphBirds) => Val(collectCountGroups(s)) })
 
     def collectRelativeDiffusion(state1: GraphBirds)(state2: GraphBirds): Double = {
       val dm = DistMatrix(state1.birds.map(_.position), model.distanceBetween)
@@ -137,15 +141,15 @@ trait Behaviour {
       relativeDiffusion(dist1, distBetween(neighbs, DistMatrix(state2.birds.map(_.position), model.distanceBetween)))
     }
     val relativeDiffusionCollector: Collector[GraphBirds, Double] =
-      Collector(200, { (s1:GraphBirds) =>
-        Collector(300, { (s2: GraphBirds) => Val(collectRelativeDiffusion(s1)(s2))})
+      Collector(400, { (s1:GraphBirds) =>
+        Collector(500, { (s2: GraphBirds) => Val(collectRelativeDiffusion(s1)(s2))})
         })
 
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
-      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position)).sum / (state1.birds.size: Double)
+      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 100.0).sum / (state1.birds.size: Double) 
     val velocityCollector: Collector[GraphBirds, Double] =
-      Collector(298, { (s1:GraphBirds) =>
-        Collector(300, { (s2:GraphBirds) => Val(collectVelocity(s1)(s2))})
+      Collector(400, { (s1:GraphBirds) =>
+        Collector(500, { (s2:GraphBirds) => Val(collectVelocity(s1)(s2))})
         })
 
     @tailrec final def constructDescription(gb: GraphBirds, iter: Int, collectors: AbstractCollector[GraphBirds, Double]*): Seq[Double] =
