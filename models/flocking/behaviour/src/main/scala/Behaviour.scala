@@ -129,8 +129,8 @@ trait Behaviour {
     }
     case class Val[S,+T](f: T) extends AbstractCollector[S, T]
 
-    def collectCountGroups(state: GraphBirds): Double =
-      countGroups(state) / (model.populationSize: Double)
+    def collectCountGroups(state: GraphBirds): Double = countGroups(state)
+
     val countGroupsCollector: Collector[GraphBirds, Double] =
       Collector(1000, { (s: GraphBirds) => Val(collectCountGroups(s)) })
 
@@ -146,7 +146,7 @@ trait Behaviour {
         })
 
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
-      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 100.0).sum / (state1.birds.size: Double) 
+      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 400.0).sum / (state1.birds.size: Double)
     val velocityCollector: Collector[GraphBirds, Double] =
       Collector(600, { (s1:GraphBirds) =>
       Collector(1000, { (s2:GraphBirds) =>  Val(
