@@ -27,6 +27,8 @@ import scala.math._
 
 
 class BehaviourComputing {
+
+
   def compute(
         _worldWidth: Double,
         _worldHeight: Double,
@@ -38,22 +40,22 @@ class BehaviourComputing {
         _maxCohereTurn: Double,
         _maxSeparateTurn: Double
                )(implicit rng: Random): Array[Double] = {
-    new Behaviour {
-      val model = new Model {
-        val worldWidth: Double = _worldWidth //32
-        val worldHeight: Double = _worldHeight //32
-        val populationSize: Int = _populationSize
-        val vision: Double = _vision
-        val minimumSeparation: Double = _minimumSeparation
-        val maxAlignTurn: Angle = Angle(_maxAlignTurn)
-        val maxCohereTurn: Angle = Angle(_maxCohereTurn)
-        val maxSeparateTurn: Angle = Angle(_maxSeparateTurn)
-        val stepSize: Double = _stepSize // 0.05
-        val envDivsHorizontal: Int = 1
-        val envDivsVertical: Int = 1
-        val visionObstacle: Double = 1
-      }
-    }.defaultDescription.toArray
+          new Behaviour {
+             val model = new Model {
+                 val worldWidth: Double = _worldWidth
+                 val worldHeight: Double = _worldHeight
+                 val populationSize: Int = _populationSize
+                 val vision: Double = _vision
+                 val minimumSeparation: Double = _minimumSeparation
+                 val maxAlignTurn: Angle = Angle(_maxAlignTurn)
+                 val maxCohereTurn: Angle = Angle(_maxCohereTurn)
+                 val maxSeparateTurn: Angle = Angle(_maxSeparateTurn)
+                 val stepSize: Double = _stepSize //
+                 val envDivsHorizontal: Int = 1 //unused
+                 val envDivsVertical: Int = 1 //unused
+                 val visionObstacle: Double = 1 //unused
+           }
+         }.defaultDescription.toArray
   }
 }
 
@@ -62,6 +64,8 @@ trait Behaviour {
     // type AvgVelocity = Double
     // type RelativeDiffusion = Double
     // type B = ([NGroups], [AvgVelocity], [RelativeDiffusion])
+
+    val itermax = 1000
 
     val model: Model
 
@@ -105,8 +109,8 @@ trait Behaviour {
       birds.indices.map(knn(_))
     }
 
-    def distBetween(neighbours: Seq[Seq[Int]], dm: DistMatrix): Seq[Seq[Double]] =
-      neighbours.indices.map((i: Int) => neighbours(i).map((j: Int) => dm(i,j)))
+    def distBetween(neighbours: Seq[(Int, Seq[Int])], dm: DistMatrix): Seq[Seq[Double]] =
+      neighbours map { case (i: Int, ns: Seq[Int]) => ns.map((j: Int) => dm(i,j))}
 
     def sumOver(is: Range, f: Int => Double): Double = (is map f).sum
     def averageOver(is: Range, f: Int => Double): Double =
@@ -131,36 +135,42 @@ trait Behaviour {
 
     def collectCountGroups(state: GraphBirds): Double = countGroups(state)
 
-    val countGroupsCollector: Collector[GraphBirds, Double] =
-      Collector(1000, { (s: GraphBirds) => Val(collectCountGroups(s)) })
+    lazy val countGroupsCollector: Collector[GraphBirds, Double] =
+      Collector(itermax, { (s: GraphBirds) => Val(collectCountGroups(s)) })
 
     def collectRelativeDiffusion(state1: GraphBirds)(state2: GraphBirds): Double = {
       val dm = DistMatrix(state1.birds.map(_.position), model.distanceBetween)
-      val neighbs = kNearestNeighbours(3,state1.birds, dm)
+      //val neighbs = kNearestNeighbours(model.populationSize,state1.birds, dm)
+      val neighbs = (state1.birds.indices zip voronoiNeighbours(state1.birds, dm)) filter {case (i, ns) => ns.size > 0}
       val dist1 = distBetween(neighbs, dm)
       relativeDiffusion(dist1, distBetween(neighbs, DistMatrix(state2.birds.map(_.position), model.distanceBetween)))
     }
-    val relativeDiffusionCollector: Collector[GraphBirds, Double] =
-      Collector(950, { (s1:GraphBirds) =>
-        Collector(1000, { (s2: GraphBirds) => Val(collectRelativeDiffusion(s1)(s2))})
-        })
+    lazy val relativeDiffusionCollector: Collector[GraphBirds, Double] =
+      Collector(itermax - 5 * (min(model.worldWidth,model.worldHeight) / (4.0 * model.stepSize)).toInt, { (s0:GraphBirds) =>
+      Collector(itermax - 4 * (min(model.worldWidth,model.worldHeight) / (4.0 * model.stepSize)).toInt, { (s1:GraphBirds) =>
+      Collector(itermax - 3 * (min(model.worldWidth,model.worldHeight) / (4.0 * model.stepSize)).toInt, { (s2:GraphBirds) =>
+      Collector(itermax - 2 * (min(model.worldWidth,model.worldHeight) / (4.0 * model.stepSize)).toInt, { (s3:GraphBirds) =>
+      Collector(itermax - (min(model.worldWidth,model.worldHeight) / (4.0 * model.stepSize)).toInt, { (s4:GraphBirds) =>
+      Collector(itermax, { (s5: GraphBirds) => Val(
+             (collectRelativeDiffusion(s0)(s1) + collectRelativeDiffusion(s1)(s2) + collectRelativeDiffusion(s2)(s3) + collectRelativeDiffusion(s3)(s4) + collectRelativeDiffusion(s4)(s5)) / 5.0
+        )})})})})})})
 
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
       (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 400.0).sum / (state1.birds.size: Double)
-    val velocityCollector: Collector[GraphBirds, Double] =
-      Collector(600, { (s1:GraphBirds) =>
-      Collector(1000, { (s2:GraphBirds) =>  Val(
-           collectVelocity(s1)(s2)
-         ) })})
 //    val velocityCollector: Collector[GraphBirds, Double] =
-//      Collector(500, { (s0:GraphBirds) =>
 //      Collector(600, { (s1:GraphBirds) =>
-//      Collector(700, { (s2:GraphBirds) =>
-//      Collector(800, { (s3:GraphBirds) =>
-//      Collector(900, { (s4:GraphBirds) =>
-//      Collector(1000, { (s5:GraphBirds) =>  Val(
-//           (collectVelocity(s0)(s1) + collectVelocity(s1)(s2) + collectVelocity(s2)(s3) +collectVelocity(s3)(s4) +collectVelocity(s4)(s5)) / 5.0 
-//         ) })})})})})})
+//      Collector(1000, { (s2:GraphBirds) =>  Val(
+//           collectVelocity(s1)(s2)
+//         ) })})
+    lazy val velocityCollector: Collector[GraphBirds, Double] =
+      Collector(itermax - 5 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s0:GraphBirds) =>
+      Collector(itermax - 4 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s1:GraphBirds) =>
+      Collector(itermax - 3 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s2:GraphBirds) =>
+      Collector(itermax - 2 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s3:GraphBirds) =>
+      Collector(itermax - (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s4:GraphBirds) =>
+      Collector(itermax, { (s5:GraphBirds) =>  Val(
+           (collectVelocity(s0)(s1) + collectVelocity(s1)(s2) + collectVelocity(s2)(s3) +collectVelocity(s3)(s4) +collectVelocity(s4)(s5)) / 5.0 
+         ) })})})})})})
 
     @tailrec final def constructDescription(gb: GraphBirds, iter: Int, collectors: AbstractCollector[GraphBirds, Double]*): Seq[Double] =
       if (collectors.exists(x => x match {case Collector(_,_) => true

@@ -117,8 +117,7 @@ trait Visu {
       framesSinceLastTimeMeasure += 1
       deltaTime = System.currentTimeMillis() - lastFrameTime
       if (deltaTime >= 1000) {
-        print((framesSinceLastTimeMeasure / deltaTime.toDouble) * 1000)
-        println(" fps")
+        println(s"iteration $iteration; ${(framesSinceLastTimeMeasure / deltaTime.toDouble) * 1000} fps")
         framesSinceLastTimeMeasure = 0
         lastFrameTime = System.currentTimeMillis()
       }
@@ -127,7 +126,6 @@ trait Visu {
 
     var iteration=0
     def actionPerformed(e: ActionEvent) {
-      println(iteration)
       iteration += 1
       modelStepByStep.step
       repaint()
