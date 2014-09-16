@@ -26,7 +26,7 @@ object SimPuzzleBuild extends Build {
      ),
      libraryDependencies += (
        if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.0.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.0.0"),
-     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.2",
+     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.3",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
      libraryDependencies ++= (
        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.0")
@@ -61,6 +61,11 @@ object SimPuzzleBuild extends Build {
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
 
+ lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = settings ++ osgiSettings) dependsOn(marius, mariusrun) settings (
+    OsgiKeys.exportPackage := Seq("fr.geocites.marius.*"),
+    OsgiKeys.importPackage := Seq("*;resolution:=optional"),
+    OsgiKeys.privatePackage := Seq("!scala.*", "*")
+   )
 
  lazy val flocking = Project(id = "flocking", base = file("models/flocking/model"))
 
@@ -73,10 +78,6 @@ object SimPuzzleBuild extends Build {
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
-
-
-
- //lazy val flockingbse = Project(id = "flockingbse", base = file("models/flocking/behaviourSpaceExploration")) dependsOn (flocking)
 
 }
 
