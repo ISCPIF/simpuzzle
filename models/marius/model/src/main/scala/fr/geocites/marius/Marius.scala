@@ -38,6 +38,7 @@ trait Marius <: StepByStep
   def sizeEffectOnDemand: Double
   def sizeEffectOnSupply: Double
   def populationToWealthExponent: Double
+  def wealthToPopulationExponent: Double
 
   def cities: SimpleLens[STATE, Seq[CITY]]
   def population: SimpleLens[CITY, Double]
@@ -57,7 +58,7 @@ trait Marius <: StepByStep
         ((s |-> cities get) zip newWealths).zipWithIndex.map {
           case ((city, newWealth), i) =>
             check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
-            val deltaPopulation = wealthToPopulation(newWealth) - wealthToPopulation(city |-> wealth get)
+            val deltaPopulation = (wealthToPopulation(newWealth) - wealthToPopulation(city |-> wealth get)) / economicMultiplier
             val newPopulation = (city |-> population get) + deltaPopulation
             check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
             newPopulation
@@ -107,13 +108,11 @@ trait Marius <: StepByStep
     wealth.map(_ * factor)
   }
 
-  def wealthToPopulationExponent: Double
-
   def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, populationToWealthExponent)
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")
-    pow(wealth / economicMultiplier, wealthToPopulationExponent)
+    pow(wealth, wealthToPopulationExponent)
   }
 
 }
