@@ -39,4 +39,15 @@ object Behaviour {
     val Array(a, _) = fitter.fit(wop)
     a
   }
+
+  def diffpopfinalinitial(populations: Seq[Double]) = populations.last - populations.head
+
+  def popincrementinversioncount(populations: Seq[Double]) =
+    if (populations.length <= 2) 0
+    else {
+      val increments: Seq[Double] = ((populations dropRight 1) zip (populations drop 1)) map {case (p1, p2) => p2 - p1}
+      println(increments)
+      val inversioncount: Int = ((increments dropRight 1) zip (increments drop 1)).foldLeft[Int](0)({(count, inc) => if (inc._2.signum != inc._1.signum) count + 1 else count})
+      inversioncount
+    }
 }
