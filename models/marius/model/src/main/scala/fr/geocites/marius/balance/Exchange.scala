@@ -53,18 +53,12 @@ trait Exchange <: Transaction { this: Marius =>
     def unsatisfieds =
       for {
         (demand, i) <- transacted.demands.zipWithIndex
-      } yield {
-        val unsatisfied = demand - transacted.transactedToSum(i)
-        if (unsatisfied >= 0) unsatisfied else 0
-      }
+      } yield demand - transacted.transactedToSum(i)
 
     def unsolds =
       for {
         (supply, i) <- transacted.supplies.zipWithIndex
-      } yield {
-        val unsold = supply - transacted.transactedFromSum(i)
-        if (unsold >= 0) unsold else 0
-      }
+      } yield supply - transacted.transactedFromSum(i)
 
     (unsolds zip unsatisfieds zip bonuses(transacted) zip totalFixedCosts(transacted)).map(flatten).map {
       case (unsold, unsatisfied, bonus, totalFixedCost) => unsatisfied - unsold + bonus - totalFixedCost
