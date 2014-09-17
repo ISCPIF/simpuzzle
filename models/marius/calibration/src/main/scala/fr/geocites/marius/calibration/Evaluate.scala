@@ -26,7 +26,7 @@ object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
-  val evaluation = Evaluation.multiMicro(SingleRedistributionResourceBonusTest)
+  val evaluation = Evaluation.multiMacro(BonusFixedCostTest)
   println("nb dead\tdistribution\toverflow")
   println(evaluation.map(_.formatted("%g")).mkString("\t"))
 

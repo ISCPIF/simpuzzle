@@ -50,7 +50,6 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat")) dependsOn(simpuzzle)
 
-
  lazy val marius = Project(id = "marius", base = file("models/marius/model")) dependsOn (simpuzzle, gibrat, gis)
 
  lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run")) dependsOn(marius)

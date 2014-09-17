@@ -31,8 +31,8 @@ trait FixedCostTransaction <: Marius with ProportionalTransaction {
     t.transacted.linesContent.map { _.count(_ > 0.0) * fixedCost }
 
   /** Filter the interaction potential matrix */
-  override def transactions(state: STATE, supplies: Seq[Double], demands: Seq[Double])(implicit rng: Random) = {
-    val interactionMatrixValue = super.transactions(state, supplies, demands)
+  override def interactionPotentialMatrix(state: STATE, supplies: Seq[Double], demands: Seq[Double]) = {
+    val interactionMatrixValue = super.interactionPotentialMatrix(state, supplies, demands)
     val fromInteractionPotentialSum = interactionMatrixValue.transpose.linesContent.map(_.sum)
 
     interactionMatrixValue.map {
@@ -41,7 +41,6 @@ trait FixedCostTransaction <: Marius with ProportionalTransaction {
           val fSupply = supplies(from)
           val fromIPSum = fromInteractionPotentialSum(from)
           val normalisedIPFrom = interactionPotential / fromIPSum
-
           if (normalisedIPFrom * fSupply > fixedCost) interactionPotential else 0.0
         } else 0.0
     }
