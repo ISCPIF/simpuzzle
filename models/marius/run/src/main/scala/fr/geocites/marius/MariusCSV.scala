@@ -140,28 +140,44 @@ object MariusCSV extends App {
 
     val out = Resource.fromFile(path)
 
-    out.append("step, arokato, population, wealth \n")
+    out.append("step, arokato, population, wealth, supply, demand, transactedFrom, transactedTo \n")
 
     for {
-      (log, cptr) <- m.logs zipWithIndex
+      (log, step) <- m.logs zipWithIndex
     } log.value match {
       case Success(s) =>
         val cs = s |-> cities get
         val transacted = log.written
+        val from = transacted.groupBy(_.from)
+        val to = transacted.groupBy(_.to)
 
         for {
-          (city, arokato, i) <- (cs zip MariusFile.arokatos).zipWithIndex.map(flatten)
+          (city, arokato, s, d, i) <- (
+            cs zip
+            MariusFile.arokatos zip
+            m.supplies(cs) zip
+            m.demands(cs)).zipWithIndex.map(flatten)
         } {
-          def line = Seq(cptr, arokato, city |-> population get, city |-> wealth get)
-          out.append(line.mkString("", ",", "\n"))
+          def line =
+            Seq(
+              step,
+              arokato,
+              city |-> population get,
+              city |-> wealth get,
+              s,
+              d,
+              from.getOrElse(i, Seq.empty).map(_.transacted).sum,
+              to.getOrElse(i, Seq.empty).map(_.transacted).sum
+              )
+          out.append(line.mkString(",") + "\n")
         }
         val totalWealth = cs.map(_ |-> wealth get).sum
         val totalPop = cs.map(_ |-> population get).sum
 
-        println("Etat ", cptr, " Wealth totale", totalWealth, " pop totale", totalPop)
+        println(s"step $step, total wealth $totalWealth, total population $totalPop")
 
 
-      case Failure(e) => println(s"Invadid State $e")
+      case Failure(e) => println(s"Invalid State $e")
     }
   }
 

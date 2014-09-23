@@ -26,7 +26,7 @@ import fr.geocites.marius.structure.Matrix
 
 trait Exchange <: Transaction { this: Marius =>
 
-  case class Transacted(val s: STATE, val supplies: Seq[Double], val demands: Seq[Double], val transacted: Matrix) {
+  case class Transacted(s: STATE, supplies: Seq[Double], demands: Seq[Double], transacted: Matrix) {
     lazy val transposedTransacted = transacted.transpose
     lazy val transactedFromSum = transacted.linesContent.map(_.sum)
     lazy val transactedToSum = transposedTransacted.linesContent.map(_.sum)

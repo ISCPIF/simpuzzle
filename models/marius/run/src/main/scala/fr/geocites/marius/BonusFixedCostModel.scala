@@ -21,7 +21,6 @@ import fr.geocites.marius.balance._
 import fr.geocites.marius.state.FullNetworkState
 import fr.geocites.marius.transaction._
 
-
 /** Model with fixed costs and bonuses */
 class BonusFixedCostModel(
   val economicMultiplier: Double,
