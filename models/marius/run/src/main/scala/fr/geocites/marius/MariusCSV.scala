@@ -24,14 +24,14 @@ import util.{Success, Failure}
 import monocle.syntax._
 
 object BonusFixedCostTest extends BonusFixedCostModel(
-  bonusMultiplier = 197.948890779081,
-  fixedCost = 0.256524806806571,
-  distanceDecay = 0.672263161474518,
-  sizeEffectOnSupply = 1.00175638801509,
-  sizeEffectOnDemand = 1.07926078029368,
-  economicMultiplier = 0.34380934416368,
-  populationToWealthExponent = 1.08660127543912,
-  wealthToPopulationExponent = 0.380435604357353
+  bonusMultiplier = 197.9488907791,
+  fixedCost = 0.2565248068,
+  distanceDecay = 0.6722631615,
+  sizeEffectOnSupply = 1.001756388,
+  sizeEffectOnDemand = 1.0792607803,
+  economicMultiplier = 0.3438093442,
+  populationToWealthExponent = 1.0866012754,
+  wealthToPopulationExponent = 0.3804356044
 )
 
 object ResourceBonusTest extends ResourceBonusModel(
