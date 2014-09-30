@@ -88,9 +88,9 @@ trait Marius <: StepByStep
           demandsOfCities zip
           balances zipWithIndex).map(flatten).map {
           case (city, supply, demand, balance, i) =>
-            val newWealth =
-              (city |-> wealth get) + supply - demand + balance
-            if (newWealth <= 0.0) 0.0 else newWealth
+            val currentWealth = city |-> wealth get
+            val newWealth = currentWealth + supply - demand + balance
+            if (currentWealth <= 0.0 || newWealth <= 0.0) 0.0 else newWealth
         }
         resourcesEffect(s |-> cities get, newWealths)
     }
