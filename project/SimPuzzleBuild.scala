@@ -60,7 +60,7 @@ object SimPuzzleBuild extends Build {
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
 
- lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = settings ++ osgiSettings) dependsOn(marius, mariusrun) settings (
+ lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = settings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")

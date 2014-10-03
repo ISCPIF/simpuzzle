@@ -41,7 +41,6 @@ object Evaluation {
   def multiMacro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, _.sorted))
   def multiMicro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, identity))
 
-
   def logSquaresError(d1: Seq[Double], d2: Seq[Double]) =
     (d1 zip d2) map {
       case (e, o) =>
@@ -58,6 +57,11 @@ object Evaluation {
   def sum(it: Iterator[Seq[Double]]) = it.foldLeft(Seq(0.0, 0.0, 0.0)) { (s, v) => (s zip v).map { case (x, y) => x + y } }
 
 
+  def overflowRatio(wealth: Double, flow: Double) = {
+    val ratio = flow / wealth
+    if (ratio < 1.0) 0.0 else ratio - 1
+  }
+
   def multi(marius: Marius, distanceFunction: (Int, Seq[Double]) => Double)(implicit rng: Random): Array[Double] = Try {
 
     import marius._
@@ -69,18 +73,13 @@ object Evaluation {
             overflowRatio(c |-> wealth get, marius.demand(c |-> population get))
       }.sum
 
-    def overflowRatio(wealth: Double, flow: Double) = {
-      val ratio = flow / wealth
-      if (ratio < 1.0) 0.0 else ratio - 1
-    }
-
     val fitness =
       sum(
         for { (state, step) <- marius.states.zipWithIndex } yield {
           state match {
             case Success(s) =>
-              val overflow = totalOverflowRatio(s |-> marius.cities get)
-              val deadCities = (s |-> marius.cities get).count(c => (c |-> wealth get) <= 0.0)
+              val overflow = totalOverflowRatio(s |-> cities get)
+              val deadCities = (s |-> cities get).count(c => (c |-> wealth get) <= 0.0)
               val distance = distanceFunction(step, (s |-> cities get) map (_ |-> population get))
               Seq(deadCities, distance, overflow)
             case Failure(_) =>
