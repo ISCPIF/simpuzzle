@@ -34,7 +34,7 @@ import math._
 import scala.annotation.tailrec
 
 
-class BehaviourComputing {
+object BehaviourComputing {
   def compute(marius: Marius)(implicit rng: Random): Seq[Double] = {
     import marius._
 
@@ -76,7 +76,6 @@ class BehaviourComputing {
         val seriestotalpop: Vector[Double] = (l map {s => ((s |-> cities get) map {c => c |-> population get}).sum}) toVector
         val lastpops: Vector[Double] = ((l.last |-> cities get) map {c => c |-> population get}) toVector
         val diffpopfinalinitial: Double = seriestotalpop.last - seriestotalpop.head
-        println(seriestotalpop.mkString("\n"))
         Array[Double](slope(lastpops), diffpopfinalinitial, popincrementinversioncount(seriestotalpop))
       }
     }

@@ -22,7 +22,7 @@ import java.util.Random
 
 object TestMariusBehaviour extends App {
   implicit val rng = new Random
-  println((new BehaviourComputing).compute(
+  println(BehaviourComputing.compute(
     new SimpleModel(
       economicMultiplier = 1,
       sizeEffectOnSupply = 0.06,
