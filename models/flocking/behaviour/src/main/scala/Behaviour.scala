@@ -27,8 +27,6 @@ import scala.math._
 
 
 class BehaviourComputing {
-
-
   def compute(
         _worldWidth: Double,
         _worldHeight: Double,
@@ -155,19 +153,21 @@ trait Behaviour {
              (collectRelativeDiffusion(s0)(s1) + collectRelativeDiffusion(s1)(s2) + collectRelativeDiffusion(s2)(s3) + collectRelativeDiffusion(s3)(s4) + collectRelativeDiffusion(s4)(s5)) / 5.0
         )})})})})})})
 
+    val deltatvelocity = (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt
+
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
-      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 400.0).sum / (state1.birds.size: Double)
+      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / deltatvelocity).sum / (state1.birds.size: Double)
 //    val velocityCollector: Collector[GraphBirds, Double] =
 //      Collector(600, { (s1:GraphBirds) =>
 //      Collector(1000, { (s2:GraphBirds) =>  Val(
 //           collectVelocity(s1)(s2)
 //         ) })})
     lazy val velocityCollector: Collector[GraphBirds, Double] =
-      Collector(itermax - 5 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s0:GraphBirds) =>
-      Collector(itermax - 4 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s1:GraphBirds) =>
-      Collector(itermax - 3 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s2:GraphBirds) =>
-      Collector(itermax - 2 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s3:GraphBirds) =>
-      Collector(itermax - (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s4:GraphBirds) =>
+      Collector(itermax - 5 * deltatvelocity, { (s0:GraphBirds) =>
+      Collector(itermax - 4 * deltatvelocity, { (s1:GraphBirds) =>
+      Collector(itermax - 3 * deltatvelocity, { (s2:GraphBirds) =>
+      Collector(itermax - 2 * deltatvelocity, { (s3:GraphBirds) =>
+      Collector(itermax - deltatvelocity, { (s4:GraphBirds) =>
       Collector(itermax, { (s5:GraphBirds) =>  Val(
            (collectVelocity(s0)(s1) + collectVelocity(s1)(s2) + collectVelocity(s2)(s3) +collectVelocity(s3)(s4) +collectVelocity(s4)(s5)) / 5.0 
          ) })})})})})})
