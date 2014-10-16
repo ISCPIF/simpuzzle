@@ -23,8 +23,6 @@ import fr.geocites.marius._
 
 trait FullNetworkState <: NetworkState {
 
-  def networkShare: Double = 1.0
-
   override def initialState(implicit rng: Random) = {
     val cities = initialCities
     NetworkState.State(0, initialCities.toVector, Network.full(cities.size), MariusFile.distanceMatrix)

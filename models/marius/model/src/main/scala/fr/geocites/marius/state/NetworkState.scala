@@ -33,8 +33,6 @@ trait NetworkState <: Marius
     with MariusCity
     with PotentialMatrix {
 
-  def networkShare: Double
-
   type STATE = NetworkState.State
 
   def step = Lenser[STATE](_.step)
@@ -42,35 +40,5 @@ trait NetworkState <: Marius
   def cities = SimpleLens[STATE, Seq[CITY]](_.cities, (s, v) => s.copy(cities = v.toVector))
   def network = Lenser[STATE](_.network)
   def distances = Lenser[STATE](_.distanceMatrix)
-
-  def initialState(implicit rng: Random) = {
-    val cities = initialCities
-    NetworkState.State(0, cities, Network.full(cities.size), MariusFile.distanceMatrix)
-  }
-
-  def network(cities: Seq[CITY]) = {
-    val fullNetworkInitialState = NetworkState.State(0, cities, Network.full(cities.size), MariusFile.distanceMatrix)
-
-    def matrix =
-      interactionPotentialMatrix(fullNetworkInitialState, supplies(cities), demands(cities))
-
-    def indexedMatrix =
-      for {
-        (l, i) <- matrix.lines.zipWithIndex
-        Cell(j, v) <- l
-      } yield (i, j, v)
-
-    def nbKeep = math.ceil(networkShare * cities.size * (cities.size - 1)).toInt
-
-    def kept = indexedMatrix.sortBy { case (_, _, ip) => ip }(Ordering[Double].reverse).take(nbKeep)
-
-    val network = Seq.fill(cities.size)(ListBuffer.empty[Int])
-
-    for {
-      (i, j, _) <- kept
-    } network(i) += j
-
-    Network(network.map(_.toSeq))
-  }
 }
 

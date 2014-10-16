@@ -17,44 +17,15 @@
 
 package fr.geocites.gugus.structure
 
-import scala.collection.mutable.ListBuffer
-
 object Network {
-
-  def apply(outLinks: Seq[Seq[Int]]) =
-    new Network {
-      lazy val indexedOut = outLinks.map(_.toSet).toVector
-      lazy val indexedIn = {
-        val outs = Vector.fill(outLinks.size)(ListBuffer[Int]())
-        for {
-          (o, i) <- indexedOut.zipWithIndex
-          j <- o
-        } outs(j) += i
-        outs.map(_.toSet)
-      }
-
-      override def outNodes(i: Int) = indexedOut(i).toVector
-      override def inNodes(i: Int) = indexedIn(i).toVector
-
-      override def mapNodes(f: (Int, Int) => Double) = {
-        val matrix = SparseMatrix.builder(outLinks.size)
-
-        for {
-          (out, i) <- outLinks.zipWithIndex
-          j <- out
-        } matrix += (i, j, f(i, j))
-
-        matrix.toMatrix
-      }
-    }
 
   def full(network: Int) =
     new Network {
       def allExcept(i: Int) = (0 until i) ++ (i + 1 until network)
       def outNodes(i: Int) = allExcept(i)
       def inNodes(i: Int) = allExcept(i)
-      def mapNodes(f: (Int, Int) => Double): DenseMatrix =
-        DenseMatrix(
+      def mapNodes(f: (Int, Int) => Double): Matrix =
+        Matrix(
           Array.tabulate(network, network) {
             (i, j) => if (i != j) f(i, j) else 0.0
           }

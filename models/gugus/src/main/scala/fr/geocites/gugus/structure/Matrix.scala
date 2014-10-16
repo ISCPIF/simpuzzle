@@ -17,11 +17,25 @@
 
 package fr.geocites.gugus.structure
 
+object Matrix {
+  def apply(_content: Array[Array[Double]]) = new Matrix {
+    override def content: Array[Array[Double]] = _content
+  }
+}
 
 trait Matrix {
-  def side: Int
-  def lines: Seq[Seq[Cell]]
-  def transpose: Matrix
-  def linesContent: Seq[Seq[Double]]
-  def map(f: (Int, Int, Double) => Double): Matrix
+  def content: Array[Array[Double]]
+
+  def side: Int = content.size
+  def lines: Seq[Seq[Cell]] =
+    content.map(_.zipWithIndex.map { case (v, i) => Cell(i, v) }.toIndexedSeq).toIndexedSeq
+
+  def transpose: Matrix = Matrix(content.transpose)
+  def linesContent: Seq[Seq[Double]] = content.map(_.toIndexedSeq).toIndexedSeq
+
+  def map(f: (Int, Int, Double) => Double): Matrix = {
+    val newContent = Array.tabulate(side, side)((i, j) => f(i, j, content(i)(j)))
+    Matrix(newContent)
+  }
+
 }
