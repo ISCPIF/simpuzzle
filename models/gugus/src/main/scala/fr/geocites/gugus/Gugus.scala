@@ -46,8 +46,6 @@ trait Gugus <: StepByStep
   def wealth: SimpleLens[CITY, Double]
   def region: SimpleLens[CITY, String]
   def nation: SimpleLens[CITY, String]
-  def regionalCapital: SimpleLens[CITY, Boolean]
-  def nationalCapital: SimpleLens[CITY, Boolean]
   def network: SimpleLens[STATE, Network]
   def distances: SimpleLens[STATE, DistanceMatrix]
 

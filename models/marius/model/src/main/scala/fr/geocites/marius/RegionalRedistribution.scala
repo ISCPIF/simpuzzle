@@ -18,9 +18,11 @@
 package fr.geocites.marius
 
 import fr.geocites.gugus.Gugus
-import fr.geocites.gugus.balance.Redistribution
+import monocle.SimpleLens
 
 trait RegionalRedistribution <: Redistribution { model: Gugus =>
+
+  def regionalCapital: SimpleLens[CITY, Boolean]
 
   override def regionalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, region.get _, regionalCapital.get _)
 
