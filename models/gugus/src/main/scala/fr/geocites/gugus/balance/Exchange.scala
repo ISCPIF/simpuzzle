@@ -15,16 +15,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.balance
+package fr.geocites.gugus.balance
 
-import fr.geocites.marius.transaction.Transaction
+import fr.geocites.gugus.transaction.Transaction
 import scala.util.Random
 import fr.geocites.simpuzzle._
-import fr.geocites.marius._
-import fr.geocites.marius.structure.Matrix._
-import fr.geocites.marius.structure.Matrix
+import fr.geocites.gugus._
+import structure._
 
-trait Exchange <: Transaction { this: Marius =>
+trait Exchange <: Transaction { this: Gugus =>
 
   case class Transacted(s: STATE, supplies: Seq[Double], demands: Seq[Double], transacted: Matrix) {
     lazy val transposedTransacted = transacted.transpose
@@ -46,7 +45,7 @@ trait Exchange <: Transaction { this: Marius =>
         Cell(j, value) <- row
       } yield Interaction(i, j, value)
 
-    log(transactedBalances(t), interactions)
+    log(transactedBalances(t), interactions.toList)
   }
 
   def transactedBalances(transacted: Transacted) = {

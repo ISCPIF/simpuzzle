@@ -17,9 +17,11 @@
 
 package fr.geocites.marius.balance
 
-import fr.geocites.marius.Marius
+import fr.geocites.gugus.Gugus
+import fr.geocites.gugus.balance.Redistribution
 
-trait NationalRedistribution <: Redistribution { model: Marius =>
+
+trait NationalRedistribution <: Redistribution { model: Gugus =>
 
   override def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get _, nationalCapital.get _)
 

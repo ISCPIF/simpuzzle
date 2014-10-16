@@ -15,9 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.structure
-
-import Matrix._
+package fr.geocites.gugus.structure
 
 object SparseMatrix {
 

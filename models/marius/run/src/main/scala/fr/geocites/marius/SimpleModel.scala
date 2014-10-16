@@ -17,8 +17,11 @@
 
 package fr.geocites.marius
 
-import fr.geocites.marius.state.FullNetworkState
-import fr.geocites.marius.transaction.ProportionalTransaction
+import fr.geocites.marius.balance._
+import fr.geocites.marius.state._
+import fr.geocites.gugus.transaction._
+import fr.geocites.gugus.balance._
+
 
 /** Simple model with only core mechanisms */
 class SimpleModel(

@@ -15,25 +15,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.balance
+package fr.geocites.gugus.transaction
 
-import scala.util.Random
-import fr.geocites.marius.Marius
-import fr.geocites.simpuzzle._
+import fr.geocites.gugus.Gugus
+import fr.geocites.gugus.structure._
+import monocle.syntax._
 
-trait Balances <: Exchange { model: Marius =>
-
-  def balances(s: STATE,
-    supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random) = {
-    for {
-      exchangeBalance <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
-    } yield {
-      (exchangeBalance zip redistributionBalances(cities.get(s))).map(flatten).map {
-        case (exchangeBalance, redistributionBalance) => exchangeBalance + redistributionBalance
-      }
-    }
-  }
-  def redistributionBalances(s: Seq[CITY]) = s.map(_=> 0.0)
+object PotentialMatrix {
+  case class InteractionPotentialException(message: String, matrix: Matrix) extends AssertionError(message)
 }
 
+trait PotentialMatrix <: InteractionPotential { self: Gugus =>
+
+  def interactionPotentialMatrix(state: STATE, supplies: Seq[Double], demands: Seq[Double]) = {
+    val iM1 = supplies.toArray
+    val iM2 = demands.toArray
+    (state |-> network get).mapNodes {
+      (i, j) =>
+        interactionPotential(iM1(i), iM2(j), (state |-> distances get) (i)(j))
+    }
+  }
+
+}

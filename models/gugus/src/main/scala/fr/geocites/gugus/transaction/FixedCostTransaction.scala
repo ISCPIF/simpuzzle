@@ -15,13 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.transaction
+package fr.geocites.gugus.transaction
 
-import fr.geocites.marius.Marius
 
-import scala.util.Random
+import fr.geocites.gugus.Gugus
 
-trait FixedCostTransaction <: Marius with ProportionalTransaction {
+
+trait FixedCostTransaction <: Gugus with ProportionalTransaction {
 
   /** Cost of a transaction */
   def fixedCost: Double

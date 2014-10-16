@@ -15,18 +15,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.structure
+package fr.geocites.gugus.balance
 
-object Matrix {
-  case class Cell(row: Int, value: Double)
+import fr.geocites.gugus.Gugus
+
+import scala.util.Random
+import fr.geocites.simpuzzle._
+
+trait Balances <: Exchange { model: Gugus =>
+
+  def balances(s: STATE,
+    supplies: Seq[Double],
+    demands: Seq[Double])(implicit rng: Random) = {
+    for {
+      exchangeBalance <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
+    } yield {
+      (exchangeBalance zip redistributionBalances(cities.get(s))).map(flatten).map {
+        case (exchangeBalance, redistributionBalance) => exchangeBalance + redistributionBalance
+      }
+    }
+  }
+  def redistributionBalances(s: Seq[CITY]) = s.map(_=> 0.0)
 }
 
-import Matrix._
-
-trait Matrix {
-  def side: Int
-  def lines: Seq[Seq[Cell]]
-  def transpose: Matrix
-  def linesContent: Seq[Seq[Double]]
-  def map(f: (Int, Int, Double) => Double): Matrix
-}

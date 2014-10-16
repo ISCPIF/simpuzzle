@@ -17,20 +17,21 @@
 
 package fr.geocites.simpuzzle.state
 
+import fr.geocites.simpuzzle.logging._
 import scala.util.Random
 import scalaz.Writer
 import util.{Success, Failure, Try}
 import fr.geocites.simpuzzle.extendIterator
 
-trait StepByStep <: State with InitialState with Step with EndingCondition {
+trait StepByStep <: State with InitialState with Step with EndingCondition with Logging {
 
-  def logs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], Try[STATE]]] =
-    Iterator.iterate(tryValid(initialState)) {
+  def logs(implicit rng: Random): Iterator[Writer[List[LOGGING], Try[STATE]]] =
+    Iterator.iterate[Writer[List[LOGGING], Try[STATE]]](tryValid(initialState)) {
       v =>
-        v.value match {
-          case Success(s) => tryValid(nextState(s))
-          case s: Failure[_] => v
-        }
+          v.value match {
+            case Success(s) => tryValid { nextState(s) }
+            case s: Failure[_] => v
+          }
     }.takeWhileInclusive {
       _.value match {
         case Success(s) => !ended(s)
@@ -38,7 +39,7 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
       }
     }
 
-  def validStatesLogs(implicit rng: Random): Iterator[Writer[Seq[LOGGING], STATE]] =
+  def validStatesLogs(implicit rng: Random): Iterator[Writer[List[LOGGING], STATE]] =
     logs.collect {
       case x if x.value.isInstanceOf[Success[_]] =>
         val util.Success(state) = x.value.asInstanceOf[Success[STATE]]
@@ -53,9 +54,9 @@ trait StepByStep <: State with InitialState with Step with EndingCondition {
 
   def run(implicit rng: Random) = states.last
 
-  private def tryValid(f: => Writer[Seq[LOGGING], STATE]) =
+  private def tryValid(f: => Writer[List[LOGGING], STATE]): Writer[List[LOGGING], Try[STATE]] =
     try f.map(Success(_))
     catch {
-      case e: AssertionError => log(Failure(e), Seq.empty)
+      case e: AssertionError => Failure(e)
     }
 }

@@ -17,20 +17,19 @@
 
 package fr.geocites.marius.state
 
+import fr.geocites.gugus._
+import fr.geocites.gugus.structure._
+import fr.geocites.gugus.transaction._
 import fr.geocites.marius._
 import scala.util.Random
-import fr.geocites.marius.transaction.PotentialMatrix
 import scala.collection.mutable.ListBuffer
-import fr.geocites.marius.structure._
-import monocle.Macro._
 import monocle._
 
 object NetworkState {
   case class State(step: Int, cities: Seq[MariusCity.City], network: Network, distanceMatrix: DistanceMatrix)
 }
 
-trait NetworkState <: MariusLogging
-    with Marius
+trait NetworkState <: Marius
     with MariusCity
     with PotentialMatrix {
 
@@ -38,11 +37,11 @@ trait NetworkState <: MariusLogging
 
   type STATE = NetworkState.State
 
-  def step = mkLens[STATE, Int]("step")
+  def step = Lenser[STATE](_.step)
 
   def cities = SimpleLens[STATE, Seq[CITY]](_.cities, (s, v) => s.copy(cities = v.toVector))
-  def network = mkLens[STATE, Network]("network")
-  def distances = mkLens[STATE, DistanceMatrix]("distanceMatrix")
+  def network = Lenser[STATE](_.network)
+  def distances = Lenser[STATE](_.distanceMatrix)
 
   def initialState(implicit rng: Random) = {
     val cities = initialCities
@@ -58,7 +57,7 @@ trait NetworkState <: MariusLogging
     def indexedMatrix =
       for {
         (l, i) <- matrix.lines.zipWithIndex
-        Matrix.Cell(j, v) <- l
+        Cell(j, v) <- l
       } yield (i, j, v)
 
     def nbKeep = math.ceil(networkShare * cities.size * (cities.size - 1)).toInt

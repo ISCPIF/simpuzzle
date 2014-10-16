@@ -15,7 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.structure
+package fr.geocites.gugus.structure
+
 import scala.collection.mutable.ListBuffer
 
 object Network {

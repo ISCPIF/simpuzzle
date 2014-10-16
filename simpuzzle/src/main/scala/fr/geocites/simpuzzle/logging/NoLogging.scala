@@ -21,5 +21,5 @@ import scalaz._
 import Scalaz._
 
 trait NoLogging <: Logging {
-  override def log[T](s: T, l: => Seq[LOGGING]) = s.set(Seq.empty)
+  override def log[T](s: T, l: => List[LOGGING]) = s.set(List.empty)
 }

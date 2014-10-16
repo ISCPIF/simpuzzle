@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 25/04/13 Romain Reuillon
+ * Copyright (C) 03/02/14 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -15,12 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.simpuzzle.state
+package fr.geocites.gugus
 
-import scala.util.Random
-import scalaz.Writer
-import fr.geocites.simpuzzle.logging.Logging
-
-trait InitialState <: State with Logging {
-  def initialState(implicit rng: Random): Writer[List[LOGGING], STATE]
-}
+case class Interaction(from: Int, to: Int, transacted: Double)

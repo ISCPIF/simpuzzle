@@ -18,6 +18,7 @@
 package fr.geocites.marius
 
 import fr.geocites.gis.distance.GeodeticDistance
+import fr.geocites.gugus.DistanceMatrix
 import fr.geocites.simpuzzle.city.Position
 
 import scala.io.Source

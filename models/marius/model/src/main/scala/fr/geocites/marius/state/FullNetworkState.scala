@@ -17,10 +17,9 @@
 
 package fr.geocites.marius.state
 
+import fr.geocites.gugus.structure._
 import scala.util.Random
-import scalaz._
 import fr.geocites.marius._
-import fr.geocites.marius.structure.Network
 
 trait FullNetworkState <: NetworkState {
 

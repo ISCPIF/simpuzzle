@@ -17,9 +17,9 @@
 
 package fr.geocites.marius
 
-import fr.geocites.marius.balance._
+import fr.geocites.gugus.balance._
 import fr.geocites.marius.state.FullNetworkState
-import fr.geocites.marius.transaction._
+import fr.geocites.gugus.transaction._
 
 /** Model with fixed costs and bonuses */
 class BonusFixedCostModel(

@@ -22,5 +22,5 @@ import scalaz.Writer
 import fr.geocites.simpuzzle.logging.Logging
 
 trait Step <: State with Logging {
-  def nextState(s: STATE)(implicit rng: Random): Writer[Seq[LOGGING], STATE]
+  def nextState(s: STATE)(implicit rng: Random): Writer[List[LOGGING], STATE]
 }

@@ -15,14 +15,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.balance
+package fr.geocites.gugus.balance
 
-import fr.geocites.marius.structure.{ Matrix, Network }
-import fr.geocites.marius.structure.Matrix.Cell
-import fr.geocites.marius.Marius
+import fr.geocites.gugus._
+import fr.geocites.gugus.structure._
 import fr.geocites.simpuzzle._
 
-trait Bonus <: Exchange { marius: Marius =>
+trait Bonus <: Exchange { marius: Gugus =>
   def bonusMultiplier: Double
 
   override def bonuses(t: Transacted): Seq[Double] = {

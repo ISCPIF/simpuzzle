@@ -6,7 +6,8 @@ import com.typesafe.sbt.osgi.SbtOsgi._
 
 object SimPuzzleBuild extends Build {
 
-  val monocleVersion = "0.4.0"  // or "0.5-SNAPSHOT"
+  val monocleVersion = "0.5.1"  // or "0.5-SNAPSHOT"
+  val scalazVersion = "7.1.0"
 
   override def settings = 
    super.settings ++ Seq(
@@ -18,7 +19,8 @@ object SimPuzzleBuild extends Build {
        else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
      },
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3",
-     libraryDependencies += "org.scalaz" %% "scalaz-core" % "7.0.6",
+     libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion,
+     libraryDependencies += "org.scalaz" %% "scalaz-iteratee" % scalazVersion,
      libraryDependencies ++= Seq(
        "com.github.julien-truffaut"  %%  "monocle-core"    % monocleVersion,
        "com.github.julien-truffaut"  %%  "monocle-generic" % monocleVersion,
@@ -50,7 +52,9 @@ object SimPuzzleBuild extends Build {
 
  lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat")) dependsOn(simpuzzle)
 
- lazy val marius = Project(id = "marius", base = file("models/marius/model")) dependsOn (simpuzzle, gibrat, gis)
+  lazy val gugus = Project(id = "gugus", base = file("models/gugus")) dependsOn(simpuzzle, gis)
+
+ lazy val marius = Project(id = "marius", base = file("models/marius/model")) dependsOn (gugus)
 
  lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run")) dependsOn(marius)
 

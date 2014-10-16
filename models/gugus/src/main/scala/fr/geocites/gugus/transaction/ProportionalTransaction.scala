@@ -15,18 +15,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.transaction
+package fr.geocites.gugus.transaction
+
+import fr.geocites.gugus.Gugus
 
 import scala.util.Random
-import fr.geocites.marius.{ Interaction, Marius }
 import scala.math._
 import fr.geocites.simpuzzle._
-import fr.geocites.marius.structure.Matrix._
-import fr.geocites.marius.structure.Network
 
 trait ProportionalTransaction <: Transaction
     with PotentialMatrix
-    with Marius { this: Marius =>
+    with Gugus {
 
   def transactions(
     state: STATE,

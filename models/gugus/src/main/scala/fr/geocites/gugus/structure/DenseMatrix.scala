@@ -15,25 +15,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.transaction
+package fr.geocites.gugus.structure
 
-import fr.geocites.marius._
-import fr.geocites.marius.structure._
-import monocle.syntax._
-
-object PotentialMatrix {
-  case class InteractionPotentialException(message: String, matrix: Matrix) extends AssertionError(message)
+object DenseMatrix {
+  def apply(_content: Array[Array[Double]]) = new DenseMatrix {
+    override def content: Array[Array[Double]] = _content
+  }
 }
 
-trait PotentialMatrix <: InteractionPotential { self: Marius =>
+trait DenseMatrix <: Matrix {
+  def content: Array[Array[Double]]
 
-  def interactionPotentialMatrix(state: STATE, supplies: Seq[Double], demands: Seq[Double]) = {
-    val iM1 = supplies.toArray
-    val iM2 = demands.toArray
-    (state |-> network get).mapNodes {
-      (i, j) =>
-        interactionPotential(iM1(i), iM2(j), (state |-> distances get) (i)(j))
-    }
+  def side: Int = content.size
+  def lines: Seq[Seq[Cell]] =
+    content.map(_.zipWithIndex.map { case (v, i) => Cell(i, v) }.toIndexedSeq).toIndexedSeq
+
+  def transpose: Matrix = DenseMatrix(content.transpose)
+  def linesContent: Seq[Seq[Double]] = content.map(_.toIndexedSeq).toIndexedSeq
+
+  def map(f: (Int, Int, Double) => Double): Matrix = {
+    val newContent = Array.tabulate(side, side)((i, j) => f(i, j, content(i)(j)))
+    DenseMatrix(newContent)
   }
 
 }

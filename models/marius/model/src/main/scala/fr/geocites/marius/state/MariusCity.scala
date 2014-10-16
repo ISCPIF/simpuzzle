@@ -17,11 +17,11 @@
 
 package fr.geocites.marius.state
 
+import monocle._
 import scala.util.Random
 import fr.geocites.simpuzzle.flatten
 import fr.geocites.marius._
 import MariusFile._
-import monocle.Macro._
 
 object MariusCity {
   case class City(
@@ -38,14 +38,14 @@ object MariusCity {
 trait MariusCity <: Marius {
 
   type CITY = MariusCity.City
-  def population = mkLens[CITY, Double]("population")
-  def wealth = mkLens[CITY, Double]("wealth")
-  def regionalCapital = mkLens[CITY, Boolean]("regionalCapital")
-  def region = mkLens[CITY, String]("region")
-  def nation = mkLens[CITY, String]("nation")
-  def nationalCapital = mkLens[CITY, Boolean]("nationalCapital")
-  def oilOrGaz = mkLens[CITY, Boolean]("oilOrGaz")
-  def coal = mkLens[CITY, Boolean]("coal")
+  def population = Lenser[CITY](_.population)
+  def wealth = Lenser[CITY](_.wealth)
+  def regionalCapital = Lenser[CITY](_.regionalCapital)
+  def region = Lenser[CITY](_.region)
+  def nation = Lenser[CITY](_.nation)
+  def nationalCapital = Lenser[CITY](_.nationalCapital)
+  def oilOrGaz = Lenser[CITY](_.oilOrGaz)
+  def coal = Lenser[CITY](_.coal)
 
   def initialCities(implicit rng: Random) = {
     val pop = initialPopulations.toSeq

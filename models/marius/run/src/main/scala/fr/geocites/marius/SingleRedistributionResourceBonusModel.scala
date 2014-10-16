@@ -1,8 +1,10 @@
 package fr.geocites.marius
 
-import fr.geocites.marius.balance.{Bonus, NationalRedistribution}
-import fr.geocites.marius.state.FullNetworkState
-import fr.geocites.marius.transaction.FixedCostTransaction
+import fr.geocites.marius.balance._
+import fr.geocites.marius.state._
+import fr.geocites.gugus.transaction._
+import fr.geocites.gugus.balance._
+
 
 /**
  * Created by clementinecottineau on 08/08/2014.

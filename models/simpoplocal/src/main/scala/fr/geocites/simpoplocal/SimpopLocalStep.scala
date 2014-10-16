@@ -20,7 +20,6 @@ package fr.geocites.simpoplocal
 import scala.util.Random
 import scala.collection.mutable.ListBuffer
 import scalaz._
-import Scalaz._
 import fr.geocites.simpuzzle.state.Step
 
 trait SimpopLocalStep
@@ -66,7 +65,7 @@ trait SimpopLocalStep
       logs ++= evolved.written
     }
 
-    log(SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId), logs)
+    log(SimpopLocalState(state.step + 1, settlements = newSettlements, currentInnovationId), logs.toList)
   }
 
   /**
@@ -141,9 +140,9 @@ trait SimpopLocalStep
         case (exchange, index) => Innovation(step = step, rootId = exchange.innovation.id, id = nextInnovationId + index)
       }
 
-    val exchanges: List[LogInfo] = distinctInnovations.map { case ProposedExchange(n, i) => Diffused(n, settlement.id, i.rootId) }
+    def exchanges: List[LogInfo] = distinctInnovations.map { case ProposedExchange(n, i) => Diffused(n, settlement.id, i.rootId) }
 
-    Writer(exchanges, (acquireInnovations(settlement, step, copyOfInnovations), nextInnovationId + copyOfInnovations.size))
+    log((acquireInnovations(settlement, step, copyOfInnovations), nextInnovationId + copyOfInnovations.size), exchanges)
   }
 
   /**
@@ -160,11 +159,11 @@ trait SimpopLocalStep
   def creation(settlement: Settlement, state: Seq[Settlement], step: Int, nextInnovationId: Int)(implicit rng: Random) =
     if (create(state(settlement.id).population)) {
       val innovation = Innovation(step = step, rootId = nextInnovationId, id = nextInnovationId)
-      Writer(
-        List[LogInfo](Created(settlement.id, innovation.rootId)),
-        (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1)
+      log(
+        (acquireInnovations(settlement, step, Seq(innovation)), nextInnovationId + 1),
+        List[LogInfo](Created(settlement.id, innovation.rootId))
       )
-    } else Writer(List.empty, (settlement, nextInnovationId))
+    } else log((settlement, nextInnovationId), List.empty)
 
   /**
    *

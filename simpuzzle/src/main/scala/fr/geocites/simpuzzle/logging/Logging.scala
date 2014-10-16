@@ -17,7 +17,7 @@
 
 package fr.geocites.simpuzzle.logging
 
-import scalaz.Writer
+import scalaz.{std, Writer}
 import scalaz.Scalaz._
 import util.{Success, Failure}
 import fr.geocites.simpuzzle.state
@@ -25,10 +25,12 @@ import fr.geocites.simpuzzle.state
 trait Logging <: state.State {
   type LOGGING
 
-  def log[T](s: T, l: => Seq[LOGGING]) = s.set(l)
+  def log[T](s: T, l: => List[LOGGING]) = s.set(l)
 
-  protected implicit def tupleToWriter[T](t: (Seq[LOGGING], T)) = Writer(t._1, t._2)
-  protected implicit def stateWriterToValidStateWriter(w: Writer[Seq[LOGGING], STATE]) = w.map(s => Success(s))
-  protected implicit def toWriter[T](s: T): Writer[Seq[LOGGING], T] = log(s, Seq.empty)
-  protected implicit def invalidStateToInvalidStateWriter(s: Failure[STATE]) = log(s, Seq.empty)
+  protected implicit def tupleToWriter[T](t: (List[LOGGING], T)) = Writer(t._1, t._2)
+  protected implicit def stateWriterToValidStateWriter(w: Writer[List[LOGGING], STATE]) = w.map(s => Success(s))
+  protected implicit def toWriter[T](s: T): Writer[List[LOGGING], T] = log(s, List.empty)
+  protected implicit def invalidStateToInvalidStateWriter(s: Failure[STATE]) = log(s, List.empty)
+
+  protected implicit def listMonoid[T] = std.list.listMonoid[T]
 }

@@ -15,11 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.balance
+package fr.geocites.gugus.balance
 
-import fr.geocites.marius.Marius
+import fr.geocites.gugus.Gugus
 
-trait Redistribution <: Balances { model: Marius =>
+trait Redistribution <: Balances { model: Gugus =>
 
   def territorialTaxes: Double
   def capitalShareOfTaxes: Double
