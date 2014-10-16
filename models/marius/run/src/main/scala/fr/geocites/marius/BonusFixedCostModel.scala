@@ -18,7 +18,6 @@
 package fr.geocites.marius
 
 import fr.geocites.gugus.balance._
-import fr.geocites.marius.state.FullNetworkState
 import fr.geocites.gugus.transaction._
 
 /** Model with fixed costs and bonuses */
@@ -30,5 +29,5 @@ class BonusFixedCostModel(
   val wealthToPopulationExponent: Double,
   val populationToWealthExponent: Double,
   val bonusMultiplier: Double,
-  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with DefaultValues with FullNetworkState
+  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with DefaultValues
 

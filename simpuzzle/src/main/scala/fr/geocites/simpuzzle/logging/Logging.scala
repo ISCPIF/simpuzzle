@@ -17,9 +17,9 @@
 
 package fr.geocites.simpuzzle.logging
 
-import scalaz.{std, Writer}
+import scalaz.{ std, Writer }
 import scalaz.Scalaz._
-import util.{Success, Failure}
+import util.{ Success, Failure }
 import fr.geocites.simpuzzle.state
 
 trait Logging <: state.State {

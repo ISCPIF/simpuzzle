@@ -17,11 +17,8 @@
 
 package fr.geocites.marius
 
-import fr.geocites.marius.balance._
-import fr.geocites.marius.state._
 import fr.geocites.gugus.transaction._
 import fr.geocites.gugus.balance._
-
 
 /** Simple model with only core mechanisms */
 class SimpleModel(
@@ -30,4 +27,4 @@ class SimpleModel(
   val sizeEffectOnDemand: Double,
   val distanceDecay: Double,
   val wealthToPopulationExponent: Double,
-  val populationToWealthExponent: Double) extends Marius with DefaultValues with FullNetworkState with ProportionalTransaction
+  val populationToWealthExponent: Double) extends Marius with DefaultValues with ProportionalTransaction

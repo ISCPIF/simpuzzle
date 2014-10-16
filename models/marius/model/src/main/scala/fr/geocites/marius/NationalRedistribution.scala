@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 27/06/13 Romain Reuillon
+ * Copyright (C) 2014 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -9,22 +9,19 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius.state
+package fr.geocites.marius
 
-import fr.geocites.gugus.structure._
-import scala.util.Random
-import fr.geocites.marius._
+import fr.geocites.gugus.Gugus
+import fr.geocites.gugus.balance.Redistribution
 
-trait FullNetworkState <: NetworkState {
+trait NationalRedistribution <: Redistribution { model: Gugus =>
 
-  override def initialState(implicit rng: Random) = {
-    val cities = initialCities
-    NetworkState.State(0, initialCities.toVector, Network.full(cities.size), MariusFile.distanceMatrix)
-  }
+  override def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get _, nationalCapital.get _)
+
 }

@@ -20,7 +20,7 @@ package fr.geocites.gugus
 import fr.geocites.gugus.balance._
 import fr.geocites.gugus.structure._
 import fr.geocites.simpuzzle._
-import fr.geocites.simpuzzle.state.{StepByStep, TimeEndingCondition}
+import fr.geocites.simpuzzle.state.{ StepByStep, TimeEndingCondition }
 
 import scala.math._
 import scala.util.Random
@@ -53,7 +53,7 @@ trait Gugus <: StepByStep
 
   def nextState(s: STATE)(implicit rng: Random) = {
     for {
-      newWealths <-  wealths(s)
+      newWealths <- wealths(s)
     } yield {
       def newPopulations =
         ((s |-> cities get) zip newWealths).zipWithIndex.map {
@@ -93,7 +93,7 @@ trait Gugus <: StepByStep
             val newWealth = currentWealth + supply - demand + balance
             if (currentWealth <= 0.0 || newWealth <= 0.0) 0.0 else newWealth
         }
-        resourcesEffect(s |-> cities get, newWealths)
+      resourcesEffect(s |-> cities get, newWealths)
     }
   }
 

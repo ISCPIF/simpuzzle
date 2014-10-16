@@ -35,6 +35,6 @@ trait Balances <: Exchange { model: Gugus =>
       }
     }
   }
-  def redistributionBalances(s: Seq[CITY]) = s.map(_=> 0.0)
+  def redistributionBalances(s: Seq[CITY]) = s.map(_ => 0.0)
 }
 

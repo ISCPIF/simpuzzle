@@ -122,7 +122,6 @@ object MariusFile extends GeodeticDistance {
     }
   }
 
-
   /** A converter function from string to boolean */
   private def toBoolean(s: String) =
     s match {

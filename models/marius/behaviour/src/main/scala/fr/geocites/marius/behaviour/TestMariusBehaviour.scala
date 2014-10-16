@@ -30,5 +30,5 @@ object TestMariusBehaviour extends App {
       distanceDecay = 4.4,
       wealthToPopulationExponent = 1,
       populationToWealthExponent = 1)
-    )(rng).mkString(" "))
+  )(rng).mkString(" "))
 }

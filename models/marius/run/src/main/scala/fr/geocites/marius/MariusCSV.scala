@@ -20,7 +20,7 @@ package fr.geocites.marius
 import fr.geocites.simpuzzle._
 import scalax.io.Resource
 import java.io.File
-import util.{Success, Failure}
+import util.{ Success, Failure }
 import monocle.syntax._
 
 object BonusFixedCostTest extends BonusFixedCostModel(
@@ -60,7 +60,6 @@ object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
   capitalShareOfTaxes = 0.0
 )
 
-
 object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
   bonusMultiplier = 564.646869914297,
   fixedCost = 0.427446768353976,
@@ -73,7 +72,6 @@ object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
   territorialTaxes = 0.0,
   capitalShareOfTaxes = 0.0
 )
-
 
 object DoubleRedistributionBonusTest extends DoubleRedistributionBonusModel(
   bonusMultiplier = 564.646869914297,
@@ -118,13 +116,12 @@ object SingleRedistributionResourceBonusTest extends SingleRedistributionResourc
   coalEffect = -0.04
 )
 
-
 object MariusCSV extends App {
 
   lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest, SingleRedistributionResourceBonusTest)
 
   println(Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println( Console.GREEN + s"$i -> ${Console.GREEN} $c") }
+  models.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
   print(Console.RESET)
 
@@ -168,14 +165,13 @@ object MariusCSV extends App {
               d,
               from.getOrElse(i, Seq.empty).map(_.transacted).sum,
               to.getOrElse(i, Seq.empty).map(_.transacted).sum
-              )
+            )
           out.append(line.mkString(",") + "\n")
         }
         val totalWealth = cs.map(_ |-> wealth get).sum
         val totalPop = cs.map(_ |-> population get).sum
 
         println(s"step $step, total wealth $totalWealth, total population $totalPop")
-
 
       case Failure(e) => println(s"Invalid State $e")
     }

@@ -17,9 +17,7 @@
 
 package fr.geocites.gugus.transaction
 
-
 import fr.geocites.gugus.Gugus
-
 
 trait FixedCostTransaction <: Gugus with ProportionalTransaction {
 

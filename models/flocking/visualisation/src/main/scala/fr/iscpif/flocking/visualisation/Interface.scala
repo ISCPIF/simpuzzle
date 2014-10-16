@@ -6,8 +6,6 @@ import java.awt.GraphicsEnvironment
 import java.awt.GraphicsDevice
 import java.awt.GraphicsConfiguration
 
-
-
 object Interface {
   // var model: Model = null
 
@@ -55,7 +53,6 @@ object Interface {
   // val ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
   // val gd = ge.getDefaultScreenDevice();
   // val gc = gd.getDefaultConfiguration();
-
 
   // def main(args: Array[String]): Unit = {
   //   val inputMatrixSize = (args(0).split("x")(0).toInt,args(0).split("x")(1).toInt)

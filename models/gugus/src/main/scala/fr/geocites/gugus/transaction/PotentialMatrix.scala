@@ -32,7 +32,7 @@ trait PotentialMatrix <: InteractionPotential { self: Gugus =>
     val iM2 = demands.toArray
     (state |-> network get).mapNodes {
       (i, j) =>
-        interactionPotential(iM1(i), iM2(j), (state |-> distances get) (i)(j))
+        interactionPotential(iM1(i), iM2(j), (state |-> distances get)(i)(j))
     }
   }
 

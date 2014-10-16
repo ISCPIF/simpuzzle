@@ -20,7 +20,7 @@ package fr.geocites.simpuzzle.state
 import fr.geocites.simpuzzle.logging._
 import scala.util.Random
 import scalaz.Writer
-import util.{Success, Failure, Try}
+import util.{ Success, Failure, Try }
 import fr.geocites.simpuzzle.extendIterator
 
 trait StepByStep <: State with InitialState with Step with EndingCondition with Logging {
@@ -28,10 +28,10 @@ trait StepByStep <: State with InitialState with Step with EndingCondition with 
   def logs(implicit rng: Random): Iterator[Writer[List[LOGGING], Try[STATE]]] =
     Iterator.iterate[Writer[List[LOGGING], Try[STATE]]](tryValid(initialState)) {
       v =>
-          v.value match {
-            case Success(s) => tryValid { nextState(s) }
-            case s: Failure[_] => v
-          }
+        v.value match {
+          case Success(s) => tryValid { nextState(s) }
+          case s: Failure[_] => v
+        }
     }.takeWhileInclusive {
       _.value match {
         case Success(s) => !ended(s)

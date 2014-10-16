@@ -15,9 +15,73 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package fr.geocites.marius
 
-import fr.geocites.gugus.Gugus
+import fr.geocites.simpuzzle._
+import fr.geocites.gugus._
+import fr.geocites.gugus.structure._
+import monocle._
 
-trait Marius <: Gugus
+import scala.util.Random
+
+case class State(step: Int, cities: Seq[City], network: Network, distanceMatrix: DistanceMatrix)
+case class City(
+  population: Double,
+  wealth: Double,
+  region: String,
+  nation: String,
+  regionalCapital: Boolean,
+  nationalCapital: Boolean,
+  oilOrGaz: Boolean,
+  coal: Boolean)
+
+trait Marius <: Gugus {
+
+  type STATE = State
+
+  def step = Lenser[STATE](_.step)
+
+  def cities = SimpleLens[STATE, Seq[CITY]](_.cities, (s, v) => s.copy(cities = v.toVector))
+  def network = Lenser[STATE](_.network)
+  def distances = Lenser[STATE](_.distanceMatrix)
+
+  def initialState(implicit rng: Random) = {
+    val cities = initialCities
+    State(0, initialCities.toVector, Network.full(cities.size), MariusFile.distanceMatrix)
+  }
+
+  type CITY = City
+
+  def population = Lenser[CITY](_.population)
+  def wealth = Lenser[CITY](_.wealth)
+  def regionalCapital = Lenser[CITY](_.regionalCapital)
+  def region = Lenser[CITY](_.region)
+  def nation = Lenser[CITY](_.nation)
+  def nationalCapital = Lenser[CITY](_.nationalCapital)
+  def oilOrGaz = Lenser[CITY](_.oilOrGaz)
+  def coal = Lenser[CITY](_.coal)
+
+  def initialCities(implicit rng: Random) = {
+    import MariusFile._
+
+    val pop = initialPopulations.toSeq
+    val initialWealths = rescaleWealth(pop.map(initialWealth), pop)
+
+    (for {
+      (_population, _region, _nation, _regionalCapital, _nationalCapital, _oilOrGaz, _coal, _initialWealth) <- pop.toIterator zip regions zip MariusFile.nations zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
+    } yield {
+      City(
+        population = _population,
+        region = _region,
+        nation = _nation,
+        regionalCapital = _regionalCapital,
+        nationalCapital = _nationalCapital,
+        wealth = _initialWealth,
+        oilOrGaz = _oilOrGaz,
+        coal = _coal
+      )
+    }).take(MariusFile.nbCities).toVector
+  }
+
+}
+

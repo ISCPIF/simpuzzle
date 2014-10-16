@@ -21,17 +21,15 @@ import fr.geocites.marius._
 
 import scala.util.Random
 
-
 object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
   lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest, SingleRedistributionResourceBonusTest)
   println(Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach{ case(c, i) => println( Console.GREEN + s"$i -> ${Console.GREEN} $c") }
+  models.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
   print(Console.RESET)
-
 
   val evaluation = Evaluation.multiMacro(models(i))
   println("nb dead\tdistribution\toverflow")

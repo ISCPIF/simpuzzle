@@ -39,7 +39,7 @@ trait Redistribution <: Balances { model: Gugus =>
         val cityTaxes = cities.map(c => wealth.get(c) * territorialTaxes)
 
         val capitalShare =
-          if(numberOfCapitals < 1) 0.0 else (capitalShareOfTaxes * cityTaxes.sum) / numberOfCapitals
+          if (numberOfCapitals < 1) 0.0 else (capitalShareOfTaxes * cityTaxes.sum) / numberOfCapitals
 
         val taxesLeft = cityTaxes.sum - (capitalShare * numberOfCapitals)
         val territoryPopulation = cities.map(c => population.get(c)).sum

@@ -15,7 +15,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 package fr.iscpif.flocking.behaviour
 
 import util.Random
@@ -27,21 +26,20 @@ import scala.util.Random
 
 object TestFlockingBehaviour extends App {
 
-implicit val rng = new Random
+  implicit val rng = new Random
 
-println((new BehaviourComputing).compute(
-        _worldWidth = 32,
-        _worldHeight = 32,
-        _populationSize = 128,
-        _stepSize = 0.5,
-        _vision = 0.8,
-        _minimumSeparation = 1/3.0,
-        _maxAlignTurn = 0.09, //5 degres
-        _maxCohereTurn = 0.05, //3 degres
-        _maxSeparateTurn = 0.03).mkString(", "))//1.5 degres
+  println((new BehaviourComputing).compute(
+    _worldWidth = 32,
+    _worldHeight = 32,
+    _populationSize = 128,
+    _stepSize = 0.5,
+    _vision = 0.8,
+    _minimumSeparation = 1 / 3.0,
+    _maxAlignTurn = 0.09, //5 degres
+    _maxCohereTurn = 0.05, //3 degres
+    _maxSeparateTurn = 0.03).mkString(", ")) //1.5 degres
 
 }
-
 
 //
 //object FlockingBehaviourSearch extends App {

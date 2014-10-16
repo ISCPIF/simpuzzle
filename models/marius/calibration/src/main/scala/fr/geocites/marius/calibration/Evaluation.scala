@@ -17,14 +17,13 @@
 
 package fr.geocites.marius.calibration
 
-import fr.geocites.marius.{Marius, MariusFile}
+import fr.geocites.marius.{ Marius, MariusFile }
 import MariusFile._
-import scala.util.{Random, Failure, Success, Try}
+import scala.util.{ Random, Failure, Success, Try }
 import math._
 import monocle.syntax._
 
 object Evaluation {
-
 
   def singleMacro(marius: Marius)(implicit rng: Random): Double =
     Try {
@@ -36,7 +35,6 @@ object Evaluation {
         }).sum
       if (fitness.isNaN) Double.PositiveInfinity else fitness
     }.getOrElse(Double.PositiveInfinity)
-
 
   def multiMacro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, _.sorted))
   def multiMicro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, identity))
@@ -55,7 +53,6 @@ object Evaluation {
     }.getOrElse(0.0)
 
   def sum(it: Iterator[Seq[Double]]) = it.foldLeft(Seq(0.0, 0.0, 0.0)) { (s, v) => (s zip v).map { case (x, y) => x + y } }
-
 
   def overflowRatio(wealth: Double, flow: Double) = {
     val ratio = flow / wealth
