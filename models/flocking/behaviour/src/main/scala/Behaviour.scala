@@ -27,8 +27,6 @@ import scala.math._
 
 
 class BehaviourComputing {
-
-
   def compute(
         _worldWidth: Double,
         _worldHeight: Double,
@@ -75,6 +73,16 @@ trait Behaviour {
       else countGroups(gb, nclustersFound + 1, remaining -- extractComponent(gb, remaining.head, Set()))
     }
 
+    def biggestGroupSize(gb:GraphBirds): Int = (groupsSizes(gb) sorted).last
+    
+    def groupsSizes(gb:GraphBirds): Vector[Int] = groupsSizes(gb, (0 until gb.birds.size).toSet).toVector
+    def groupsSizes(gb:GraphBirds, remaining: Set[Int]): List[Int] = 
+      if (remaining.size == 0) List[Int]()
+      else {
+        val curgroup = extractComponent(gb, remaining.head, Set())
+        curgroup.size :: groupsSizes(gb:GraphBirds, remaining -- curgroup)
+      }
+      
     def extractComponent(gb: GraphBirds, start: Int, visited: Set[Int]): Set[Int] = {
       if (gb.birds.size == 0) Set()
       else {
@@ -134,9 +142,12 @@ trait Behaviour {
     case class Val[S,+T](f: T) extends AbstractCollector[S, T]
 
     def collectCountGroups(state: GraphBirds): Double = countGroups(state)
-
     lazy val countGroupsCollector: Collector[GraphBirds, Double] =
       Collector(itermax, { (s: GraphBirds) => Val(collectCountGroups(s)) })
+
+    def collectBiggestGroupSize(state:GraphBirds): Double = biggestGroupSize(state)
+    lazy val biggestGroupSizeCollector: Collector[GraphBirds, Double] =
+      Collector(itermax, { (s: GraphBirds) => Val(collectBiggestGroupSize(s).toDouble)})
 
     def collectRelativeDiffusion(state1: GraphBirds)(state2: GraphBirds): Double = {
       val dm = DistMatrix(state1.birds.map(_.position), model.distanceBetween)
@@ -155,19 +166,21 @@ trait Behaviour {
              (collectRelativeDiffusion(s0)(s1) + collectRelativeDiffusion(s1)(s2) + collectRelativeDiffusion(s2)(s3) + collectRelativeDiffusion(s3)(s4) + collectRelativeDiffusion(s4)(s5)) / 5.0
         )})})})})})})
 
+    lazy val deltatvelocity = (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt
+
     def collectVelocity(state1: GraphBirds)(state2: GraphBirds): Double =
-      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / 400.0).sum / (state1.birds.size: Double)
+      (state1.birds zip state2.birds).map(x => model.distanceBetween(x._1.position, x._2.position) / deltatvelocity).sum / (state1.birds.size: Double)
 //    val velocityCollector: Collector[GraphBirds, Double] =
 //      Collector(600, { (s1:GraphBirds) =>
 //      Collector(1000, { (s2:GraphBirds) =>  Val(
 //           collectVelocity(s1)(s2)
 //         ) })})
     lazy val velocityCollector: Collector[GraphBirds, Double] =
-      Collector(itermax - 5 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s0:GraphBirds) =>
-      Collector(itermax - 4 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s1:GraphBirds) =>
-      Collector(itermax - 3 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s2:GraphBirds) =>
-      Collector(itermax - 2 * (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s3:GraphBirds) =>
-      Collector(itermax - (min(model.worldWidth,model.worldHeight) / (2.0 * model.stepSize)).toInt, { (s4:GraphBirds) =>
+      Collector(itermax - 5 * deltatvelocity, { (s0:GraphBirds) =>
+      Collector(itermax - 4 * deltatvelocity, { (s1:GraphBirds) =>
+      Collector(itermax - 3 * deltatvelocity, { (s2:GraphBirds) =>
+      Collector(itermax - 2 * deltatvelocity, { (s3:GraphBirds) =>
+      Collector(itermax - deltatvelocity, { (s4:GraphBirds) =>
       Collector(itermax, { (s5:GraphBirds) =>  Val(
            (collectVelocity(s0)(s1) + collectVelocity(s1)(s2) + collectVelocity(s2)(s3) +collectVelocity(s3)(s4) +collectVelocity(s4)(s5)) / 5.0 
          ) })})})})})})
@@ -182,7 +195,7 @@ trait Behaviour {
       }
       else collectors.map(_ match { case Val(x) => x } )
 
-    def defaultDescription(implicit rng: Random) = constructDescription(model.randomInit, 0, countGroupsCollector, relativeDiffusionCollector, velocityCollector)
+    def defaultDescription(implicit rng: Random) = constructDescription(model.randomInit, 0, biggestGroupSizeCollector, relativeDiffusionCollector, velocityCollector)
 
     trait DistMatrix {
       val distances: Vector[Vector[Double]]

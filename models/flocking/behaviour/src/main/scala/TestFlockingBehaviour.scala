@@ -34,7 +34,7 @@ println((new BehaviourComputing).compute(
         _worldHeight = 32,
         _populationSize = 128,
         _stepSize = 0.5,
-        _vision = 3,
+        _vision = 0.8,
         _minimumSeparation = 1/3.0,
         _maxAlignTurn = 0.09, //5 degres
         _maxCohereTurn = 0.05, //3 degres
