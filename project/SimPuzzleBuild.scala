@@ -10,8 +10,8 @@ object SimPuzzleBuild extends Build {
   val scalazVersion = "7.1.0"
 
   override def settings = super.settings ++ Seq (
-    scalaVersion := "2.11.2",
-    crossScalaVersions := Seq("2.10.4", "2.11.2")
+    scalaVersion := "2.11.4",
+    crossScalaVersions := Seq("2.10.4", "2.11.4")
   )
 
 
@@ -57,7 +57,9 @@ object SimPuzzleBuild extends Build {
 
   lazy val gugus = Project(id = "gugus", base = file("models/gugus"), settings = defaultSettings) dependsOn(simpuzzle, gis)
 
- lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus)
+ lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus) settings (
+    libraryDependencies += "com.github.cb372" %% "scalacache-core" % "0.4.2"
+   )
 
  lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run"), settings = defaultSettings) dependsOn(marius)
 
