@@ -39,6 +39,8 @@ trait Marius <: Gugus {
 
   type STATE = State
 
+  def initialCensus = 0
+
   def step = Lenser[STATE](_.step)
 
   def cities = SimpleLens[STATE, Seq[CITY]](_.cities, (s, v) => s.copy(cities = v.toVector))
