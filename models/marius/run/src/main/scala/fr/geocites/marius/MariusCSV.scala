@@ -151,7 +151,7 @@ object MariusCSV extends App {
         for {
           (city, arokato, s, d, i) <- (
             cs zip
-            MariusFile.arokatos zip
+            mariusFile.arokatos zip
             m.supplies(cs) zip
             m.demands(cs)).zipWithIndex.map(flatten)
         } {

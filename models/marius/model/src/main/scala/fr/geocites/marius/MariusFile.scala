@@ -21,9 +21,29 @@ import fr.geocites.gis.distance.GeodeticDistance
 import fr.geocites.gugus.DistanceMatrix
 import fr.geocites.simpuzzle.city.Position
 
+import scala.collection.mutable
 import scala.io.Source
 
-object MariusFile extends GeodeticDistance {
+object MariusFile {
+
+  lazy val memoization = new mutable.HashMap[Int, MariusFile]
+
+  def apply(census: Int): MariusFile = memoization.synchronized {
+    memoization.getOrElseUpdate(
+      census, {
+        val _census = census
+        new MariusFile {
+          def census: Int = _census
+        }
+      }
+    )
+  }
+
+}
+
+trait MariusFile extends GeodeticDistance {
+
+  def census: Int
 
   /** Read the content of the file */
   def content = {
@@ -42,12 +62,13 @@ object MariusFile extends GeodeticDistance {
   def data = content.drop(1).toList
 
   /** The number of columns of census data */
-  def numberOfDates = 6
+  def numberOfDates = 6 - census
 
   /** The dates of the census */
-  lazy val dates = MariusFile.header.takeRight(numberOfDates).map(_.toInt)
+  lazy val dates = header.takeRight(numberOfDates).map(_.toInt)
 
   /** The cities with known populations for all dates */
+
   def startingCities =
     data.filter {
       _.takeRight(numberOfDates).forall(!_.isEmpty)
@@ -114,11 +135,11 @@ object MariusFile extends GeodeticDistance {
 
   /** Cache of the distance matrix between */
   lazy val distanceMatrix: DistanceMatrix = {
-    val positions = MariusFile.positions.toVector
+    val p = positions.toVector
 
-    positions.zipWithIndex.map {
+    p.zipWithIndex.map {
       case (c1, i) =>
-        positions.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
+        p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
     }
   }
 

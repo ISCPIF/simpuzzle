@@ -40,6 +40,7 @@ trait Marius <: Gugus {
   type STATE = State
 
   def initialCensus = 0
+  def mariusFile = MariusFile(initialCensus)
 
   def step = Lenser[STATE](_.step)
 
@@ -49,7 +50,7 @@ trait Marius <: Gugus {
 
   def initialState(implicit rng: Random) = {
     val cities = initialCities
-    State(0, initialCities.toVector, Network.full(cities.size), MariusFile.distanceMatrix)
+    State(0, initialCities.toVector, Network.full(cities.size), mariusFile.distanceMatrix)
   }
 
   type CITY = City
@@ -64,25 +65,33 @@ trait Marius <: Gugus {
   def coal = Lenser[CITY](_.coal)
 
   def initialCities(implicit rng: Random) = {
-    import MariusFile._
 
-    val pop = initialPopulations.toSeq
+    val pop = mariusFile.initialPopulations.toSeq
     val initialWealths = rescaleWealth(pop.map(initialWealth), pop)
 
-    (for {
-      (_population, _region, _nation, _regionalCapital, _nationalCapital, _oilOrGaz, _coal, _initialWealth) <- pop.toIterator zip regions zip MariusFile.nations zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
-    } yield {
-      City(
-        population = _population,
-        region = _region,
-        nation = _nation,
-        regionalCapital = _regionalCapital,
-        nationalCapital = _nationalCapital,
-        wealth = _initialWealth,
-        oilOrGaz = _oilOrGaz,
-        coal = _coal
-      )
-    }).take(MariusFile.nbCities).toVector
+    val cities =
+      for {
+        (_population,
+          _region,
+          _nation,
+          _regionalCapital,
+          _nationalCapital,
+          _oilOrGaz,
+          _coal,
+          _initialWealth) <- pop.toIterator zip mariusFile.regions zip mariusFile.nations zip mariusFile.regionCapitals zip mariusFile.nationalCapitals zip mariusFile.oilOrGazDistribution.toIterator zip mariusFile.coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
+      } yield {
+        City(
+          population = _population,
+          region = _region,
+          nation = _nation,
+          regionalCapital = _regionalCapital,
+          nationalCapital = _nationalCapital,
+          wealth = _initialWealth,
+          oilOrGaz = _oilOrGaz,
+          coal = _coal
+        )
+      }
+    cities.take(mariusFile.nbCities).toVector
   }
 
 }

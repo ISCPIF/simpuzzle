@@ -31,8 +31,14 @@ object Evaluate extends App {
   val i = io.StdIn.readInt()
   print(Console.RESET)
 
-  val evaluation = Evaluation.multiMacro(models(i))
-  println("nb dead\tdistribution\toverflow")
-  println(evaluation.map(_.formatted("%g")).mkString("\t"))
+  for (
+    j <- 0 until 10
+  ) {
+    val begin = System.currentTimeMillis()
+    val evaluation = Evaluation.multiMacro(models(i))
+    println("nb dead\tdistribution\toverflow")
+    println(evaluation.map(_.formatted("%g")).mkString("\t"))
+    println(System.currentTimeMillis() - begin)
+  }
 
 }

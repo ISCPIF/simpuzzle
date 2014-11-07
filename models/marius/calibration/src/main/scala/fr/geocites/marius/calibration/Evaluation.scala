@@ -30,14 +30,14 @@ object Evaluation {
       import marius._
       val fitness =
         (for { (state, step) <- marius.states.zipWithIndex } yield state match {
-          case Success(s) => distanceToData(step, (s |-> marius.cities get) map (_ |-> population get), _.sorted)
+          case Success(s) => distanceToData(marius)(step, (s |-> marius.cities get) map (_ |-> population get), _.sorted)
           case Failure(_) => Double.PositiveInfinity
         }).sum
       if (fitness.isNaN) Double.PositiveInfinity else fitness
     }.getOrElse(Double.PositiveInfinity)
 
-  def multiMacro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, _.sorted))
-  def multiMicro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(_, _, identity))
+  def multiMacro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(marius)(_, _, _.sorted))
+  def multiMicro(marius: Marius)(implicit rng: Random) = multi(marius, distanceToData(marius)(_, _, identity))
 
   def logSquaresError(d1: Seq[Double], d2: Seq[Double]) =
     (d1 zip d2) map {
@@ -45,10 +45,10 @@ object Evaluation {
         pow(log10(o) - log10(e), 2)
     } sum
 
-  def date(step: Int) = MariusFile.dates.head + step
+  def date(marius: Marius)(step: Int) = marius.mariusFile.dates.head + step
 
-  def distanceToData(step: Int, populations: Seq[Double], preProcessing: Seq[Double] => Seq[Double]) =
-    MariusFile.populations(dates.head + step).map {
+  def distanceToData(marius: Marius)(step: Int, populations: Seq[Double], preProcessing: Seq[Double] => Seq[Double]) =
+    marius.mariusFile.populations(marius.mariusFile.dates.head + step).map {
       empirical => logSquaresError(preProcessing(populations), preProcessing(empirical))
     }.getOrElse(0.0)
 

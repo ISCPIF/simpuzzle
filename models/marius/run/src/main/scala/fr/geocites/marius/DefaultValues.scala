@@ -21,4 +21,5 @@ package fr.geocites.marius
 trait DefaultValues {
   /** Simulate from 1959 to 1989 */
   def maxStep = 30
+  def census = 0
 }
