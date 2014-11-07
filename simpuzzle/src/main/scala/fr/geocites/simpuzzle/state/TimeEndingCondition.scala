@@ -21,8 +21,8 @@ import monocle._
 import monocle.syntax._
 
 trait TimeEndingCondition extends EndingCondition with State {
-  def maxStep: Int
-  def ended(state: STATE) = (state |-> step get) >= maxStep
+  def steps: Int
+  def ended(state: STATE) = (state |-> step get) >= steps
 
   def step: SimpleLens[STATE, Int]
 }

@@ -20,5 +20,5 @@ package fr.geocites.simpoplocal
 import fr.geocites.simpuzzle.state.TimeEndingCondition
 
 trait SimpopLocalTimeEndingCondition <: TimeEndingCondition with SimpopLocalState {
-  def maxStep: Int = 4000
+  def steps: Int = 4000
 }

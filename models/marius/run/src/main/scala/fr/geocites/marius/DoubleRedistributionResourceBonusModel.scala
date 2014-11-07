@@ -16,5 +16,5 @@ class DoubleRedistributionResourceBonusModel(
   val capitalShareOfTaxes: Double,
   val oilAndGazEffect: Double,
   val coalEffect: Double)
-    extends Marius with Bonus with FixedCostTransaction with RegionalRedistribution with NationalRedistribution with SubSurfaceResources with DefaultValues
+    extends Marius with Bonus with FixedCostTransaction with RegionalRedistribution with NationalRedistribution with SubSurfaceResources with From59To89
 

@@ -29,5 +29,5 @@ class BonusFixedCostModel(
   val wealthToPopulationExponent: Double,
   val populationToWealthExponent: Double,
   val bonusMultiplier: Double,
-  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with DefaultValues
+  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with From59To89
 

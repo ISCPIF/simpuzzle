@@ -16,4 +16,4 @@ class NationalRedistributionBonusModel(
   val bonusMultiplier: Double,
   val fixedCost: Double,
   val territorialTaxes: Double,
-  val capitalShareOfTaxes: Double) extends Marius with Bonus with FixedCostTransaction with NationalRedistribution with DefaultValues
+  val capitalShareOfTaxes: Double) extends Marius with Bonus with FixedCostTransaction with NationalRedistribution with From59To89

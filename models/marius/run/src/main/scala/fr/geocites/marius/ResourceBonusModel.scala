@@ -17,4 +17,4 @@ class ResourceBonusModel(
   val bonusMultiplier: Double,
   val fixedCost: Double,
   val oilAndGazEffect: Double,
-  val coalEffect: Double) extends Marius with Bonus with FixedCostTransaction with SubSurfaceResources with DefaultValues
+  val coalEffect: Double) extends Marius with Bonus with FixedCostTransaction with SubSurfaceResources with From59To89

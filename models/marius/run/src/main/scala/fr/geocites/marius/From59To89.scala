@@ -18,8 +18,8 @@
 package fr.geocites.marius
 
 /** Default values for some parameters of the models */
-trait DefaultValues {
+trait From59To89 {
   /** Simulate from 1959 to 1989 */
-  def maxStep = 30
+  def steps = 30
   def census = 0
 }

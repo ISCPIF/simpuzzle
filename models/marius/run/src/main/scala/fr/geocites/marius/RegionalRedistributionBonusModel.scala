@@ -17,5 +17,5 @@ class RegionalRedistributionBonusModel(
   val fixedCost: Double,
   val territorialTaxes: Double,
   val capitalShareOfTaxes: Double)
-    extends Marius with Bonus with FixedCostTransaction with RegionalRedistribution with DefaultValues
+    extends Marius with Bonus with FixedCostTransaction with RegionalRedistribution with From59To89
 

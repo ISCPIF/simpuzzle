@@ -27,4 +27,4 @@ class SimpleModel(
   val sizeEffectOnDemand: Double,
   val distanceDecay: Double,
   val wealthToPopulationExponent: Double,
-  val populationToWealthExponent: Double) extends Marius with DefaultValues with ProportionalTransaction
+  val populationToWealthExponent: Double) extends Marius with From59To89 with ProportionalTransaction
