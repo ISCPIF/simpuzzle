@@ -34,7 +34,11 @@ trait Matrix {
   def linesContent: Seq[Seq[Double]] = content.map(_.toIndexedSeq).toIndexedSeq
 
   def map(f: (Int, Int, Double) => Double): Matrix = {
-    val newContent = Array.tabulate(side, side)((i, j) => f(i, j, content(i)(j)))
+    val newContent = Array.ofDim[Double](side, side)
+    for {
+      i <- 0 until side
+      j <- 0 until side
+    } newContent(i)(j) = f(i, j, content(i)(j))
     Matrix(newContent)
   }
 

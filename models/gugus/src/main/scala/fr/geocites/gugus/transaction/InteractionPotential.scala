@@ -17,15 +17,11 @@
 
 package fr.geocites.gugus.transaction
 
-import fr.geocites.simpuzzle._
-
 trait InteractionPotential {
 
   def distanceDecay: Double
 
-  def interactionPotential(mass1: Double, mass2: Double, distance: Double) = {
-    val potential = (mass1 * mass2) / math.pow(distance, distanceDecay)
-    check(potential >= 0, s"Error in potential computing gave $potential for $mass1 $mass2 $distance")
-    potential
-  }
+  def interactionPotential(mass1: Double, mass2: Double, distance: Double) =
+    (mass1 * mass2) / math.pow(distance, distanceDecay)
+
 }

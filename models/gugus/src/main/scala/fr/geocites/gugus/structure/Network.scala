@@ -24,12 +24,14 @@ object Network {
       def allExcept(i: Int) = (0 until i) ++ (i + 1 until network)
       def outNodes(i: Int) = allExcept(i)
       def inNodes(i: Int) = allExcept(i)
-      def mapNodes(f: (Int, Int) => Double): Matrix =
-        Matrix(
-          Array.tabulate(network, network) {
-            (i, j) => if (i != j) f(i, j) else 0.0
-          }
-        )
+      def mapNodes(f: (Int, Int) => Double): Matrix = {
+        val matrix = Array.ofDim[Double](network, network)
+        for {
+          i <- 0 until network
+          j <- 0 until network
+        } matrix(i)(j) = if (i != j) f(i, j) else 0.0
+        Matrix(matrix)
+      }
 
     }
 
