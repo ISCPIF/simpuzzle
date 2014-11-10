@@ -46,7 +46,7 @@ trait MariusFile extends GeodeticDistance {
   def census: Int
 
   /** Read the content of the file */
-  def contentCities= {
+  def contentCities = {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius.csv"))
 
@@ -143,10 +143,8 @@ trait MariusFile extends GeodeticDistance {
     }
   }
 
- 
-
   /** Read the content of the file */
-  def contentRegions= {
+  def contentRegions = {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius-regions.csv"))
 
@@ -156,22 +154,22 @@ trait MariusFile extends GeodeticDistance {
   }
 
   /** Read the header of the csv file */
-  def header = contentRegions.next
+  def headerRegions = contentRegions.next
 
   /** Read the data part of the csv file */
-  def data = contentRegions.drop(1).toList
+  def dataRegions = contentRegions.drop(1).toList
 
   /** The number of columns of census data */
-  def numberOfDates = 6 - census
+  def numberOfDatesRegions = 6 - census
 
   /** The dates of the census */
-  lazy val dates = header.takeRight(numberOfDates).map(_.toInt)
+  lazy val datesRegions = headerRegions.takeRight(numberOfDatesRegions).map(_.toInt)
 
   /** The regions with known urbanisation rates for all dates */
 
   def startingRegions =
     data.filter {
-      _.takeRight(numberOfDates).forall(!_.isEmpty)
+      _.takeRight(numberOfDatesRegions).forall(!_.isEmpty)
     }
 
   /** Number of regions taken into account */
@@ -184,7 +182,7 @@ trait MariusFile extends GeodeticDistance {
     }
 
   /** Number of column before the census columns */
-  def columnsBeforeDates = header.size - numberOfDates
+  def columnsBeforeDatesRegions = headerRegions.size - numberOfDatesRegions
 
   /**
    * Column of urbanisation rates at a given date
@@ -193,9 +191,9 @@ trait MariusFile extends GeodeticDistance {
    * @return an option containing the population if provided, none otherwise
    */
   def urbanisationRates(date: Int): Option[Seq[Double]] =
-    (dates.indexOf(date) match {
+    (datesRegions.indexOf(date) match {
       case -1 => None
-      case i => Some(i + columnsBeforeDates)
+      case i => Some(i + columnsBeforeDatesRegions)
     }).map {
       c => startingRegions.map(_(c).toDouble)
     }
@@ -204,17 +202,13 @@ trait MariusFile extends GeodeticDistance {
   def IDREG = startingRegions.map(_(0))
 
   /** Names of the regions */
-  def names = startingCities.map(_(1))
+  def namesRegions = startingRegions.map(_(1))
 
+  /** Populations of the regions at the first date */
+  def initialUrbanisationRates = urbanisationRates(datesRegions.head).get
 
-  /** Populations of the cities at the first date */
-  def initialUrbanisationRates = urbanisationRates(dates.head).get
-
-   /** States cities belong to */
-  def nations = startingRegions.map(_(2)).toIterator
-
-
-  }
+  /** States regions belong to */
+  def nationsRegions = startingRegions.map(_(2)).toIterator
 
   /** A converter function from string to boolean */
   private def toBoolean(s: String) =
