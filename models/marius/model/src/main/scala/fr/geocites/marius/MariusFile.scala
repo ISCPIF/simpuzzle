@@ -46,7 +46,7 @@ trait MariusFile extends GeodeticDistance {
   def census: Int
 
   /** Read the content of the file */
-  def content = {
+  def contentCities= {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius.csv"))
 
@@ -56,10 +56,10 @@ trait MariusFile extends GeodeticDistance {
   }
 
   /** Read the header of the csv file */
-  def header = content.next
+  def header = contentCities.next
 
   /** Read the data part of the csv file */
-  def data = content.drop(1).toList
+  def data = contentCities.drop(1).toList
 
   /** The number of columns of census data */
   def numberOfDates = 6 - census
@@ -141,6 +141,79 @@ trait MariusFile extends GeodeticDistance {
       case (c1, i) =>
         p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
     }
+  }
+
+ 
+
+  /** Read the content of the file */
+  def contentRegions= {
+    val input =
+      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius-regions.csv"))
+
+    input.getLines.map {
+      l => l.split(",").toSeq
+    }
+  }
+
+  /** Read the header of the csv file */
+  def header = contentRegions.next
+
+  /** Read the data part of the csv file */
+  def data = contentRegions.drop(1).toList
+
+  /** The number of columns of census data */
+  def numberOfDates = 6 - census
+
+  /** The dates of the census */
+  lazy val dates = header.takeRight(numberOfDates).map(_.toInt)
+
+  /** The regions with known urbanisation rates for all dates */
+
+  def startingRegions =
+    data.filter {
+      _.takeRight(numberOfDates).forall(!_.isEmpty)
+    }
+
+  /** Number of regions taken into account */
+  def nbRegions = startingRegions.size
+
+  /** Read the position of the cities */
+  def positionsRegions =
+    startingRegions.map {
+      l => Position(l(5).toDouble, l(4).toDouble)
+    }
+
+  /** Number of column before the census columns */
+  def columnsBeforeDates = header.size - numberOfDates
+
+  /**
+   * Column of urbanisation rates at a given date
+   *
+   * @param date date of observation
+   * @return an option containing the population if provided, none otherwise
+   */
+  def urbanisationRates(date: Int): Option[Seq[Double]] =
+    (dates.indexOf(date) match {
+      case -1 => None
+      case i => Some(i + columnsBeforeDates)
+    }).map {
+      c => startingRegions.map(_(c).toDouble)
+    }
+
+  /** Id of regions */
+  def IDREG = startingRegions.map(_(0))
+
+  /** Names of the regions */
+  def names = startingCities.map(_(1))
+
+
+  /** Populations of the cities at the first date */
+  def initialUrbanisationRates = urbanisationRates(dates.head).get
+
+   /** States cities belong to */
+  def nations = startingRegions.map(_(2)).toIterator
+
+
   }
 
   /** A converter function from string to boolean */
