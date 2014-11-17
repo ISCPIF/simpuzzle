@@ -39,8 +39,9 @@ trait Marius <: Gugus {
 
   type STATE = State
 
-  def initialCensus = 0
-  def mariusFile = MariusFile(initialCensus)
+  def census: Int
+
+  def mariusFile = MariusFile(census)
 
   def step = Lenser[STATE](_.step)
 
