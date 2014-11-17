@@ -24,11 +24,11 @@ import fr.geocites.simpuzzle.neighbourhood._
 import scalaz.Lens
 import fr.geocites.simpuzzle.matrix.Torus2D
 import fr.geocites.simpuzzle.state.Step
-import fr.geocites.simpuzzle.logging.NoLogging
+import fr.geocites.simpuzzle.logging.NoLog
 
 trait SchellingStep <: Step
     with MatrixNeighbourhood
-    with NoLogging {
+    with NoLog {
 
   trait Place
   case object Free extends Place

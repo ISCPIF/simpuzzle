@@ -20,11 +20,11 @@ package fr.geocites.schelling
 import fr.geocites.simpuzzle._
 import scala.util.Random
 import fr.geocites.simpuzzle.state.InitialState
-import fr.geocites.simpuzzle.logging.NoLogging
+import fr.geocites.simpuzzle.logging.NoLog
 
 trait SchellingRandomInitialState <: InitialState
     with Schelling
-    with NoLogging {
+    with NoLog {
 
   def freeProportion: Double
   def whiteProportion: Double

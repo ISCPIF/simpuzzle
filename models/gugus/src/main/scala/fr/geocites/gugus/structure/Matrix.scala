@@ -28,7 +28,7 @@ trait Matrix {
 
   def side: Int = content.size
   def lines: Seq[Seq[Cell]] =
-    content.map(_.zipWithIndex.map { case (v, i) => Cell(i, v) }.toIndexedSeq).toIndexedSeq
+    content.view.map(_.view.zipWithIndex.map { case (v, i) => Cell(i, v) })
 
   def transpose: Matrix = Matrix(content.transpose)
   def linesContent: Seq[Seq[Double]] = content.map(_.toIndexedSeq).toIndexedSeq

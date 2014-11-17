@@ -21,10 +21,10 @@ import scala.util.Random
 import fr.geocites.simpuzzle.state
 import scalaz._
 import fr.geocites.simpuzzle.state.Step
-import fr.geocites.simpuzzle.logging.NoLogging
+import fr.geocites.simpuzzle.logging.NoLog
 
 trait GibratStep <: Step
-    with NoLogging
+    with NoLog
     with state.State {
 
   type CITY

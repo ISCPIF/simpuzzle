@@ -20,6 +20,7 @@ package fr.geocites.gugus
 import fr.geocites.gugus.balance._
 import fr.geocites.gugus.structure._
 import fr.geocites.simpuzzle._
+import fr.geocites.simpuzzle.logging.NoLog
 import fr.geocites.simpuzzle.state.{ StepByStep, TimeEndingCondition }
 
 import scala.math._
@@ -29,7 +30,8 @@ import monocle.syntax._
 
 trait Gugus <: StepByStep
     with TimeEndingCondition
-    with Balances {
+    with Balances
+    with NoLog {
 
   type LOGGING = Interaction
 

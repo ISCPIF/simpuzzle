@@ -20,6 +20,6 @@ package fr.geocites.simpuzzle.logging
 import scalaz._
 import Scalaz._
 
-trait NoLogging <: Logging {
+trait NoLog <: Logging {
   override def log[T](s: T, l: => List[LOGGING]) = s.set(List.empty)
 }
