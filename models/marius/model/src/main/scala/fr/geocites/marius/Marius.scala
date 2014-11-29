@@ -17,6 +17,7 @@
 
 package fr.geocites.marius
 
+import fr.geocites.gugus.balance.{ InitialWealth, SuperLinearInitialWealth }
 import fr.geocites.simpuzzle._
 import fr.geocites.gugus._
 import fr.geocites.gugus.structure._
@@ -25,6 +26,7 @@ import monocle._
 import scala.util.Random
 
 case class State(step: Int, cities: Seq[City], network: Network, distanceMatrix: DistanceMatrix)
+
 case class City(
   population: Double,
   wealth: Double,
@@ -35,7 +37,7 @@ case class City(
   oilOrGaz: Boolean,
   coal: Boolean)
 
-trait Marius <: Gugus {
+trait Marius <: Gugus with SuperLinearInitialWealth {
 
   type STATE = State
 
@@ -68,7 +70,7 @@ trait Marius <: Gugus {
   def initialCities(implicit rng: Random) = {
 
     val pop = mariusFile.initialPopulations.toSeq
-    val initialWealths = rescaleWealth(pop.map(initialWealth), pop)
+    val initialWealths = InitialWealth.rescaleWealth(pop.map(initialWealth), pop)
 
     val cities =
       for {

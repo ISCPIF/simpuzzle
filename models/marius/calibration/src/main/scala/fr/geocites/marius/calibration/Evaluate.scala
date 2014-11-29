@@ -25,7 +25,7 @@ object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
-  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest, SingleRedistributionResourceBonusTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
   println(Console.YELLOW + "Choose you model: ")
   models.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()

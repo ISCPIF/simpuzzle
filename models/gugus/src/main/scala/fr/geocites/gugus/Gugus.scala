@@ -40,7 +40,6 @@ trait Gugus <: StepByStep
   def economicMultiplier: Double
   def sizeEffectOnDemand: Double
   def sizeEffectOnSupply: Double
-  def populationToWealthExponent: Double
   def wealthToPopulationExponent: Double
 
   def cities: SimpleLens[STATE, Seq[CITY]]
@@ -103,13 +102,6 @@ trait Gugus <: StepByStep
 
   def demand(population: Double) = economicMultiplier * pow(population, sizeEffectOnDemand)
   def supply(population: Double) = economicMultiplier * pow(population, sizeEffectOnSupply)
-
-  def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
-    val factor = population.sum / wealth.sum.toDouble
-    wealth.map(_ * factor)
-  }
-
-  def initialWealth(population: Double)(implicit rng: Random): Double = pow(population, populationToWealthExponent)
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")

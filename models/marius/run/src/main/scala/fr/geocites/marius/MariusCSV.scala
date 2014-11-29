@@ -47,32 +47,6 @@ object ResourceBonusTest extends ResourceBonusModel(
   coalEffect = -0.022116545015663
 )
 
-object NationalRedistributionBonusTest extends NationalRedistributionBonusModel(
-  bonusMultiplier = 427.5248642847163,
-  fixedCost = 283.3037716981452,
-  distanceDecay = 5.163495482844931,
-  sizeEffectOnSupply = 1.5414957182929494,
-  sizeEffectOnDemand = 9.814965767224715,
-  economicMultiplier = 0.0,
-  populationToWealthExponent = 1.389243762417773,
-  wealthToPopulationExponent = 0.9143309383981182,
-  territorialTaxes = 0.04106670424962933,
-  capitalShareOfTaxes = 0.0
-)
-
-object RegionalRedistributionBonusTest extends RegionalRedistributionBonusModel(
-  bonusMultiplier = 564.646869914297,
-  fixedCost = 0.427446768353976,
-  distanceDecay = 0.67639638323395,
-  sizeEffectOnSupply = 1,
-  sizeEffectOnDemand = 1.0841916528743,
-  economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1.06919766558929,
-  wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.0,
-  capitalShareOfTaxes = 0.0
-)
-
 object DoubleRedistributionBonusTest extends DoubleRedistributionBonusModel(
   bonusMultiplier = 564.646869914297,
   fixedCost = 0.427446768353976,
@@ -101,24 +75,9 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
   coalEffect = 0.0
 )
 
-object SingleRedistributionResourceBonusTest extends SingleRedistributionResourceBonusModel(
-  bonusMultiplier = 564.646869914297,
-  fixedCost = 0.427446768353976,
-  distanceDecay = 0.67639638323395,
-  sizeEffectOnSupply = 1,
-  sizeEffectOnDemand = 1.0841916528743,
-  economicMultiplier = 0.589041240155966,
-  populationToWealthExponent = 1.06919766558929,
-  wealthToPopulationExponent = 0.410661076332697,
-  territorialTaxes = 0.001,
-  capitalShareOfTaxes = 0.001,
-  oilAndGazEffect = 0.03,
-  coalEffect = -0.04
-)
-
 object MariusCSV extends App {
 
-  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, NationalRedistributionBonusTest, RegionalRedistributionBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest, SingleRedistributionResourceBonusTest)
+  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
 
   println(Console.YELLOW + "Choose you model: ")
   models.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }

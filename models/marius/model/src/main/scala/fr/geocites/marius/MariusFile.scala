@@ -41,9 +41,10 @@ object MariusFile {
 
 }
 
-trait MariusFile extends GeodeticDistance {
+trait MariusFile <: GeodeticDistance {
 
   def census: Int
+  def numberOfCensus = 6
 
   /** Read the content of the file */
   def contentCities = {
@@ -62,7 +63,7 @@ trait MariusFile extends GeodeticDistance {
   def data = contentCities.drop(1).toList
 
   /** The number of columns of census data */
-  def numberOfDates = 6 - census
+  def numberOfDates = numberOfCensus - census
 
   /** The dates of the census */
   lazy val dates = header.takeRight(numberOfDates).map(_.toInt)
@@ -79,8 +80,8 @@ trait MariusFile extends GeodeticDistance {
 
   /** Read the position of the cities */
   def positions =
-    startingCities.map {
-      l => Position(l(5).toDouble, l(4).toDouble)
+    (longitudes zip latitudes).map {
+      case (long, lat) => Position(long, lat)
     }
 
   /** Number of column before the census columns */
@@ -107,10 +108,10 @@ trait MariusFile extends GeodeticDistance {
   def names = startingCities.map(_(1))
 
   /** Latitudes of the cities in decimal degrees */
-  def latitudes = startingCities.map(_(4))
+  def latitudes = startingCities.map(_(4).toDouble)
 
   /** Longitudes of the cities in decimal degrees */
-  def longitudes = startingCities.map(_(5))
+  def longitudes = startingCities.map(_(5).toDouble)
 
   /** Populations of the cities at the first date */
   def initialPopulations = populations(dates.head).get

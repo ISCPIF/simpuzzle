@@ -15,15 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.gugus.balance
+package fr.geocites.marius
 
-import fr.geocites.gugus.Gugus
-import monocle.SimpleLens
+import fr.geocites.gugus.balance.Redistribution
 
-trait RegionalRedistribution <: Redistribution { model: Gugus =>
-
-  def regionalCapital: SimpleLens[CITY, Boolean]
-
-  override def regionalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, region.get _, regionalCapital.get _)
-
+trait DoubleRedistribution <: Redistribution with RegionalRedistribution with NationalRedistribution {
+  override def redistributions = Seq(regionalRedistributions, nationalRedistributions)
 }

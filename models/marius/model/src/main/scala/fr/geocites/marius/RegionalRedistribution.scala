@@ -15,10 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites
+package fr.geocites.marius
 
-import fr.geocites.gis.distance._
+import fr.geocites.gugus.balance.{ TerritorialTaxes, Redistribution }
+import monocle.SimpleLens
 
-object IndusFile extends GeodeticDistance {
-
+trait RegionalRedistribution <: Redistribution with TerritorialTaxes {
+  def regionalCapital: SimpleLens[CITY, Boolean]
+  def regionalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, region.get _, regionalCapital.get _)
 }

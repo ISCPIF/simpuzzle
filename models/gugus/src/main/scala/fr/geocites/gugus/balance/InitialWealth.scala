@@ -17,17 +17,25 @@
 
 package fr.geocites.gugus.balance
 
-import fr.geocites.gugus.Gugus
+import scala.util.Random
 
-trait Redistribution <: Balances with Gugus {
+object InitialWealth {
 
-  type RedistributionFunction = (Seq[CITY] => Seq[Double])
+  def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
+    val factor = population.sum / wealth.sum
+    wealth.map(_ * factor)
+  }
 
-  def redistributions: Seq[RedistributionFunction]
+}
 
-  override def redistributionBalances(s: Seq[CITY]): Seq[Double] =
-    redistributions.foldLeft(s.map(_ => 0.0)) {
-      (total, r) => (total zip r(s)).map { case (t, r) => t + r }
-    }
+trait InitialWealth {
+  def initialWealth(population: Double)(implicit rng: Random): Double
+}
 
+trait SuperLinearInitialWealth <: InitialWealth {
+
+  def populationToWealthExponent: Double
+
+  def initialWealth(population: Double)(implicit rng: Random): Double =
+    math.pow(population, populationToWealthExponent)
 }
