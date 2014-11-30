@@ -62,13 +62,13 @@ object IndusFile extends GeodeticDistance {
       case -1 => None
       case i => Some(i + columnsBeforeDates)
     }).map {
-      c => startingCities.map(_(c).toDouble)
+      c => startingCities.map(_(c).toDouble / 1000)
     }
 
   /** The cities with known populations for all dates */
   def startingCities =
     data.filter {
-      _.takeRight(numberOfDates).forall(!_.isEmpty)
+      d => d.takeRight(numberOfDates).forall(!_.isEmpty) //&& d(columnsBeforeDates).toDouble >= 10000
     }
 
   /** Number of cities taken into account */

@@ -17,21 +17,27 @@
 
 package fr.geocites.indus
 
-import fr.geocites.gugus.transaction.ProportionalTransaction
+import java.io.File
 
-object Models {
+import Models._
+import fr.geocites.gugus.tool.ToCSV
 
-  trait From1961To2011 {
-    /** Simulate from 1961 to 2011 */
-    def steps = 50
-  }
+import scala.util.Random
 
-  case class SimpleModel(
-    economicMultiplier: Double,
-    sizeEffectOnSupply: Double,
-    sizeEffectOnDemand: Double,
-    distanceDecay: Double,
-    wealthToPopulationExponent: Double,
-    populationToWealthExponent: Double) extends Indus with From1961To2011 with ProportionalTransaction
+object Run extends App with ToCSV {
+  val model =
+    SimpleModel(
+      distanceDecay = 0.6722631615,
+      sizeEffectOnSupply = 1.001756388,
+      sizeEffectOnDemand = 1.0792607803,
+      economicMultiplier = 0.3438093442,
+      populationToWealthExponent = 1.0866012754,
+      wealthToPopulationExponent = 0.3804356044)
+
+  implicit val rng = new Random(42)
+
+  val path = new File("/tmp/indusmodel_log.csv")
+
+  toCSVFile(model, path)
 
 }
