@@ -20,11 +20,9 @@ package fr.geocites.indus
 import fr.geocites.gis.distance._
 import fr.geocites.gugus._
 import fr.geocites.simpuzzle.city.Position
-import fr.geocites.simpuzzle.flatten
 import scala.io.Source
-import scala.util.Random
 
-object IndusFile extends GeodeticDistance {
+object IndusFile {
 
   /** Read the content of the file */
   def contentCities = {
@@ -81,14 +79,7 @@ object IndusFile extends GeodeticDistance {
     }
 
   /** Cache of the distance matrix between */
-  lazy val distanceMatrix: DistanceMatrix = {
-    val p = positions.toVector
-
-    p.zipWithIndex.map {
-      case (c1, i) =>
-        p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
-  }
+  lazy val distanceMatrix: DistanceMatrix = positions.distanceMatrix
 
   /** Id of cities */
   def arokatos = startingCities.map(_(0))

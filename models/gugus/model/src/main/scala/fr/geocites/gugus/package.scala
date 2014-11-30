@@ -17,6 +17,31 @@
 
 package fr.geocites
 
+import fr.geocites.gis.distance.GeodeticDistance
+import fr.geocites.simpuzzle.city.Position
+
 package object gugus {
-  type DistanceMatrix = Seq[Seq[Double]]
+
+  implicit class PositionDecorator(positions: Seq[Position]) extends GeodeticDistance {
+    /** Cache of the distance matrix between */
+    def distanceMatrix: DistanceMatrix = {
+      val p = positions.toVector
+      val distances = Array.ofDim[Double](p.size, p.size)
+
+      for {
+        i <- 0 until p.size
+        j <- i until p.size
+      } {
+        if (i == j) distances(i)(i) = 0.0
+        else {
+          val d = distance(p(i), p(j))
+          distances(i)(j) = d
+          distances(j)(i) = d
+        }
+      }
+      distances
+    }
+  }
+
+  type DistanceMatrix = Array[Array[Double]]
 }

@@ -17,14 +17,13 @@
 
 package fr.geocites.marius
 
-import fr.geocites.gis.distance.GeodeticDistance
-import fr.geocites.gugus.DistanceMatrix
-import fr.geocites.simpuzzle.city.Position
+import fr.geocites.gugus._
+import fr.geocites.simpuzzle.city._
 
 import scala.collection.mutable
 import scala.io.Source
 
-object MariusFile extends GeodeticDistance {
+object MariusFile {
 
   private lazy val memoization = new mutable.HashMap[Int, DistanceMatrix]
 
@@ -61,12 +60,7 @@ object MariusFile extends GeodeticDistance {
 
   /** Cache of the distance matrix between */
   def distanceMatrix(census: Int): DistanceMatrix = memoize(census) {
-    val p = positions(census).toVector
-
-    p.zipWithIndex.map {
-      case (c1, i) =>
-        p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
+    positions(census).distanceMatrix
   }
 
 }
