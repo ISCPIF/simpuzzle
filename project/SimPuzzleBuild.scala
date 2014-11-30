@@ -102,4 +102,5 @@ trait Marius <: Gugus {
 
 trait Indus <: Gugus {
   lazy val indus = Project(id = "indus", base = file("models/indus/model"), settings = defaultSettings) dependsOn (gugus)
+  lazy val indusrun = Project(id = "indusrun", base = file("models/indus/run"), settings = defaultSettings) dependsOn (indus)
 }

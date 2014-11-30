@@ -21,6 +21,7 @@ import fr.geocites.gugus.balance.{ TerritorialTaxes, Redistribution }
 import monocle.SimpleLens
 
 trait NationalRedistribution <: Redistribution with TerritorialTaxes {
+  def nation: SimpleLens[CITY, String]
   def nationalCapital: SimpleLens[CITY, Boolean]
   def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get _, nationalCapital.get _)
 }

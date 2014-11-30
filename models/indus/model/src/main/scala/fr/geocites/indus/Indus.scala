@@ -17,11 +17,15 @@
 
 package fr.geocites.indus
 
-import fr.geocites.gugus.Gugus
-import fr.geocites.gugus.balance.{ InitialWealth, SuperLinearInitialWealth }
+import fr.geocites.gugus._
+import fr.geocites.gugus.balance._
+import fr.geocites.gugus.structure.Network
 import fr.geocites.simpuzzle.flatten
 
 import scala.util.Random
+import monocle._
+
+case class State(step: Int, cities: Seq[City], network: Network, distanceMatrix: DistanceMatrix)
 
 case class City(
   population: Double,
@@ -32,6 +36,21 @@ case class City(
   stateCapital: Boolean)
 
 trait Indus <: Gugus with SuperLinearInitialWealth {
+
+  type STATE = State
+  type CITY = City
+
+  def population = Lenser[CITY](_.population)
+  def wealth = Lenser[CITY](_.wealth)
+  def cities = Lenser[STATE](_.cities)
+  def step = Lenser[STATE](_.step)
+  def network = Lenser[STATE](_.network)
+  def distances = Lenser[STATE](_.distanceMatrix)
+
+  def initialState(implicit rng: Random) = {
+    val cities = initialCities
+    State(0, initialCities.toVector, Network.full(cities.size), IndusFile.distanceMatrix)
+  }
 
   def initialCities(implicit rng: Random) = {
     val initialPopulations = IndusFile.initialPopulations

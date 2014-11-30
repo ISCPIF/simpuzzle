@@ -15,13 +15,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius
+package fr.geocites.indus
 
-import fr.geocites.gugus.balance.{ TerritorialTaxes, Redistribution }
-import monocle.SimpleLens
+import fr.geocites.gugus.transaction.ProportionalTransaction
 
-trait RegionalRedistribution <: Redistribution with TerritorialTaxes {
-  def region: SimpleLens[CITY, String]
-  def regionalCapital: SimpleLens[CITY, Boolean]
-  def regionalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, region.get _, regionalCapital.get _)
+object Models {
+
+  trait From1961To2011 {
+    /** Simulate from 1961 to 2011 */
+    def steps = 50
+    def census = 0
+  }
+
+  class SimpleModel(
+    val economicMultiplier: Double,
+    val sizeEffectOnSupply: Double,
+    val sizeEffectOnDemand: Double,
+    val distanceDecay: Double,
+    val wealthToPopulationExponent: Double,
+    val populationToWealthExponent: Double) extends Indus with From1961To2011 with ProportionalTransaction
+
 }
