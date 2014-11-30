@@ -31,7 +31,7 @@ case class City(
   districtCapital: Boolean,
   stateCapital: Boolean)
 
-trait Indus <: /*Gugus with */ SuperLinearInitialWealth {
+trait Indus <: Gugus with SuperLinearInitialWealth {
 
   def initialCities(implicit rng: Random) = {
     val initialPopulations = IndusFile.initialPopulations
