@@ -17,8 +17,8 @@
 
 package fr.geocites.marius.behaviour
 
+import fr.geocites.gugus.calibration.Evaluation
 import fr.geocites.marius.Marius
-import fr.geocites.marius.calibration.Evaluation.overflowRatio
 
 import org.apache.commons.math3.fitting._
 import java.util.{ Vector => JVector }
@@ -39,8 +39,8 @@ object BehaviourComputing {
     def totalOverflowRatio(cities: Seq[CITY]) =
       cities.map {
         c =>
-          overflowRatio(c |-> wealth get, marius.supply(c |-> population get)) +
-            overflowRatio(c |-> wealth get, marius.demand(c |-> population get))
+          Evaluation.overflowRatio(c |-> wealth get, marius.supply(c |-> population get)) +
+            Evaluation.overflowRatio(c |-> wealth get, marius.demand(c |-> population get))
       }.sum
 
     def isValid(s: STATE): Boolean = {

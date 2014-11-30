@@ -40,34 +40,36 @@ object SimPuzzleBuild extends Build {
      resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
    )
 
- lazy val geotools = "org.geotools" % "gt-referencing" % "9.3"
+  lazy val geotools = "org.geotools" % "gt-referencing" % "9.3"
 
- lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
+  lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
 
- lazy val gis = Project(id = "gis", base = file("gis"), settings = defaultSettings) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
+  lazy val gis = Project(id = "gis", base = file("gis"), settings = defaultSettings) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
 
 
- lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal"), settings = defaultSettings) dependsOn(simpuzzle)
 
- lazy val schelling = Project(id = "schelling", base = file("models/schelling"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val schelling = Project(id = "schelling", base = file("models/schelling"), settings = defaultSettings) dependsOn(simpuzzle)
  
- lazy val sugarscape = Project(id = "sugarscape", base = file("models/sugarscape"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val sugarscape = Project(id = "sugarscape", base = file("models/sugarscape"), settings = defaultSettings) dependsOn(simpuzzle)
 
- lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat"), settings = defaultSettings) dependsOn(simpuzzle)
 
-  lazy val gugus = Project(id = "gugus", base = file("models/gugus"), settings = defaultSettings) dependsOn(simpuzzle, gis)
+  lazy val gugus = Project(id = "gugus", base = file("models/gugus/model"), settings = defaultSettings) dependsOn(simpuzzle, gis)
 
- lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus)
+  lazy val guguscalibration = Project(id = "guguscalibration", base = file("models/gugus/calibration"), settings = defaultSettings) dependsOn(gugus)
 
- lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run"), settings = defaultSettings) dependsOn(marius)
+  lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus)
 
- lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun) settings (
+  lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run"), settings = defaultSettings) dependsOn(marius)
+
+  lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, guguscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
    )
 
- lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
+  lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
     OsgiKeys.importPackage := Seq("*;resolution:=optional"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
@@ -75,7 +77,7 @@ object SimPuzzleBuild extends Build {
 
   lazy val indus = Project(id = "indus", base = file("models/indus/model"), settings = defaultSettings) dependsOn (gugus)
 
- lazy val flocking = Project(id = "flocking", base = file("models/flocking/model"))
+  lazy val flocking = Project(id = "flocking", base = file("models/flocking/model"))
 
   lazy val flockingVisualisation = Project(id = "flockingvisualisation", base = file("models/flocking/visualisation"), settings = defaultSettings) settings {
     libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "1.0.1"

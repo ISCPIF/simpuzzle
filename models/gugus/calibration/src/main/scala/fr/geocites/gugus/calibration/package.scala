@@ -15,19 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.marius
+package fr.geocites.gugus
 
-import fr.geocites.gugus.balance._
-import fr.geocites.gugus.transaction._
+import monocle._
 
-/** Model with fixed costs and bonuses */
-class BonusFixedCostModel(
-  val economicMultiplier: Double,
-  val sizeEffectOnSupply: Double,
-  val sizeEffectOnDemand: Double,
-  val distanceDecay: Double,
-  val wealthToPopulationExponent: Double,
-  val populationToWealthExponent: Double,
-  val bonusMultiplier: Double,
-  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with From59To89
-
+package object calibration {
+  type Evaluable = Gugus {
+    def populations(date: Int): Option[Seq[Double]]
+    def firstDate: Int
+    def cities: SimpleLens[STATE, Seq[CITY]]
+    def wealth: SimpleLens[CITY, Double]
+    def population: SimpleLens[CITY, Double]
+  }
+}

@@ -24,29 +24,15 @@ import fr.geocites.simpuzzle.city.Position
 import scala.collection.mutable
 import scala.io.Source
 
-object MariusFile {
+object MariusFile extends GeodeticDistance {
 
-  lazy val memoization = new mutable.HashMap[Int, MariusFile]
+  private lazy val memoization = new mutable.HashMap[Int, DistanceMatrix]
 
-  def apply(census: Int): MariusFile = memoization.synchronized {
-    memoization.getOrElseUpdate(
-      census, {
-        val _census = census
-        new MariusFile {
-          def census: Int = _census
-        }
-      }
-    )
-  }
+  def memoize(census: Int)(f: => DistanceMatrix) =
+    memoization.getOrElseUpdate(census, f)
 
-}
-
-trait MariusFile <: GeodeticDistance {
-
-  def census: Int
   def numberOfCensus = 6
 
-  /** Read the content of the file */
   def contentCities = {
     val input =
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius.csv"))
@@ -56,33 +42,64 @@ trait MariusFile <: GeodeticDistance {
     }
   }
 
+  def data = contentCities.drop(1).toList
+
+  def numberOfDates(census: Int) = numberOfCensus - census
+
+  def startingCities(census: Int) =
+    data.filter {
+      _.takeRight(numberOfDates(census)).forall(!_.isEmpty)
+    }
+
+  def latitudes(census: Int) = startingCities(census).map(_(4).toDouble)
+  def longitudes(census: Int) = startingCities(census).map(_(5).toDouble)
+
+  def positions(census: Int) =
+    (longitudes(census) zip latitudes(census)).map {
+      case (long, lat) => Position(long, lat)
+    }
+
+  /** Cache of the distance matrix between */
+  def distanceMatrix(census: Int): DistanceMatrix = memoize(census) {
+    val p = positions(census).toVector
+
+    p.zipWithIndex.map {
+      case (c1, i) =>
+        p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
+    }
+  }
+
+}
+
+trait MariusFile {
+
+  def census: Int
+
+  /** Read the content of the file */
+  def contentCities = MariusFile.contentCities
+
   /** Read the header of the csv file */
   def header = contentCities.next
 
   /** Read the data part of the csv file */
-  def data = contentCities.drop(1).toList
+  def data = MariusFile.data(census)
 
   /** The number of columns of census data */
-  def numberOfDates = numberOfCensus - census
+  def numberOfDates = MariusFile.numberOfDates(census)
 
   /** The dates of the census */
   lazy val dates = header.takeRight(numberOfDates).map(_.toInt)
 
-  /** The cities with known populations for all dates */
+  def firstDate = dates.head
 
-  def startingCities =
-    data.filter {
-      _.takeRight(numberOfDates).forall(!_.isEmpty)
-    }
+  /** The cities with known populations for all dates */
+  def startingCities = MariusFile.startingCities(census)
 
   /** Number of cities taken into account */
   def nbCities = startingCities.size
 
   /** Read the position of the cities */
-  def positions =
-    (longitudes zip latitudes).map {
-      case (long, lat) => Position(long, lat)
-    }
+  def positions = MariusFile.positions(census)
 
   /** Number of column before the census columns */
   def columnsBeforeDates = header.size - numberOfDates
@@ -108,10 +125,10 @@ trait MariusFile <: GeodeticDistance {
   def names = startingCities.map(_(1))
 
   /** Latitudes of the cities in decimal degrees */
-  def latitudes = startingCities.map(_(4).toDouble)
+  def latitudes = MariusFile.latitudes(census)
 
   /** Longitudes of the cities in decimal degrees */
-  def longitudes = startingCities.map(_(5).toDouble)
+  def longitudes = MariusFile.longitudes(census)
 
   /** Populations of the cities at the first date */
   def initialPopulations = populations(dates.head).get
@@ -135,14 +152,7 @@ trait MariusFile <: GeodeticDistance {
   def nations = startingCities.map(_(3)).toIterator
 
   /** Cache of the distance matrix between */
-  lazy val distanceMatrix: DistanceMatrix = {
-    val p = positions.toVector
-
-    p.zipWithIndex.map {
-      case (c1, i) =>
-        p.zipWithIndex.map { case (c2, _) => distance(c1, c2) }
-    }
-  }
+  lazy val distanceMatrix: DistanceMatrix = MariusFile.distanceMatrix(census)
 
   /** Read the content of the file */
   def contentRegions = {
@@ -169,7 +179,7 @@ trait MariusFile <: GeodeticDistance {
   /** The regions with known urbanisation rates for all dates */
 
   def startingRegions =
-    data.filter {
+    dataRegions.filter {
       _.takeRight(numberOfDatesRegions).forall(!_.isEmpty)
     }
 

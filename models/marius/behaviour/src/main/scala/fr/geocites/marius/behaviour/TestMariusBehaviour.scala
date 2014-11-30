@@ -17,8 +17,9 @@
 
 package fr.geocites.marius.behaviour
 
-import fr.geocites.marius.SimpleModel
 import java.util.Random
+
+import fr.geocites.marius.SimpleModel
 
 object TestMariusBehaviour extends App {
   implicit val rng = new Random

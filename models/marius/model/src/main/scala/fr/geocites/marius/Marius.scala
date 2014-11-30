@@ -37,13 +37,11 @@ case class City(
   oilOrGaz: Boolean,
   coal: Boolean)
 
-trait Marius <: Gugus with SuperLinearInitialWealth {
+trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile {
 
   type STATE = State
 
   def census: Int
-
-  def mariusFile = MariusFile(census)
 
   def step = Lenser[STATE](_.step)
 
@@ -53,7 +51,7 @@ trait Marius <: Gugus with SuperLinearInitialWealth {
 
   def initialState(implicit rng: Random) = {
     val cities = initialCities
-    State(0, initialCities.toVector, Network.full(cities.size), mariusFile.distanceMatrix)
+    State(0, initialCities.toVector, Network.full(cities.size), distanceMatrix)
   }
 
   type CITY = City
@@ -69,7 +67,7 @@ trait Marius <: Gugus with SuperLinearInitialWealth {
 
   def initialCities(implicit rng: Random) = {
 
-    val pop = mariusFile.initialPopulations.toSeq
+    val pop = initialPopulations.toSeq
     val initialWealths = InitialWealth.rescaleWealth(pop.map(initialWealth), pop)
 
     val cities =
@@ -81,7 +79,7 @@ trait Marius <: Gugus with SuperLinearInitialWealth {
           _nationalCapital,
           _oilOrGaz,
           _coal,
-          _initialWealth) <- pop.toIterator zip mariusFile.regions zip mariusFile.nations zip mariusFile.regionCapitals zip mariusFile.nationalCapitals zip mariusFile.oilOrGazDistribution.toIterator zip mariusFile.coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
+          _initialWealth) <- pop.toIterator zip regions zip nations zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
       } yield {
         City(
           population = _population,
@@ -94,7 +92,7 @@ trait Marius <: Gugus with SuperLinearInitialWealth {
           coal = _coal
         )
       }
-    cities.take(mariusFile.nbCities).toVector
+    cities.take(nbCities).toVector
   }
 
 }

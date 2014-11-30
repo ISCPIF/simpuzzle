@@ -17,6 +17,7 @@
 
 package fr.geocites.marius.calibration
 
+import fr.geocites.gugus.calibration._
 import fr.geocites.marius._
 
 import scala.util.Random
@@ -25,9 +26,8 @@ object Evaluate extends App {
 
   implicit val rng = new Random(42)
 
-  lazy val models = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
   println(Console.YELLOW + "Choose you model: ")
-  models.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }
+  Models.all.map(_.getClass.getName).zipWithIndex.foreach { case (c, i) => println(Console.GREEN + s"$i -> ${Console.GREEN} $c") }
   val i = io.StdIn.readInt()
   print(Console.RESET)
 
@@ -35,7 +35,8 @@ object Evaluate extends App {
     j <- 0 until 10
   ) {
     val begin = System.currentTimeMillis()
-    val evaluation = Evaluation.multiMacro(models(i))
+
+    val evaluation = Evaluation(Models.all(i)).multiMacro
     println("nb dead\tdistribution\toverflow")
     println(evaluation.map(_.formatted("%g")).mkString("\t"))
     println(System.currentTimeMillis() - begin)
