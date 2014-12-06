@@ -89,13 +89,13 @@ trait Marius <: Gugus {
 
   lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, guguscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
-    OsgiKeys.importPackage := Seq("*;resolution:=optional"),
+    OsgiKeys.importPackage := Seq("scala.*"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
 
   lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
-    OsgiKeys.importPackage := Seq("*;resolution:=optional"),
+    OsgiKeys.importPackage := Seq("scala.*"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
 }
@@ -103,4 +103,9 @@ trait Marius <: Gugus {
 trait Indus <: Gugus {
   lazy val indus = Project(id = "indus", base = file("models/indus/model"), settings = defaultSettings) dependsOn (gugus)
   lazy val indusrun = Project(id = "indusrun", base = file("models/indus/run"), settings = defaultSettings) dependsOn (indus)
+  lazy val induscalibration = Project(id = "induscalibration", base = file("models/indus/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(indus, indusrun, guguscalibration) settings (
+    OsgiKeys.exportPackage := Seq("fr.geocites.indus.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
+    OsgiKeys.importPackage := Seq("scala.*"),
+    OsgiKeys.privatePackage := Seq("!scala.*", "*")
+    )
 }
