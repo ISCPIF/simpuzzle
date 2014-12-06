@@ -25,8 +25,8 @@ import scala.annotation.tailrec
 import scala.util.Random
 import scala.math._
 
-class BehaviourComputing {
-  def compute(
+object Behaviour {
+  def apply(
     _worldWidth: Double,
     _worldHeight: Double,
     _populationSize: Int,

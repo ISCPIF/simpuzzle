@@ -17,6 +17,11 @@
 
 package fr.geocites.gugus.calibration
 
+import monocle.syntax._
+
+import scala.util.{ Failure, Success, Try, Random }
+import math._
+
 object Evaluation {
 
   def apply(m: Evaluable) = new Evaluation {
