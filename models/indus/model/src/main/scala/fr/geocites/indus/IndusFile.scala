@@ -63,10 +63,12 @@ object IndusFile {
       c => startingCities.map(_(c).toDouble / 1000)
     }
 
+  def firstDate: Int = dates.head
+
   /** The cities with known populations for all dates */
   def startingCities =
     data.filter {
-      d => d.takeRight(numberOfDates).forall(!_.isEmpty) //&& d(columnsBeforeDates).toDouble >= 10000
+      d => d.takeRight(numberOfDates).forall(!_.isEmpty) && d.takeRight(numberOfDates).forall(_.toDouble >= 10000)
     }
 
   /** Number of cities taken into account */

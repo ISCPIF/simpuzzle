@@ -48,6 +48,10 @@ trait Indus <: Gugus with SuperLinearInitialWealth {
   def distances = Lenser[STATE](_.distanceMatrix)
   def arokatos = IndusFile.arokatos
 
+  def populations(date: Int) = IndusFile.populations(date)
+
+  def firstDate = IndusFile.firstDate
+
   def initialState(implicit rng: Random) = {
     val cities = initialCities
     State(0, initialCities.toVector, Network.full(cities.size), IndusFile.distanceMatrix)
