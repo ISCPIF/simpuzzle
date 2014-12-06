@@ -17,7 +17,7 @@
 
 package fr.geocites.marius.behaviour
 
-import fr.geocites.gugus.calibration.Evaluation
+import fr.geocites.gugus.calibration.{ Evaluable, Overflow, Evaluation }
 import fr.geocites.marius.Marius
 
 import org.apache.commons.math3.fitting._
@@ -33,15 +33,19 @@ import math._
 import scala.annotation.tailrec
 
 object BehaviourComputing {
-  def compute(marius: Marius)(implicit rng: Random): Seq[Double] = {
-    import marius._
 
-    def totalOverflowRatio(cities: Seq[CITY]) =
-      cities.map {
-        c =>
-          Evaluation.overflowRatio(c |-> wealth get, marius.supply(c |-> population get)) +
-            Evaluation.overflowRatio(c |-> wealth get, marius.demand(c |-> population get))
-      }.sum
+  def apply(_model: Evaluable) =
+    new BehaviourComputing {
+      val model = _model
+    }
+
+}
+
+trait BehaviourComputing <: Overflow {
+
+  import model._
+
+  def compute(implicit rng: Random): Seq[Double] = {
 
     def isValid(s: STATE): Boolean = {
       val overflow = totalOverflowRatio(s |-> cities get)
@@ -61,20 +65,21 @@ object BehaviourComputing {
         }
       else Some(List[STATE]())
 
-    // val (validstates, invalidstates) = marius.states.map(maybeS => maybeS match {
-    //   case Success(s) => (s, isValid(s))
-    //   case Failure(_) => (None, false)
-    //   }) span {case (s, v) => v}
+    val simres: Option[List[STATE]] = toValidStatesOrNone(states)
 
-    val simres: Option[List[STATE]] = toValidStatesOrNone(marius.states)
+    val invalid = Array[Double](-1e12, -1e12, -1e12)
 
     simres match {
-      case None => Array[Double](-1e12, -1e12, -1e12)
+      case None => invalid
       case Some(l) => {
-        val seriestotalpop: Vector[Double] = (l map { s => ((s |-> cities get) map { c => c |-> population get }).sum }) toVector
-        val lastpops: Vector[Double] = ((l.last |-> cities get) map { c => c |-> population get }) toVector
-        val diffpopfinalinitial: Double = seriestotalpop.last - seriestotalpop.head
-        Array[Double](slope(lastpops), diffpopfinalinitial, popincrementinversioncount(seriestotalpop))
+        if (!l.forall(isValid)) invalid
+        else {
+          val seriestotalpop: Vector[Double] = (l map { s => ((s |-> cities get) map { c => c |-> population get }).sum }) toVector
+          val lastpops: Vector[Double] = ((l.last |-> cities get) map { c => c |-> population get }) toVector
+          val diffpopfinalinitial: Double = seriestotalpop.last - seriestotalpop.head
+          Array[Double](slope(lastpops), diffpopfinalinitial, popincrementinversioncount(seriestotalpop))
+        }
+
       }
     }
   }

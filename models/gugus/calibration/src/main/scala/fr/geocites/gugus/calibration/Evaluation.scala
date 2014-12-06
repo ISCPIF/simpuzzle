@@ -17,21 +17,6 @@
 
 package fr.geocites.gugus.calibration
 
-import fr.geocites.gugus.Gugus
-import monocle._
-import syntax._
-
-import math._
-import scala.util.{ Failure, Success, Try, Random }
-
-/*trait Evaluable <: Gugus {
-  def populations(date: Int): Option[Seq[Double]]
-  def firstDate: Int
-  def cities: SimpleLens[STATE, Seq[CITY]]
-  def wealth: SimpleLens[CITY, Double]
-  def population: SimpleLens[CITY, Double]
-}*/
-
 object Evaluation {
 
   def apply(m: Evaluable) = new Evaluation {
@@ -44,9 +29,22 @@ object Evaluation {
   }
 }
 
-trait Evaluation {
-
+trait Model {
   val model: Evaluable
+}
+
+trait Overflow <: Model {
+  import model._
+
+  def totalOverflowRatio(cities: Seq[CITY]) =
+    cities.map {
+      c =>
+        Evaluation.overflowRatio(c |-> wealth get, supply(c |-> population get)) +
+          Evaluation.overflowRatio(c |-> wealth get, demand(c |-> population get))
+    }.sum
+}
+
+trait Evaluation <: Overflow {
 
   import model._
 
@@ -71,13 +69,6 @@ trait Evaluation {
     }.getOrElse(0.0)
 
   private def multi(distanceFunction: (Int, Seq[Double]) => Double)(implicit rng: Random): Array[Double] = Try {
-
-    def totalOverflowRatio(cities: Seq[CITY]) =
-      cities.map {
-        c =>
-          Evaluation.overflowRatio(c |-> wealth get, supply(c |-> population get)) +
-            Evaluation.overflowRatio(c |-> wealth get, demand(c |-> population get))
-      }.sum
 
     val fitness =
       sum(
