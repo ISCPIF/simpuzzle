@@ -17,7 +17,8 @@
 
 package fr.geocites.indus
 
-import fr.geocites.gugus.transaction.ProportionalTransaction
+import fr.geocites.gugus.balance._
+import fr.geocites.gugus.transaction._
 
 object Models {
 
@@ -33,5 +34,15 @@ object Models {
     distanceDecay: Double,
     wealthToPopulationExponent: Double,
     populationToWealthExponent: Double) extends Indus with From1961To2011 with ProportionalTransaction
+
+  case class BonusFixedCostModel(
+    economicMultiplier: Double,
+    sizeEffectOnSupply: Double,
+    sizeEffectOnDemand: Double,
+    distanceDecay: Double,
+    wealthToPopulationExponent: Double,
+    populationToWealthExponent: Double,
+    bonusMultiplier: Double,
+    fixedCost: Double) extends Indus with Bonus with FixedCostTransaction with From1961To2011
 
 }
