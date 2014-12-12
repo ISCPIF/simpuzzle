@@ -105,11 +105,8 @@ trait MariusFile {
    * @return an option containing the population if provided, none otherwise
    */
   def populations(date: Int): Option[Seq[Double]] =
-    (dates.indexOf(date) match {
-      case -1 => None
-      case i => Some(i + columnsBeforeDates)
-    }).map {
-      c => startingCities.map(_(c).toDouble)
+    dates.indexOption(date).map {
+      c => startingCities.map(_(columnsBeforeDates + c).toDouble)
     }
 
   /** Id of cities */
@@ -162,7 +159,7 @@ trait MariusFile {
   def headerRegions = contentRegions.next
 
   /** Read the data part of the csv file */
-  def dataRegions = contentRegions.drop(1).toList
+  def regionData = contentRegions.drop(1).toList
 
   /** The number of columns of census data */
   def numberOfDatesRegions = 6 - census
@@ -170,24 +167,10 @@ trait MariusFile {
   /** The dates of the census */
   lazy val datesRegions = headerRegions.takeRight(numberOfDatesRegions).map(_.toInt)
 
-  /** The regions with known urbanisation rates for all dates */
-
-  def startingRegions =
-    dataRegions.filter {
-      _.takeRight(numberOfDatesRegions).forall(!_.isEmpty)
-    }
-
-  /** Number of regions taken into account */
-  def nbRegions = startingRegions.size
-
-  /** Read the position of the cities */
-  def positionsRegions =
-    startingRegions.map {
-      l => Position(l(5).toDouble, l(4).toDouble)
-    }
-
   /** Number of column before the census columns */
   def columnsBeforeDatesRegions = headerRegions.size - numberOfDatesRegions
+
+  def urbanisationData = regionData.map { _.takeRight(numberOfDatesRegions).map(_.toDouble) }
 
   /**
    * Column of urbanisation rates at a given date
@@ -195,25 +178,19 @@ trait MariusFile {
    * @param date date of observation
    * @return an option containing the population if provided, none otherwise
    */
-  def urbanisationRates(date: Int): Option[Seq[Double]] =
-    (datesRegions.indexOf(date) match {
-      case -1 => None
-      case i => Some(i + columnsBeforeDatesRegions)
-    }).map {
-      c => startingRegions.map(_(c).toDouble)
-    }
+  def urbanisationRate(regionId: String, date: Int): Option[Double] =
+    for {
+      data <- urbanisationRates.get(regionId)
+      column <- datesRegions.indexOption(date)
+    } yield data(column)
+
+  lazy val urbanisationRates = (regionIDs zip urbanisationData).toMap
 
   /** Id of regions */
-  def IDREG = startingRegions.map(_(0))
+  def regionIDs = regionData.map(_(0))
 
   /** Names of the regions */
-  def namesRegions = startingRegions.map(_(1))
-
-  /** Populations of the regions at the first date */
-  def initialUrbanisationRates = urbanisationRates(datesRegions.head).get
-
-  /** States regions belong to */
-  def nationsRegions = startingRegions.map(_(2)).toIterator
+  def regionNames = regionData.map(_(1))
 
   /** A converter function from string to boolean */
   private def toBoolean(s: String) =
