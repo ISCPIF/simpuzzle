@@ -161,30 +161,17 @@ trait MariusFile {
   /** Read the data part of the csv file */
   def regionData = contentRegions.drop(1).toList
 
-  /** The number of columns of census data */
-  def numberOfDatesRegions = 6 - census
-
-  /** The dates of the census */
-  lazy val datesRegions = headerRegions.takeRight(numberOfDatesRegions).map(_.toInt)
-
-  /** Number of column before the census columns */
-  def columnsBeforeDatesRegions = headerRegions.size - numberOfDatesRegions
-
-  def urbanisationData = regionData.map { _.takeRight(numberOfDatesRegions).map(_.toDouble) }
+  def initialUrbanisationData = regionData.map { _.takeRight(numberOfDates)(census).toDouble }
 
   /**
    * Column of urbanisation rates at a given date
    *
-   * @param date date of observation
    * @return an option containing the population if provided, none otherwise
    */
-  def urbanisationRate(regionId: String, date: Int): Option[Double] =
-    for {
-      data <- urbanisationRates.get(regionId)
-      column <- datesRegions.indexOption(date)
-    } yield data(column)
-
-  lazy val urbanisationRates = (regionIDs zip urbanisationData).toMap
+  def initialUrbanisationRates: Seq[Double] = {
+    lazy val urbanisationRates = (regionIDs zip initialUrbanisationData).toMap
+    regions.map(urbanisationRates).toSeq
+  }
 
   /** Id of regions */
   def regionIDs = regionData.map(_(0))
