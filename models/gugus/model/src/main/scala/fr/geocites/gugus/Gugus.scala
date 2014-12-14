@@ -69,7 +69,8 @@ trait Gugus <: StepByStep
             (city |-> wealth set newWealth) |-> population set newPopulation
         }
 
-      (s |-> cities set newCities) |-> step modify (_ + 1)
+      def upadatedState = urbanTransition(s |-> cities set newCities)
+      upadatedState |-> step modify (_ + 1)
     }
   }
 
@@ -94,6 +95,7 @@ trait Gugus <: StepByStep
     }
   }
 
+  def urbanTransition(state: STATE): STATE = state
   def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) = newWealths
   def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
   def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))

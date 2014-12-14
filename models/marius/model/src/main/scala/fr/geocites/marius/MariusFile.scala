@@ -131,16 +131,16 @@ trait MariusFile {
   def coalDistribution = startingCities.map(l => toBoolean(l(6)))
 
   /** Regions of the cities */
-  def regions = startingCities.map(_(2)).toIterator
+  def cityRegions = startingCities.map(_(2)).toIterator
 
   /** A vector of boolean, true in case a city is a regional capital */
-  def regionCapitals = startingCities.map(l => toBoolean(l(7))).toIterator
+  def regionalCapitals = startingCities.map(l => toBoolean(l(7))).toIterator
 
   /** A vector of boolean, true in case a city is a national capital */
   def nationalCapitals = startingCities.map(l => toBoolean(l(9))).toIterator
 
   /** States cities belong to */
-  def nations = startingCities.map(_(3)).toIterator
+  def cityNations = startingCities.map(_(3)).toIterator
 
   /** Cache of the distance matrix between */
   lazy val distanceMatrix: DistanceMatrix = MariusFile.distanceMatrix(census)
@@ -161,17 +161,7 @@ trait MariusFile {
   /** Read the data part of the csv file */
   def regionData = contentRegions.drop(1).toList
 
-  def initialUrbanisationData = regionData.map { _.takeRight(numberOfDates)(census).toDouble }
-
-  /**
-   * Column of urbanisation rates at a given date
-   *
-   * @return an option containing the population if provided, none otherwise
-   */
-  def initialUrbanisationRates: Seq[Double] = {
-    lazy val urbanisationRates = (regionIDs zip initialUrbanisationData).toMap
-    regions.map(urbanisationRates).toSeq
-  }
+  def initialUrbanisationRates = regionData.map { _.takeRight(numberOfDates)(census).toDouble }
 
   /** Id of regions */
   def regionIDs = regionData.map(_(0))

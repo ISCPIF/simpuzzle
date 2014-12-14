@@ -19,6 +19,7 @@ package fr.geocites.marius
 
 import fr.geocites.gugus.balance._
 import fr.geocites.gugus.transaction._
+import fr.geocites.gugus.urbanisation.UrbanTransition
 
 object Models {
   lazy val all = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
@@ -108,6 +109,17 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
   oilAndGazEffect = 0.0,
   coalEffect = 0.0
 )
+
+class UrbanTransitionModel(
+  val economicMultiplier: Double,
+  val sizeEffectOnSupply: Double,
+  val sizeEffectOnDemand: Double,
+  val distanceDecay: Double,
+  val wealthToPopulationExponent: Double,
+  val populationToWealthExponent: Double,
+  val bonusMultiplier: Double,
+  val fixedCost: Double,
+  val ruralMultiplier: Double) extends Marius with Bonus with FixedCostTransaction with UrbanTransition with From59To89
 
 class ResourceBonusModel(
   val economicMultiplier: Double,

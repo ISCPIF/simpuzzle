@@ -18,6 +18,7 @@
 package fr.geocites.marius
 
 import fr.geocites.gugus.balance.{ InitialWealth, SuperLinearInitialWealth }
+import fr.geocites.gugus.urbanisation.UrbanisationFunction
 import fr.geocites.simpuzzle._
 import fr.geocites.gugus._
 import fr.geocites.gugus.structure._
@@ -25,7 +26,12 @@ import monocle._
 
 import scala.util.Random
 
-case class State(step: Int, cities: Seq[City], network: Network, distanceMatrix: DistanceMatrix)
+case class State(
+  step: Int,
+  cities: Seq[City],
+  regions: Seq[Region],
+  network: Network,
+  distanceMatrix: DistanceMatrix)
 
 case class City(
   population: Double,
@@ -37,25 +43,22 @@ case class City(
   oilOrGaz: Boolean,
   coal: Boolean)
 
-trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile {
+case class Region(id: String, urbanisationStep: Double)
+
+trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile with UrbanisationFunction {
 
   type STATE = State
+  type CITY = City
+  type REGION = Region
 
   def census: Int
 
   def step = Lenser[STATE](_.step)
 
   def cities = Lenser[STATE](_.cities)
+  def regions = Lenser[STATE](_.regions)
   def network = Lenser[STATE](_.network)
   def distances = Lenser[STATE](_.distanceMatrix)
-
-  def initialState(implicit rng: Random) = {
-    val cities = initialCities
-    State(0, initialCities.toVector, Network.full(cities.size), distanceMatrix)
-  }
-
-  type CITY = City
-
   def population = Lenser[CITY](_.population)
   def wealth = Lenser[CITY](_.wealth)
   def regionalCapital = Lenser[CITY](_.regionalCapital)
@@ -64,6 +67,23 @@ trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile {
   def nationalCapital = Lenser[CITY](_.nationalCapital)
   def oilOrGaz = Lenser[CITY](_.oilOrGaz)
   def coal = Lenser[CITY](_.coal)
+
+  type TERRITORY = REGION
+  def territory: SimpleLens[CITY, String] = region
+  def territories: SimpleLens[STATE, Seq[TERRITORY]] = regions
+  def urbanisationStep: SimpleLens[TERRITORY, Double] = Lenser[TERRITORY](_.urbanisationStep)
+  def territoryId: SimpleLens[TERRITORY, String] = Lenser[TERRITORY](_.id)
+
+  // This parameter has been empirically estimated
+  def urbanisationSpeed: Double = 0.017006722508654093
+
+  def initialState(implicit rng: Random) = {
+    val cities = initialCities
+    State(0, initialCities.toVector, initialRegions, Network.full(cities.size), distanceMatrix)
+  }
+
+  def initialRegions =
+    (regionIDs.toSeq zip initialUrbanisationRates) map { case (id, rate) => Region(id, inverseUrbanisationFunction(rate)) }
 
   def initialCities(implicit rng: Random) = {
 
@@ -79,7 +99,7 @@ trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile {
           _nationalCapital,
           _oilOrGaz,
           _coal,
-          _initialWealth) <- pop.toIterator zip regions zip nations zip regionCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
+          _initialWealth) <- pop.toIterator zip cityRegions zip cityNations zip regionalCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator map (flatten)
       } yield {
         City(
           population = _population,
