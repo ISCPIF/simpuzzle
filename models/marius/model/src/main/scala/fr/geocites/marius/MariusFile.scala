@@ -161,7 +161,7 @@ trait MariusFile {
   /** Read the data part of the csv file */
   def regionData = contentRegions.drop(1).toList
 
-  def initialUrbanisationRates = regionData.map { _.takeRight(numberOfDates)(census).toDouble }
+  def initialUrbanisationRates = regionData.map { _.takeRight(numberOfDates)(census).toDouble / 100.0 }
 
   /** Id of regions */
   def regionIDs = regionData.map(_(0))
