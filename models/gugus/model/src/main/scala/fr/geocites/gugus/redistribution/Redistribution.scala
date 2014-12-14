@@ -15,9 +15,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.gugus.balance
+package fr.geocites.gugus.redistribution
 
 import fr.geocites.gugus.Gugus
+import fr.geocites.gugus.balance.Balances
 
 trait Redistribution <: Balances with Gugus {
 

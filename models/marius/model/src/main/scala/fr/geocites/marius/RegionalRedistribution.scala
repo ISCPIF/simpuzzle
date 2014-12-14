@@ -17,7 +17,7 @@
 
 package fr.geocites.marius
 
-import fr.geocites.gugus.balance.{ TerritorialTaxes, Redistribution }
+import fr.geocites.gugus.redistribution.{ TerritorialTaxes, Redistribution }
 import monocle.SimpleLens
 
 trait RegionalRedistribution <: Redistribution with TerritorialTaxes {

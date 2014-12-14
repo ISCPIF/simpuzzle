@@ -17,7 +17,7 @@
 
 package fr.geocites.marius
 
-import fr.geocites.gugus.balance.Redistribution
+import fr.geocites.gugus.redistribution.Redistribution
 
 trait DoubleRedistribution <: Redistribution with RegionalRedistribution with NationalRedistribution {
   override def redistributions = Seq(regionalRedistributions, nationalRedistributions)
