@@ -38,7 +38,7 @@ trait UrbanTransition <: Gugus with UrbanisationFunction {
         territory <- (state |-> territories get)
         urbanisation = urbanisationFunction(territory |-> urbanisationStep get)
         id = (territory |-> territoryId get)
-      } yield id -> (1.0 - urbanisation) * ruralMultiplier).toMap
+      } yield id -> (1.0 + (1.0 - urbanisation) * ruralMultiplier)).toMap
 
     val newCities =
       for {
