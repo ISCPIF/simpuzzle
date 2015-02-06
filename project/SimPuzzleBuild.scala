@@ -39,7 +39,7 @@ trait DefaultSettings {
   val scalazVersion = "7.1.0"
 
   val defaultSettings = SbtScalariform.scalariformSettings ++ Seq(
-     organization := "fr.geocite",
+     organization := "fr.geocites",
      publishTo := {
        if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots")
        else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
