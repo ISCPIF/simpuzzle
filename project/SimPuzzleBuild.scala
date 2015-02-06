@@ -65,7 +65,7 @@ trait DefaultSettings {
 }
 
 trait Simpuzzle <: DefaultSettings {
-  lazy val geotools = "org.geotools" % "gt-referencing" % "9.3"
+  lazy val geotools = "org.geotools" % "gt-referencing" % "12.2"
 
   lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
 
