@@ -22,14 +22,7 @@ import fr.geocites.gugus.transaction._
 import fr.geocites.gugus.urbanisation.UrbanTransition
 
 object Models {
-  lazy val all = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest)
-}
-
-/** Default values for some parameters of the models */
-trait From59To89 {
-  /** Simulate from 1959 to 1989 */
-  def steps = 30
-  def census = 0
+  lazy val all = List(BonusFixedCostTest, ResourceBonusTest, DoubleRedistributionBonusTest, DoubleRedistributionResourceBonusTest, UrbanTransitionModelTest)
 }
 
 /** Model with fixed costs and bonuses */
@@ -41,7 +34,7 @@ class BonusFixedCostModel(
   val wealthToPopulationExponent: Double,
   val populationToWealthExponent: Double,
   val bonusMultiplier: Double,
-  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with From59To89
+  val fixedCost: Double) extends Marius with Bonus with FixedCostTransaction with From1959To1989
 
 object BonusFixedCostTest extends BonusFixedCostModel(
   bonusMultiplier = 197.9488907791,
@@ -65,7 +58,7 @@ class DoubleRedistributionBonusModel(
   val fixedCost: Double,
   val territorialTaxes: Double,
   val capitalShareOfTaxes: Double)
-    extends Marius with Bonus with FixedCostTransaction with DoubleRedistribution with From59To89
+    extends Marius with Bonus with FixedCostTransaction with DoubleRedistribution with From1959To1989
 
 object DoubleRedistributionBonusTest extends DoubleRedistributionBonusModel(
   bonusMultiplier = 564.646869914297,
@@ -93,7 +86,7 @@ class DoubleRedistributionResourceBonusModel(
   val capitalShareOfTaxes: Double,
   val oilAndGazEffect: Double,
   val coalEffect: Double)
-    extends Marius with Bonus with FixedCostTransaction with DoubleRedistribution with SubSurfaceResources with From59To89
+    extends Marius with Bonus with FixedCostTransaction with DoubleRedistribution with SubSurfaceResources with From1959To1989
 
 object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourceBonusModel(
   bonusMultiplier = 564.646869914297,
@@ -110,6 +103,18 @@ object DoubleRedistributionResourceBonusTest extends DoubleRedistributionResourc
   coalEffect = 0.0
 )
 
+object UrbanTransitionModelTest extends UrbanTransitionModel(
+  economicMultiplier = 0.2743965501,
+  sizeEffectOnSupply = 1.0056140036,
+  sizeEffectOnDemand = 1.0734676356,
+  distanceDecay = 0.1715067921,
+  wealthToPopulationExponent = 0.3520455485,
+  populationToWealthExponent = 1.179702831,
+  bonusMultiplier = 97.4206661151,
+  fixedCost = 0.2257967847,
+  ruralMultiplier = 0.018269691
+)
+
 class UrbanTransitionModel(
   val economicMultiplier: Double,
   val sizeEffectOnSupply: Double,
@@ -119,7 +124,7 @@ class UrbanTransitionModel(
   val populationToWealthExponent: Double,
   val bonusMultiplier: Double,
   val fixedCost: Double,
-  val ruralMultiplier: Double) extends Marius with Bonus with FixedCostTransaction with UrbanTransition with From59To89
+  val ruralMultiplier: Double) extends Marius with Bonus with FixedCostTransaction with UrbanTransition with From1959To1989
 
 class ResourceBonusModel(
   val economicMultiplier: Double,
@@ -131,7 +136,7 @@ class ResourceBonusModel(
   val bonusMultiplier: Double,
   val fixedCost: Double,
   val oilAndGazEffect: Double,
-  val coalEffect: Double) extends Marius with Bonus with FixedCostTransaction with SubSurfaceResources with From59To89
+  val coalEffect: Double) extends Marius with Bonus with FixedCostTransaction with SubSurfaceResources with From1959To1989
 
 object ResourceBonusTest extends ResourceBonusModel(
   bonusMultiplier = 92.450713956686,
@@ -153,5 +158,5 @@ class SimpleModel(
   val sizeEffectOnDemand: Double,
   val distanceDecay: Double,
   val wealthToPopulationExponent: Double,
-  val populationToWealthExponent: Double) extends Marius with From59To89 with ProportionalTransaction
+  val populationToWealthExponent: Double) extends Marius with From1959To1989 with ProportionalTransaction
 

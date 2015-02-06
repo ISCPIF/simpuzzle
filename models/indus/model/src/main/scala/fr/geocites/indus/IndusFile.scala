@@ -20,14 +20,14 @@ package fr.geocites.indus
 import fr.geocites.gis.distance._
 import fr.geocites.gugus._
 import fr.geocites.simpuzzle.city.Position
-import scala.io.Source
+import scala.io.{ Codec, Source }
 
 object IndusFile {
 
   /** Read the content of the file */
   def contentCities = {
     val input =
-      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/indus/cities.csv"))
+      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/indus/cities.csv"))(Codec.UTF8)
 
     input.getLines.map {
       l => l.split(",").toSeq

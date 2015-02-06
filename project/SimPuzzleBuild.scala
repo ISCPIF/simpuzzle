@@ -7,8 +7,8 @@ import com.typesafe.sbt.osgi.SbtOsgi._
 object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings {
 
   override def settings = super.settings ++ Seq (
-    scalaVersion := "2.11.4",
-    crossScalaVersions := Seq("2.10.4", "2.11.4")
+    scalaVersion := "2.11.5",
+    crossScalaVersions := Seq("2.10.4", "2.11.5")
   )
 
   lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal"), settings = defaultSettings) dependsOn(simpuzzle)

@@ -27,7 +27,7 @@ trait ProportionalTransaction <: Transaction
     with PotentialMatrix
     with Gugus {
 
-  def transactions(
+  override def transactions(
     state: STATE,
     supplies: Seq[Double],
     demands: Seq[Double])(implicit rng: Random) = {

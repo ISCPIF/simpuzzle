@@ -21,7 +21,7 @@ import fr.geocites.gugus._
 import fr.geocites.simpuzzle.city._
 
 import scala.collection.mutable
-import scala.io.Source
+import scala.io.{ Codec, Source }
 
 object MariusFile {
 
@@ -34,7 +34,7 @@ object MariusFile {
 
   def contentCities = {
     val input =
-      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius.csv"))
+      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius.csv"))(Codec.UTF8)
 
     input.getLines.map {
       l => l.split(",").toSeq
@@ -148,7 +148,7 @@ trait MariusFile {
   /** Read the content of the file */
   def contentRegions = {
     val input =
-      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius-regions.csv"))
+      Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/marius/marius-regions.csv"))(Codec.UTF8)
 
     input.getLines.map {
       l => l.split(",").toSeq
