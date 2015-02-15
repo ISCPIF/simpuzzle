@@ -26,5 +26,6 @@ package object calibration {
     def cities: SimpleLens[STATE, Seq[CITY]]
     def wealth: SimpleLens[CITY, Double]
     def population: SimpleLens[CITY, Double]
+    def steps: Int
   }
 }

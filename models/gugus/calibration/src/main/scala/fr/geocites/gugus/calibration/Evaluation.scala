@@ -80,10 +80,12 @@ trait Evaluation <: Overflow {
         for { (state, step) <- states.zipWithIndex } yield {
           state match {
             case Success(s) =>
-              val overflow = totalOverflowRatio(s |-> cities get)
-              val deadCities = (s |-> cities get).count(c => (c |-> wealth get) <= 0.0)
-              val distance = distanceFunction(step, (s |-> cities get) map (_ |-> population get))
-              Seq(deadCities, distance, overflow)
+              val cs = s |-> cities get
+              val overflow = totalOverflowRatio(cs)
+              val deadCities = (cs).count(c => (c |-> wealth get) <= 0.0)
+              val distance = distanceFunction(step, cs map (_ |-> population get))
+              val eval = Seq(deadCities.toDouble, distance, overflow)
+              eval.map(_ / steps / cs.size)
             case Failure(_) =>
               Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)
           }
