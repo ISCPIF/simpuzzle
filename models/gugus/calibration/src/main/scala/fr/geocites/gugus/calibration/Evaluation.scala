@@ -58,8 +58,8 @@ trait Evaluation <: Overflow {
       val fitness =
         (for { (state, step) <- states.zipWithIndex } yield state match {
           case Success(s) => distanceToData(step, (s |-> cities get) map (_ |-> population get), _.sorted)
-          case Failure(_) => Double.PositiveInfinity
-        }).sum
+          case Failure(_) => Some(Double.PositiveInfinity)
+        }).flatten.sum
       if (fitness.isNaN) Double.PositiveInfinity else fitness
     }.getOrElse(Double.PositiveInfinity)
 
@@ -71,27 +71,28 @@ trait Evaluation <: Overflow {
   private def distanceToData(step: Int, simulated: Seq[Double], preProcessing: Seq[Double] => Seq[Double]) =
     populations(date(step)).map {
       empirical => logSquaresError(preProcessing(simulated), preProcessing(empirical))
-    }.getOrElse(0.0)
+    }
 
-  private def multi(distanceFunction: (Int, Seq[Double]) => Double)(implicit rng: Random): Array[Double] = Try {
+  private def multi(distanceFunction: (Int, Seq[Double]) => Option[Double])(implicit rng: Random): Array[Double] = Try {
 
-    val fitness =
-      sum(
-        for { (state, step) <- states.zipWithIndex } yield {
+    val fitnesses: Seq[Seq[Double]] =
+      states.zipWithIndex.flatMap {
+        case (state, step) =>
           state match {
             case Success(s) =>
-              val cs = s |-> cities get
-              val overflow = totalOverflowRatio(cs)
-              val deadCities = (cs).count(c => (c |-> wealth get) <= 0.0)
-              val distance = distanceFunction(step, cs map (_ |-> population get))
-              val eval = Seq(deadCities.toDouble, distance, overflow)
-              eval.map(_ / steps / cs.size)
+              val cs = (s |-> cities get)
+              distanceFunction(step, cs map (_ |-> population get)) map { distance =>
+                val overflow = totalOverflowRatio(cs)
+                val deadCities = cs.count(c => (c |-> wealth get) <= 0.0)
+                val eval = Seq(deadCities.toDouble, distance, overflow)
+                eval.map(_ / cs.size)
+              }
             case Failure(_) =>
-              Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)
+              Some(Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity))
           }
-        }
-      )
+      }.toSeq
 
+    val fitness = sum(fitnesses).map(_ / fitnesses.size)
     fitness.map(x => if (x.isNaN) Double.PositiveInfinity else x)
   }.getOrElse(Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)).toArray
 
@@ -101,6 +102,6 @@ trait Evaluation <: Overflow {
         pow(log10(o) - log10(e), 2)
     } sum
 
-  private def sum(it: Iterator[Seq[Double]]) = it.foldLeft(Seq(0.0, 0.0, 0.0)) { (s, v) => (s zip v).map { case (x, y) => x + y } }
+  private def sum(it: Seq[Seq[Double]]) = it.foldLeft(Seq(0.0, 0.0, 0.0)) { (s, v) => (s zip v).map { case (x, y) => x + y } }
 
 }
