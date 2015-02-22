@@ -74,7 +74,6 @@ trait Evaluation <: Overflow {
     }
 
   private def multi(distanceFunction: (Int, Seq[Double]) => Option[Double])(implicit rng: Random): Array[Double] = Try {
-
     val fitnesses: Seq[Seq[Double]] =
       states.zipWithIndex.flatMap {
         case (state, step) =>
@@ -87,15 +86,15 @@ trait Evaluation <: Overflow {
                 val eval = Seq(deadCities.toDouble, distance, overflow)
                 eval.map(_ / cs.size)
               }
-            case Failure(_) =>
+            case Failure(f) =>
               Some(Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity))
           }
       }.toSeq
 
     val fitness = sum(fitnesses).map(_ / fitnesses.size)
     fitness.map(x => if (x.isNaN) Double.PositiveInfinity else x)
-  }.getOrElse(Seq(Double.PositiveInfinity, Double.PositiveInfinity, Double.PositiveInfinity)).toArray
-
+  }.get.toArray
+  
   private def logSquaresError(d1: Seq[Double], d2: Seq[Double]) =
     (d1 zip d2) map {
       case (e, o) =>
