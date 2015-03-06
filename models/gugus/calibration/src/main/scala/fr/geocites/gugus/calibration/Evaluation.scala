@@ -94,7 +94,7 @@ trait Evaluation <: Overflow {
     val fitness = sum(fitnesses).map(_ / fitnesses.size)
     fitness.map(x => if (x.isNaN) Double.PositiveInfinity else x)
   }.get.toArray
-  
+
   private def logSquaresError(d1: Seq[Double], d2: Seq[Double]) =
     (d1 zip d2) map {
       case (e, o) =>

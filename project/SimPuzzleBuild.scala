@@ -60,6 +60,7 @@ trait DefaultSettings {
        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.0")
        else Nil
      ),
+     resolvers += Resolver.sonatypeRepo("snapshots"),
      resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
    )
 }
@@ -97,6 +98,10 @@ trait Marius <: Gugus {
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
     OsgiKeys.importPackage := Seq("scala.*"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
+    )
+
+  lazy val mariusrest = Project(id = "mariusrest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
+    libraryDependencies += "fr.iscpif" %% "family" % "1.0-SNAPSHOT"
     )
 }
 
