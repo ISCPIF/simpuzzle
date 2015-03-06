@@ -17,7 +17,7 @@
 
 package fr.geocites.gugus.tool
 
-import java.io.File
+import java.io.{ BufferedWriter, FileWriter, Writer, File }
 
 import fr.geocites.gugus.Gugus
 
@@ -26,16 +26,22 @@ import scalax.io.Resource
 import fr.geocites.simpuzzle._
 import monocle.syntax._
 
+object ToCSV extends ToCSV
+
 trait ToCSV {
 
   def toCSVFile(m: Gugus { def arokatos: Seq[String] }, file: File) = {
-    file.delete
-    val out = Resource.fromFile(file)
+    val out = new BufferedWriter(new FileWriter(file))
+    try toCSV(m, out)
+    finally out.close
+  }
+
+  def toCSV(m: Gugus { def arokatos: Seq[String] }, out: Writer): Unit = {
     out.append("step, arokato, population, wealth, supply, demand, transactedFrom, transactedTo \n")
     toCSV(m).foreach { l => out.append(l + "\n") }
   }
 
-  def toCSV(m: Gugus { def arokatos: Seq[String] }) = {
+  def toCSV(m: Gugus { def arokatos: Seq[String] }): Iterator[String] = {
     implicit val rng = fr.geocites.simpuzzle.random(42)
     import m._
 
