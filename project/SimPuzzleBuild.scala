@@ -7,8 +7,7 @@ import com.typesafe.sbt.osgi.SbtOsgi._
 object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings {
 
   override def settings = super.settings ++ Seq (
-    scalaVersion := "2.11.6",
-    crossScalaVersions := Seq("2.10.4", "2.11.6")
+    scalaVersion := "2.11.6"
   )
 
   lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal"), settings = defaultSettings) dependsOn(simpuzzle)
@@ -85,7 +84,6 @@ trait Marius <: Gugus {
 
   lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus)
 
-
   lazy val mariusrun = Project(id = "mariusrun", base = file("models/marius/run"), settings = defaultSettings) dependsOn(marius)
 
   lazy val mariuscalibration = Project(id = "mariuscalibration", base = file("models/marius/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, guguscalibration) settings (
@@ -101,7 +99,7 @@ trait Marius <: Gugus {
     )
 
   lazy val mariusrest = Project(id = "mariusrest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
-    libraryDependencies += "fr.iscpif" %% "family" % "1.0-SNAPSHOT",
+    libraryDependencies += "fr.iscpif" %% "family" % "1.0",
     libraryDependencies += "org.scalatra" %% "scalatra" % "2.3.0",
     libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.M1",
     libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.10"
