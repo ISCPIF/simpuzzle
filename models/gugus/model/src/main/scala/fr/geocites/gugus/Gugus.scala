@@ -69,8 +69,8 @@ trait Gugus <: StepByStep
             (city |-> wealth set newWealth) |-> population set newPopulation
         }
 
-      def upadatedState = urbanTransition(s |-> cities set newCities)
-      upadatedState |-> step modify (_ + 1)
+      def updatedState = urbanTransition(s |-> cities set newCities)
+      updatedState |-> step modify (_ + 1)
     }
   }
 
