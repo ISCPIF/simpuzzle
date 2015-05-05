@@ -21,9 +21,9 @@ import fr.geocites.gugus._
 import fr.geocites.gugus.balance._
 import fr.geocites.gugus.structure.Network
 import fr.geocites.simpuzzle.flatten
+import monocle.macros._
 
 import scala.util.Random
-import monocle._
 
 case class State(step: Int, cities: Seq[City], network: Network, distanceMatrix: DistanceMatrix)
 
@@ -40,12 +40,12 @@ trait Indus <: Gugus with SuperLinearInitialWealth {
   type STATE = State
   type CITY = City
 
-  def population = Lenser[CITY](_.population)
-  def wealth = Lenser[CITY](_.wealth)
-  def cities = Lenser[STATE](_.cities)
-  def step = Lenser[STATE](_.step)
-  def network = Lenser[STATE](_.network)
-  def distances = Lenser[STATE](_.distanceMatrix)
+  def population = GenLens[CITY](_.population)
+  def wealth = GenLens[CITY](_.wealth)
+  def cities = GenLens[STATE](_.cities)
+  def step = GenLens[STATE](_.step)
+  def network = GenLens[STATE](_.network)
+  def distances = GenLens[STATE](_.distanceMatrix)
   def arokatos = IndusFile.arokatos
 
   def populations(date: Int) = IndusFile.populations(date)

@@ -22,7 +22,7 @@ import monocle.syntax._
 
 trait TimeEndingCondition extends EndingCondition with State {
   def steps: Int
-  def ended(state: STATE) = (state |-> step get) >= steps
+  def ended(state: STATE) = step.get(state) >= steps
 
-  def step: SimpleLens[STATE, Int]
+  def step: Lens[STATE, Int]
 }

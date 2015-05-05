@@ -18,9 +18,10 @@
 package fr.geocites.simpoplocal
 
 import fr.geocites.simpuzzle.city.{ Id, Radius, Position }
+import monocle.macros.GenLens
 import scala.collection.immutable.{ TreeSet, TreeMap }
 import fr.geocites.simpuzzle.state._
-import monocle.Macro._
+import monocle._
 
 trait SimpopLocalState <: State {
 
@@ -34,7 +35,7 @@ trait SimpopLocalState <: State {
    */
   case class SimpopLocalState(step: Int, settlements: Seq[Settlement], currentInnovationId: Int = 0)
 
-  def step = mkLens[STATE, Int]("step")
+  def step = GenLens[STATE](_.step)
 
   /**
    *

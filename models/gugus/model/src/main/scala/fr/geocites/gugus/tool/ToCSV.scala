@@ -50,18 +50,18 @@ trait ToCSV {
         (log, step) <- m.logs zipWithIndex
       } yield log.value match {
         case Success(s) =>
-          val cs = s |-> cities get
+          val cs = cities.get(s)
           val transacted = log.written
           val from = transacted.groupBy(_.from)
           val to = transacted.groupBy(_.to)
 
           for {
             (activity, activityId) <- m.activities.zipWithIndex
-            (city, arokato, s, d, i) <- (
+            ((((city, arokato), s), d), i) <- (
               cs zip
               m.arokatos zip
               m.supplies(cs, activity) zip
-              m.demands(cs, activity)).zipWithIndex.map(flatten).toIterator
+              m.demands(cs, activity)).zipWithIndex.toIterator
           } yield {
 
             def line =

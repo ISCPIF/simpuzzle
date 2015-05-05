@@ -23,8 +23,8 @@ package object calibration {
   type Evaluable = Gugus {
     def populations(date: Int): Option[Seq[Double]]
     def firstDate: Int
-    def cities: SimpleLens[STATE, Seq[CITY]]
-    def wealth: SimpleLens[CITY, Double]
-    def population: SimpleLens[CITY, Double]
+    def cities: Lens[STATE, Seq[CITY]]
+    def wealth: Lens[CITY, Double]
+    def population: Lens[CITY, Double]
   }
 }

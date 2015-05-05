@@ -48,8 +48,8 @@ trait BehaviourComputing <: Overflow {
   def compute(implicit rng: Random): Seq[Double] = {
 
     def isValid(s: STATE): Boolean = {
-      val overflow = totalOverflowRatio(s |-> cities get)
-      val deadCities = (s |-> cities get).count(c => (c |-> wealth get) <= 0.0)
+      val overflow = totalOverflowRatio(cities.get(s))
+      val deadCities = (cities.get(s)).count(c => wealth.get(c) <= 0.0)
       overflow == 0 || deadCities == 0
     }
 
@@ -74,8 +74,8 @@ trait BehaviourComputing <: Overflow {
       case Some(l) => {
         if (!l.forall(isValid)) invalid
         else {
-          val seriestotalpop: Vector[Double] = (l map { s => ((s |-> cities get) map { c => c |-> population get }).sum }) toVector
-          val lastpops: Vector[Double] = ((l.last |-> cities get) map { c => c |-> population get }) toVector
+          val seriestotalpop: Vector[Double] = (l map { s => (cities.get(s) map { population.get }).sum }) toVector
+          val lastpops: Vector[Double] = (cities.get(l.last) map { population.get }) toVector
           val diffpopfinalinitial: Double = seriestotalpop.last - seriestotalpop.head
           Array[Double](slope(lastpops), diffpopfinalinitial, popincrementinversioncount(seriestotalpop))
         }

@@ -30,9 +30,9 @@ trait PotentialMatrix <: InteractionPotential { self: Gugus =>
   def interactionPotentialMatrix(state: STATE, supplies: Seq[Double], demands: Seq[Double]) = {
     val iM1 = supplies.toArray
     val iM2 = demands.toArray
-    (state |-> network get).mapNodes {
+    network.get(state).mapNodes {
       (i, j) =>
-        interactionPotential(iM1(i), iM2(j), (state |-> distances get)(i)(j))
+        interactionPotential(iM1(i), iM2(j), distances.get(state)(i)(j))
     }
   }
 

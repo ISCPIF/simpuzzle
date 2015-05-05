@@ -17,24 +17,23 @@
 
 package fr.geocites.marius
 
-import monocle.SimpleLens
-import monocle.syntax._
+import monocle._
 
 trait SubSurfaceResources <: Marius {
 
   def oilAndGazEffect: Double
   def coalEffect: Double
 
-  def oilOrGaz: SimpleLens[CITY, Boolean]
-  def coal: SimpleLens[CITY, Boolean]
+  def oilOrGaz: Lens[CITY, Boolean]
+  def coal: Lens[CITY, Boolean]
 
   override def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) =
     (cities zip newWealths).map {
       case (city, wealth) =>
         wealth * {
           1 +
-            (if (city |-> oilOrGaz get) oilAndGazEffect else 0.0) +
-            (if (city |-> coal get) coalEffect else 0.0)
+            (if (oilOrGaz.get(city)) oilAndGazEffect else 0.0) +
+            (if (coal.get(city)) coalEffect else 0.0)
         }
     }
 

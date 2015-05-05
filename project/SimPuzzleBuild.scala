@@ -21,7 +21,7 @@ object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings 
   lazy val flocking = Project(id = "flocking", base = file("models/flocking/model"))
 
   lazy val flockingVisualisation = Project(id = "flockingvisualisation", base = file("models/flocking/visualisation"), settings = defaultSettings) settings {
-    libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "1.0.1"
+    libraryDependencies += "org.scala-lang.modules" %% "scala-swing" % "1.0.2"
   } dependsOn(flocking)
 
   lazy val flockingbehaviour = Project(id = "flockingbehaviour", base = file("models/flocking/behaviour"), settings = defaultSettings  ++ osgiSettings) dependsOn(flocking) settings (
@@ -34,8 +34,8 @@ object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings 
 
 
 trait DefaultSettings {
-  val monocleVersion = "0.5.1"  // or "0.5-SNAPSHOT"
-  val scalazVersion = "7.1.0"
+  val monocleVersion = "1.1.1"  // or "0.5-SNAPSHOT"
+  val scalazVersion = "7.1.2"
 
   val defaultSettings = SbtScalariform.scalariformSettings ++ Seq(
      organization := "fr.geocites",
@@ -52,8 +52,8 @@ trait DefaultSettings {
        "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion
      ),
      libraryDependencies += (
-       if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.0.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.0.0"),
-     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.3",
+       if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.1.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.1.0"),
+     libraryDependencies += "org.apache.commons" % "commons-math3" % "3.5",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
      libraryDependencies ++= (
        if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.0")
@@ -65,7 +65,7 @@ trait DefaultSettings {
 }
 
 trait Simpuzzle <: DefaultSettings {
-  lazy val geotools = "org.geotools" % "gt-referencing" % "12.2"
+  lazy val geotools = "org.geotools" % "gt-referencing" % "13.0"
 
   lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
 
@@ -100,9 +100,9 @@ trait Marius <: Gugus {
 
   lazy val mariusrest = Project(id = "mariusrest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
     libraryDependencies += "fr.iscpif" %% "family" % "1.0",
-    libraryDependencies += "org.scalatra" %% "scalatra" % "2.3.0",
-    libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.M1",
-    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.10"
+    libraryDependencies += "org.scalatra" %% "scalatra" % "2.3.1",
+    libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.M2",
+    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.12"
     )
 }
 

@@ -18,37 +18,36 @@
 package fr.geocites.gugus.urbanisation
 
 import fr.geocites.gugus.Gugus
-import monocle.SimpleLens
-import monocle.syntax._
+import monocle._
 
 trait UrbanTransition <: Gugus with UrbanisationFunction {
 
   type TERRITORY
 
-  def territory: SimpleLens[CITY, String]
-  def territories: SimpleLens[STATE, Seq[TERRITORY]]
-  def urbanisationStep: SimpleLens[TERRITORY, Double]
-  def territoryId: SimpleLens[TERRITORY, String]
+  def territory: Lens[CITY, String]
+  def territories: Lens[STATE, Seq[TERRITORY]]
+  def urbanisationStep: Lens[TERRITORY, Double]
+  def territoryId: Lens[TERRITORY, String]
 
   def ruralMultiplier: Double
 
   override def urbanTransition(state: STATE): STATE = {
     val territorialMultipliers =
       (for {
-        territory <- (state |-> territories get)
-        urbanisation = urbanisationFunction(territory |-> urbanisationStep get)
-        id = (territory |-> territoryId get)
+        territory <- territories.get(state)
+        urbanisation = urbanisationFunction(urbanisationStep.get(territory))
+        id = (territoryId.get(territory))
       } yield id -> (1.0 + (1.0 - urbanisation) * ruralMultiplier)).toMap
 
     val newCities =
       for {
-        c <- (state |-> cities get)
-        t = (c |-> territory get)
+        c <- cities.get(state)
+        t = territory.get(c)
         multiplier = territorialMultipliers(t)
-      } yield c |-> population modify (_ * multiplier)
+      } yield population.modify(_ * multiplier)(c)
 
-    val updatedTerritories = state |-> territories modify (_.map(t => t |-> urbanisationStep modify (_ + 1)))
-    (updatedTerritories |-> cities set newCities)
+    val updatedTerritories = territories.modify(_.map(urbanisationStep.modify(_ + 1)))(state)
+    cities.set(newCities)(updatedTerritories)
   }
 
 }

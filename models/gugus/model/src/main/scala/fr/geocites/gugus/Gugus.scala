@@ -46,35 +46,35 @@ trait Gugus <: StepByStep
   def economicMultiplier: Double
   def wealthToPopulationExponent: Double
 
-  def cities: SimpleLens[STATE, Seq[CITY]]
-  def population: SimpleLens[CITY, Double]
-  def wealth: SimpleLens[CITY, Double]
-  def network: SimpleLens[STATE, Network]
-  def distances: SimpleLens[STATE, DistanceMatrix]
+  def cities: Lens[STATE, Seq[CITY]]
+  def population: Lens[CITY, Double]
+  def wealth: Lens[CITY, Double]
+  def network: Lens[STATE, Network]
+  def distances: Lens[STATE, DistanceMatrix]
 
   def nextState(s: STATE)(implicit rng: Random): Log[STATE] = {
     for {
       newWealths <- wealths(s)
     } yield {
       def newPopulations =
-        ((s |-> cities get) zip newWealths).zipWithIndex.map {
+        (cities.get(s) zip newWealths).zipWithIndex.map {
           case ((city, newWealth), i) =>
             check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
-            val deltaPopulation = (wealthToPopulation(newWealth) - wealthToPopulation(city |-> wealth get)) / economicMultiplier
-            val newPopulation = (city |-> population get) + deltaPopulation
+            val deltaPopulation = (wealthToPopulation(newWealth) - wealthToPopulation(wealth.get(city))) / economicMultiplier
+            val newPopulation = population.get(city) + deltaPopulation
             check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
             newPopulation
         }
 
       def newCities =
-        ((s |-> cities get) zip newPopulations zip newWealths).map(flatten).map {
+        (cities.get(s) zip newPopulations zip newWealths).map(flatten).map {
           case (city, newPopulation, newWealth) =>
             check(newPopulation >= 0, s"The population of $city is negative $newPopulation, $newWealth")
-            (city |-> wealth set newWealth) |-> population set newPopulation
+            population.set(newPopulation)(wealth.set(newWealth)(city))
         }
 
-      def updatedState = urbanTransition(s |-> cities set newCities)
-      updatedState |-> step modify (_ + 1)
+      def updatedState = urbanTransition(cities.set(newCities)(s))
+      step.modify(_ + 1)(updatedState)
     }
   }
 
@@ -103,15 +103,15 @@ trait Gugus <: StepByStep
             if (currentWealth <= 0.0 || delta <= 0.0) 0.0 else wealth
         }
 
-      resourcesEffect(s |-> cities get, newWealths)
+      resourcesEffect(cities.get(s), newWealths)
     }
   }
 
   def urbanTransition(state: STATE): STATE = state
   def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) = newWealths
 
-  def supplies(cities: Seq[CITY], activity: Activity) = cities.map(c => supply(c |-> population get, activity))
-  def demands(cities: Seq[CITY], activity: Activity) = cities.map(c => demand(c |-> population get, activity))
+  def supplies(cities: Seq[CITY], activity: Activity) = cities.map(c => supply(population.get(c), activity))
+  def demands(cities: Seq[CITY], activity: Activity) = cities.map(c => demand(population.get(c), activity))
 
   def demand(population: Double, activity: Activity) = economicMultiplier * activity.exchangeRate * pow(population, activity.sizeEffectOnDemand)
   def supply(population: Double, activity: Activity) = economicMultiplier * activity.exchangeRate * pow(population, activity.sizeEffectOnSupply)

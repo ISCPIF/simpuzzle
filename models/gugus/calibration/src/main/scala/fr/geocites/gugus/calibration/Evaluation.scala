@@ -46,11 +46,12 @@ trait Overflow <: Model {
       for {
         c <- cities
         a <- activities
-      } yield Evaluation.overflowRatio(c |-> wealth get, supply(c |-> population get, a)) +
-        Evaluation.overflowRatio(c |-> wealth get, demand(c |-> population get, a))
+      } yield Evaluation.overflowRatio(wealth.get(c), supply(population.get(c), a)) +
+        Evaluation.overflowRatio(wealth.get(c), demand(population.get(c), a))
 
     overflows.sum
   }
+
 }
 
 trait Evaluation <: Overflow {
@@ -61,7 +62,7 @@ trait Evaluation <: Overflow {
     Try {
       val fitness =
         (for { (state, step) <- states.zipWithIndex } yield state match {
-          case Success(s) => distanceToData(step, (s |-> cities get) map (_ |-> population get), _.sorted)
+          case Success(s) => distanceToData(step, cities.get(s) map population.get, _.sorted)
           case Failure(_) => Some(Double.PositiveInfinity)
         }).flatten.sum
       if (fitness.isNaN) Double.PositiveInfinity else fitness
@@ -83,10 +84,10 @@ trait Evaluation <: Overflow {
         case (state, step) =>
           state match {
             case Success(s) =>
-              val cs = (s |-> cities get)
-              distanceFunction(step, cs map (_ |-> population get)) map { distance =>
+              val cs = cities.get(s)
+              distanceFunction(step, cs map population.get) map { distance =>
                 val overflow = totalOverflowRatio(cs)
-                val deadCities = cs.count(c => (c |-> wealth get) <= 0.0)
+                val deadCities = cs.count(c => wealth.get(c) <= 0.0)
                 val eval = Seq(deadCities.toDouble, distance, overflow)
                 eval.map(_ / cs.size)
               }

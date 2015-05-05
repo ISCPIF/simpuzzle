@@ -23,6 +23,7 @@ import fr.geocites.simpuzzle._
 import fr.geocites.gugus._
 import fr.geocites.gugus.structure._
 import monocle._
+import monocle.macros._
 
 import scala.util.Random
 
@@ -53,26 +54,26 @@ trait Marius <: Gugus with SuperLinearInitialWealth with MariusFile with Urbanis
 
   def census: Int
 
-  def step = Lenser[STATE](_.step)
+  def step = GenLens[STATE](_.step)
 
-  def cities = Lenser[STATE](_.cities)
-  def regions = Lenser[STATE](_.regions)
-  def network = Lenser[STATE](_.network)
-  def distances = Lenser[STATE](_.distanceMatrix)
-  def population = Lenser[CITY](_.population)
-  def wealth = Lenser[CITY](_.wealth)
-  def regionalCapital = Lenser[CITY](_.regionalCapital)
-  def region = Lenser[CITY](_.region)
-  def nation = Lenser[CITY](_.nation)
-  def nationalCapital = Lenser[CITY](_.nationalCapital)
-  def oilOrGaz = Lenser[CITY](_.oilOrGaz)
-  def coal = Lenser[CITY](_.coal)
+  def cities = GenLens[STATE](_.cities)
+  def regions = GenLens[STATE](_.regions)
+  def network = GenLens[STATE](_.network)
+  def distances = GenLens[STATE](_.distanceMatrix)
+  def population = GenLens[CITY](_.population)
+  def wealth = GenLens[CITY](_.wealth)
+  def regionalCapital = GenLens[CITY](_.regionalCapital)
+  def region = GenLens[CITY](_.region)
+  def nation = GenLens[CITY](_.nation)
+  def nationalCapital = GenLens[CITY](_.nationalCapital)
+  def oilOrGaz = GenLens[CITY](_.oilOrGaz)
+  def coal = GenLens[CITY](_.coal)
 
   type TERRITORY = REGION
-  def territory: SimpleLens[CITY, String] = region
-  def territories: SimpleLens[STATE, Seq[TERRITORY]] = regions
-  def urbanisationStep: SimpleLens[TERRITORY, Double] = Lenser[TERRITORY](_.urbanisationStep)
-  def territoryId: SimpleLens[TERRITORY, String] = Lenser[TERRITORY](_.id)
+  def territory: Lens[CITY, String] = region
+  def territories: Lens[STATE, Seq[TERRITORY]] = regions
+  def urbanisationStep: Lens[TERRITORY, Double] = GenLens[TERRITORY](_.urbanisationStep)
+  def territoryId: Lens[TERRITORY, String] = GenLens[TERRITORY](_.id)
 
   // This parameter has been empirically estimated
   def urbanisationSpeed: Double = 0.017006722508654093

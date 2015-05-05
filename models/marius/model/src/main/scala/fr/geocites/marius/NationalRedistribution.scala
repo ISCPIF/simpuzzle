@@ -18,10 +18,10 @@
 package fr.geocites.marius
 
 import fr.geocites.gugus.redistribution.{ TerritorialTaxes, Redistribution }
-import monocle.SimpleLens
+import monocle._
 
 trait NationalRedistribution <: Redistribution with TerritorialTaxes {
-  def nation: SimpleLens[CITY, String]
-  def nationalCapital: SimpleLens[CITY, Boolean]
-  def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get _, nationalCapital.get _)
+  def nation: Lens[CITY, String]
+  def nationalCapital: Lens[CITY, Boolean]
+  def nationalRedistributions(s: Seq[CITY]): Seq[Double] = redistribution(s, nation.get, nationalCapital.get)
 }
