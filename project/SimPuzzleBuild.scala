@@ -4,7 +4,7 @@ import sbt._
 import sbt.Keys._
 import com.typesafe.sbt.osgi.SbtOsgi._
 
-object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings {
+object SimPuzzleBuild extends Build with Marius with Indus with Schelling with DefaultSettings {
 
   override def settings = super.settings ++ Seq (
     scalaVersion := "2.11.7"
@@ -12,8 +12,6 @@ object SimPuzzleBuild extends Build with Marius with Indus with DefaultSettings 
 
   lazy val simpoplocal = Project(id = "simpoplocal", base = file("models/simpoplocal"), settings = defaultSettings) dependsOn(simpuzzle)
 
-  lazy val schelling = Project(id = "schelling", base = file("models/schelling"), settings = defaultSettings) dependsOn(simpuzzle)
- 
   lazy val sugarscape = Project(id = "sugarscape", base = file("models/sugarscape"), settings = defaultSettings) dependsOn(simpuzzle)
 
   lazy val gibrat = Project(id = "gibrat", base = file("models/gibrat"), settings = defaultSettings) dependsOn(simpuzzle)
@@ -51,14 +49,9 @@ trait DefaultSettings {
        "com.github.julien-truffaut"  %%  "monocle-generic" % monocleVersion,
        "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion
      ),
-     libraryDependencies += (
-       if (scalaVersion.value.startsWith("2.10")) "com.chuusai" %% "shapeless" % "2.1.0" cross CrossVersion.full else "com.chuusai" %% "shapeless" % "2.1.0"),
+     libraryDependencies += "com.chuusai" %% "shapeless" % "2.1.0",
      libraryDependencies += "org.apache.commons" % "commons-math3" % "3.5",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
-     libraryDependencies ++= (
-       if (scalaVersion.value.startsWith("2.10")) List("org.scalamacros" %% "quasiquotes" % "2.0.0")
-       else Nil
-     ),
      resolvers += Resolver.sonatypeRepo("snapshots"),
      resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
    )
@@ -75,9 +68,7 @@ trait Simpuzzle <: DefaultSettings {
 
 trait Gugus <: Simpuzzle {
   lazy val gugus = Project(id = "gugus", base = file("models/gugus/model"), settings = defaultSettings) dependsOn(simpuzzle, gis)
-
-  lazy val guguscalibration = Project(id = "guguscalibration", base = file("models/gugus/calibration"), settings = defaultSettings) dependsOn(gugus)
-
+  lazy val guguscalibration = Project(id = "gugus-calibration", base = file("models/gugus/calibration"), settings = defaultSettings) dependsOn(gugus)
 }
 
 trait Marius <: Gugus {
@@ -92,26 +83,32 @@ trait Marius <: Gugus {
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
 
-  lazy val mariusbehaviour = Project(id = "mariusbehaviour", base = file("models/marius/behaviour"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
+  lazy val mariusbehaviour = Project(id = "marius-behaviour", base = file("models/marius/behaviour"), settings = defaultSettings ++ osgiSettings) dependsOn(marius, mariusrun, mariuscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.marius.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
     OsgiKeys.importPackage := Seq("scala.*"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
 
-  lazy val mariusrest = Project(id = "mariusrest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
-    libraryDependencies += "fr.iscpif" %% "family" % "1.0",
+  lazy val mariusrest = Project(id = "marius-rest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
+    libraryDependencies += "fr.iscpif" %% "family" % "1.1-SNAPSHOT",
     libraryDependencies += "org.scalatra" %% "scalatra" % "2.3.1",
     libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.M2",
-    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.12"
+    libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.12",
+    mainClass := Some("fr.iscpif.marius.RESTAPI")
     )
 }
 
 trait Indus <: Gugus {
   lazy val indus = Project(id = "indus", base = file("models/indus/model"), settings = defaultSettings) dependsOn (gugus)
-  lazy val indusrun = Project(id = "indusrun", base = file("models/indus/run"), settings = defaultSettings) dependsOn (indus)
-  lazy val induscalibration = Project(id = "induscalibration", base = file("models/indus/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(indus, indusrun, guguscalibration) settings (
+  lazy val indusrun = Project(id = "indus-run", base = file("models/indus/run"), settings = defaultSettings) dependsOn (indus)
+  lazy val induscalibration = Project(id = "indus-calibration", base = file("models/indus/calibration"), settings = defaultSettings ++ osgiSettings) dependsOn(indus, indusrun, guguscalibration) settings (
     OsgiKeys.exportPackage := Seq("fr.geocites.indus.*,fr.geocites.gugus.*,fr.geocites.simpuzzle.*"),
     OsgiKeys.importPackage := Seq("scala.*"),
     OsgiKeys.privatePackage := Seq("!scala.*", "*")
     )
+}
+
+trait Schelling <: Simpuzzle {
+  lazy val schellingBinary = Project(id = "schelling-binary", base = file("models/schelling/binary"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val schellingQuantity = Project(id = "schelling-quantity", base = file("models/schelling/quantity"), settings = defaultSettings) dependsOn(simpuzzle)
 }

@@ -17,8 +17,7 @@
 
 package fr.geocites.simpuzzle.matrix
 
-trait Matrix2D {
-  type CELL
+trait Matrix2D[CELL] {
   def cells: Seq[Seq[CELL]]
   def cell(x: Int, y: Int) = cells(x)(y)
 }

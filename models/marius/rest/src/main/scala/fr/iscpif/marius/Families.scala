@@ -35,14 +35,15 @@ object Families {
     def source(traits: String, attributes: String): String =
       s"""
         |val model =
-        |  new Marius with ProportionalTransaction $traits {
+        |  new Marius with ProportionalTransaction with $traits {
         |    $attributes
         |  }
         |val csvWriter = new StringWriter()
         |ToCSV.toCSV(model, csvWriter)
         |val csv = csvWriter.toString""".stripMargin
 
-    def attributes: Seq[String] =
+    def inputs = Seq.empty
+    def attributes =
       Seq(
         "economicMultiplier",
         "populationToWealthExponent",
@@ -57,8 +58,8 @@ object Families {
         "territorialTaxes",
         "capitalShareOfTaxes",
         "ruralMultiplier"
-      )
-    def outputs = Seq("csv")
+      ).map(TypedValue[Double])
+    def outputs = Seq(TypedValue[String]("csv"))
     def combination: Combination[Class[_]] =
       AllToAll(
         AnyOf(classOf[Bonus], classOf[FixedCostTransaction], classOf[SubSurfaceResources], classOf[DoubleRedistribution], classOf[UrbanTransition]),

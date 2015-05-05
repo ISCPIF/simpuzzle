@@ -18,6 +18,7 @@
 package fr.geocites.schelling
 
 import fr.geocites.simpuzzle._
+import fr.geocites.simpuzzle.matrix.Torus2D
 import scala.util.Random
 import fr.geocites.simpuzzle.state.InitialState
 import fr.geocites.simpuzzle.logging.NoLog
@@ -33,9 +34,8 @@ trait SchellingRandomInitialState <: InitialState
   def initialState(implicit rng: Random) =
     SchellingState(
       0,
-      new Cells {
-        def cells = Seq.fill(side, side)(randomCell)
-      })
+      Torus2D(Seq.fill(side, side)(randomCell))
+    )
 
   // Randomly draw a cell type given the proportions
   def randomCell(implicit rng: Random): Place =

@@ -28,9 +28,7 @@ trait SugarScapeState <: State {
   case class SugarScapeState(
       step: Int,
       agents: Seq[(Position, Agent)],
-      sugar: Seq[Seq[Sugar]]) extends Torus2D {
-
-    type CELL = Cell
+      sugar: Seq[Seq[Sugar]]) extends Torus2D[Cell] {
 
     def cells: Seq[Seq[Cell]] = {
       val cells =

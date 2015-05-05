@@ -17,7 +17,15 @@
 
 package fr.geocites.simpuzzle.matrix
 
-trait Torus2D extends Matrix2D {
+object Torus2D {
+  def apply[T](cs: Seq[Seq[T]]) =
+    new Torus2D[T] {
+      override def cells = cs
+    }
+}
+
+trait Torus2D[CELL] extends Matrix2D[CELL] {
+
   def positiveMod(i: Int, j: Int) = {
     val m = i % j
     if (m < 0) m + j else m

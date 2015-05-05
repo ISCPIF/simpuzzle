@@ -21,7 +21,7 @@ import fr.geocites.simpuzzle._
 import scala.util.Random
 import scala.collection.mutable.ArrayBuffer
 import fr.geocites.simpuzzle.neighbourhood._
-import scalaz.Lens
+import monocle._
 import fr.geocites.simpuzzle.matrix.Torus2D
 import fr.geocites.simpuzzle.state.Step
 import fr.geocites.simpuzzle.logging.NoLog
@@ -39,10 +39,7 @@ trait SchellingStep <: Step
   def similarWanted: Double
   def neighbourhoodSize: Int
 
-  trait Cells <: Torus2D {
-    type CELL = Place
-  }
-  type CELLS = Cells
+  type CELLS = Torus2D[Place]
 
   def step: Lens[STATE, Int]
   def cells: Lens[STATE, CELLS]
@@ -79,9 +76,7 @@ trait SchellingStep <: Step
       newMatrix(fromI)(fromJ) = Free
     }
 
-    cells.set(step.mod(_ + 1, state), new Cells {
-      def cells = newMatrix.toSeq.map(_.toSeq)
-    })
+    cells.set(Torus2D(newMatrix.toSeq.map(_.toSeq)))(step.modify(_ + 1)(state))
   }
 
 }
