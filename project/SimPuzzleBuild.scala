@@ -41,7 +41,7 @@ trait DefaultSettings {
        if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots")
        else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
      },
-     libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3",
+     libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3-1",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion,
      libraryDependencies += "org.scalaz" %% "scalaz-iteratee" % scalazVersion,
      libraryDependencies ++= Seq(
@@ -109,6 +109,5 @@ trait Indus <: Gugus {
 }
 
 trait Schelling <: Simpuzzle {
-  lazy val schellingBinary = Project(id = "schelling-binary", base = file("models/schelling/binary"), settings = defaultSettings) dependsOn(simpuzzle)
-  lazy val schellingQuantity = Project(id = "schelling-quantity", base = file("models/schelling/quantity"), settings = defaultSettings) dependsOn(simpuzzle)
+  lazy val schelling = Project(id = "schelling", base = file("models/schelling"), settings = defaultSettings) dependsOn(simpuzzle)
 }

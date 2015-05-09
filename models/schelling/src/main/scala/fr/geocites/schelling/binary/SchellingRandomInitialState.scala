@@ -15,16 +15,31 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.schelling
+package fr.geocites.schelling.binary
 
-import monocle.macros._
+import fr.geocites.simpuzzle.logging.NoLog
+import fr.geocites.simpuzzle.matrix.Torus2D
+import fr.geocites.simpuzzle.state.InitialState
 
-trait Schelling <: SchellingStep {
+import scala.util.Random
 
-  type STATE = SchellingState
+trait SchellingRandomInitialState <: InitialState
+    with Schelling
+    with NoLog {
 
-  case class SchellingState(step: Int, cells: CELLS)
+  def freeProportion: Double
+  def whiteProportion: Double
+  def side: Int
 
-  def step = GenLens[STATE](_.step)
-  def cells = GenLens[STATE](_.cells)
+  def initialState(implicit rng: Random) =
+    SchellingState(
+      0,
+      Torus2D(Seq.fill(side, side)(randomCell))
+    )
+
+  // Randomly draw a cell type given the proportions
+  def randomCell(implicit rng: Random): Place =
+    if (rng.nextDouble < freeProportion) Free
+    else if (rng.nextDouble < whiteProportion) White else Black
+
 }

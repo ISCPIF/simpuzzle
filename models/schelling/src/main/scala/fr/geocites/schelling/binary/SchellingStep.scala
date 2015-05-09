@@ -15,16 +15,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.schelling
+package fr.geocites.schelling.binary
 
-import fr.geocites.simpuzzle._
-import scala.util.Random
-import scala.collection.mutable.ArrayBuffer
-import fr.geocites.simpuzzle.neighbourhood._
-import monocle._
-import fr.geocites.simpuzzle.matrix.Torus2D
-import fr.geocites.simpuzzle.state.Step
 import fr.geocites.simpuzzle.logging.NoLog
+import fr.geocites.simpuzzle.matrix.Torus2D
+import fr.geocites.simpuzzle.neighbourhood._
+import fr.geocites.simpuzzle.state.Step
+import monocle._
+
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Random
 
 trait SchellingStep <: Step
     with MatrixNeighbourhood
