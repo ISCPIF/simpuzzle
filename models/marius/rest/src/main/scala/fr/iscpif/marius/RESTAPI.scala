@@ -19,7 +19,7 @@ package fr.iscpif.marius
 import javax.script.ScriptEngineManager
 import javax.servlet.ServletContext
 
-import fr.iscpif.family.TypedValue
+import fr.iscpif.family._
 import org.eclipse.jetty.server.Server
 import org.eclipse.jetty.servlet.DefaultServlet
 import org.eclipse.jetty.webapp.WebAppContext
@@ -55,9 +55,9 @@ class ScalatraExample extends ScalatraServlet {
       params("parameters").split(",").map {
         p =>
           val Array(name, value) = p.split("=")
-          TypedValue[Double](name) -> value.toDouble
+          name -> value.toDouble
       }.toMap
-    val parameterValues = family.attributes.map(parameters(_))
+    val parameterValues = family.attributes.map { v => parameters(v.name) }
     family.run(id, parameterValues: _*).get("csv")
   }
 }
