@@ -16,6 +16,7 @@
  */
 package fr.iscpif.marius
 
+import java.net.{ InetSocketAddress, InetAddress, ServerSocket }
 import javax.script.ScriptEngineManager
 import javax.servlet.ServletContext
 
@@ -30,7 +31,7 @@ import scala.util.Random
 
 object RESTAPI extends App {
   val p = if (args.size >= 1) args(0).toInt else 8080
-  val server = new Server(p)
+  val server = new Server(new InetSocketAddress(InetAddress.getLoopbackAddress, p))
   val context = new WebAppContext()
   context setContextPath "/"
   context.setResourceBase("src/main/webapp")
