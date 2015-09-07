@@ -41,12 +41,16 @@ trait Model {
 trait Overflow <: Model {
   import model._
 
-  def totalOverflowRatio(cities: Seq[CITY]) =
-    cities.map {
-      c =>
-        Evaluation.overflowRatio(c |-> wealth get, supply(c |-> population get)) +
-          Evaluation.overflowRatio(c |-> wealth get, demand(c |-> population get))
-    }.sum
+  def totalOverflowRatio(cities: Seq[CITY]) = {
+    val overflows =
+      for {
+        c <- cities
+        a <- activities
+      } yield Evaluation.overflowRatio(c |-> wealth get, supply(c |-> population get, a)) +
+        Evaluation.overflowRatio(c |-> wealth get, demand(c |-> population get, a))
+
+    overflows.sum
+  }
 }
 
 trait Evaluation <: Overflow {

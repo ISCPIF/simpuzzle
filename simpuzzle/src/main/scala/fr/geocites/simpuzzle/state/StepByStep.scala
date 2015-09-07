@@ -25,8 +25,8 @@ import fr.geocites.simpuzzle.extendIterator
 
 trait StepByStep <: State with InitialState with Step with EndingCondition with Logging {
 
-  def logs(implicit rng: Random): Iterator[Writer[List[LOGGING], Try[STATE]]] =
-    Iterator.iterate[Writer[List[LOGGING], Try[STATE]]](tryValid(initialState)) {
+  def logs(implicit rng: Random): Iterator[Log[Try[STATE]]] =
+    Iterator.iterate[Log[Try[STATE]]](tryValid(initialState)) {
       v =>
         v.value match {
           case Success(s) => tryValid { nextState(s) }
@@ -39,7 +39,7 @@ trait StepByStep <: State with InitialState with Step with EndingCondition with 
       }
     }
 
-  def validStatesLogs(implicit rng: Random): Iterator[Writer[List[LOGGING], STATE]] =
+  def validStatesLogs(implicit rng: Random): Iterator[Log[STATE]] =
     logs.collect {
       case x if x.value.isInstanceOf[Success[_]] =>
         val util.Success(state) = x.value.asInstanceOf[Success[STATE]]
@@ -54,7 +54,7 @@ trait StepByStep <: State with InitialState with Step with EndingCondition with 
 
   def run(implicit rng: Random) = states.last
 
-  private def tryValid(f: => Writer[List[LOGGING], STATE]): Writer[List[LOGGING], Try[STATE]] =
+  private def tryValid(f: => Log[STATE]): Log[Try[STATE]] =
     try f.map(Success(_))
     catch {
       case e: AssertionError => Failure(e)

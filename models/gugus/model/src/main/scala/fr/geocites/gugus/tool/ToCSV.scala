@@ -45,7 +45,7 @@ trait ToCSV {
     implicit val rng = fr.geocites.simpuzzle.random(42)
     import m._
 
-    def csv: Iterator[Iterator[String]] =
+    def csv =
       for {
         (log, step) <- m.logs zipWithIndex
       } yield log.value match {
@@ -56,18 +56,21 @@ trait ToCSV {
           val to = transacted.groupBy(_.to)
 
           for {
+            (activity, activityId) <- m.activities.zipWithIndex
             (city, arokato, s, d, i) <- (
               cs zip
               m.arokatos zip
-              m.supplies(cs) zip
-              m.demands(cs)).zipWithIndex.map(flatten).toIterator
+              m.supplies(cs, activity) zip
+              m.demands(cs, activity)).zipWithIndex.map(flatten).toIterator
           } yield {
+
             def line =
               Seq(
                 step,
+                activityId,
                 arokato,
-                city |-> population get,
-                city |-> wealth get,
+                population.get(city),
+                wealth.get(city),
                 s,
                 d,
                 from.getOrElse(i, Seq.empty).map(_.transacted).sum,

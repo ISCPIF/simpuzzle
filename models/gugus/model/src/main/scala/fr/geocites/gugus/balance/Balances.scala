@@ -26,7 +26,7 @@ trait Balances <: Exchange { model: Gugus =>
 
   def balances(s: STATE,
     supplies: Seq[Double],
-    demands: Seq[Double])(implicit rng: Random) = {
+    demands: Seq[Double])(implicit rng: Random): Log[Seq[Double]] = {
     for {
       exchangeBalance <- exchangeBalances(s, supplies.toIndexedSeq, demands.toIndexedSeq)
     } yield {
@@ -35,6 +35,7 @@ trait Balances <: Exchange { model: Gugus =>
       }
     }
   }
+
   def redistributionBalances(s: Seq[CITY]) = s.map(_ => 0.0)
 }
 

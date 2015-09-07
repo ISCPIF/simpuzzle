@@ -28,18 +28,22 @@ import scala.util.Random
 import monocle._
 import monocle.syntax._
 
+import scalaz.WriterT
+
+case class Activity (sizeEffectOnDemand: Double, sizeEffectOnSupply: Double, exchangeRate: Double)
+
+
 trait Gugus <: StepByStep
     with TimeEndingCondition
     with Balances
     with NoLog {
 
   type LOGGING = Interaction
-
   type CITY
 
+  def activities: Seq[Activity]
+
   def economicMultiplier: Double
-  def sizeEffectOnDemand: Double
-  def sizeEffectOnSupply: Double
   def wealthToPopulationExponent: Double
 
   def cities: SimpleLens[STATE, Seq[CITY]]
@@ -48,7 +52,7 @@ trait Gugus <: StepByStep
   def network: SimpleLens[STATE, Network]
   def distances: SimpleLens[STATE, DistanceMatrix]
 
-  def nextState(s: STATE)(implicit rng: Random) = {
+  def nextState(s: STATE)(implicit rng: Random): Log[STATE] = {
     for {
       newWealths <- wealths(s)
     } yield {
@@ -74,34 +78,43 @@ trait Gugus <: StepByStep
     }
   }
 
-  def wealths(s: STATE)(implicit rng: Random) = {
-    val suppliesOfCities = supplies(cities.get(s))
-    val demandsOfCities = demands(cities.get(s))
+  def wealths(s: STATE)(implicit rng: Random): Log[Seq[Double]]  = {
+    def deltaWealth(activity: Activity): Log[Seq[Double]] = {
+      val suppliesOfCities = supplies(cities.get(s), activity)
+      val demandsOfCities = demands(cities.get(s), activity)
+      for {
+        bs <- balances(s, suppliesOfCities, demandsOfCities)
+      } yield {
+        (suppliesOfCities zip demandsOfCities zip bs).map {
+            case ((supply, demand), balance) => supply - demand + balance
+          }
+      }
+    }
+
+    def originalWealth = cities.get(s) map wealth.get
 
     for {
-      balances <- balances(s, suppliesOfCities, demandsOfCities)
+      dw <- activities.map(deltaWealth).combine
     } yield {
-      val newWealths =
-        (cities.get(s) zip
-          suppliesOfCities zip
-          demandsOfCities zip
-          balances zipWithIndex).map(flatten).map {
-          case (city, supply, demand, balance, i) =>
-            val currentWealth = city |-> wealth get
-            val newWealth = currentWealth + supply - demand + balance
-            if (currentWealth <= 0.0 || newWealth <= 0.0) 0.0 else newWealth
+      def newWealths: Seq[Double] =
+        (originalWealth zip dw.transpose.map(_.sum)) map {
+          case (currentWealth, delta) =>
+            val wealth = currentWealth + delta
+            if (currentWealth <= 0.0 || delta <= 0.0) 0.0 else wealth
         }
+
       resourcesEffect(s |-> cities get, newWealths)
     }
   }
 
   def urbanTransition(state: STATE): STATE = state
   def resourcesEffect(cities: Seq[CITY], newWealths: Seq[Double]) = newWealths
-  def supplies(cities: Seq[CITY]) = cities.map(c => supply(c |-> population get))
-  def demands(cities: Seq[CITY]) = cities.map(c => demand(c |-> population get))
 
-  def demand(population: Double) = economicMultiplier * pow(population, sizeEffectOnDemand)
-  def supply(population: Double) = economicMultiplier * pow(population, sizeEffectOnSupply)
+  def supplies(cities: Seq[CITY], activity: Activity) = cities.map(c => supply(c |-> population get, activity))
+  def demands(cities: Seq[CITY], activity: Activity) = cities.map(c => demand(c |-> population get, activity))
+
+  def demand(population: Double, activity: Activity) = economicMultiplier * activity.exchangeRate * pow(population, activity.sizeEffectOnDemand)
+  def supply(population: Double, activity: Activity) = economicMultiplier * activity.exchangeRate * pow(population, activity.sizeEffectOnSupply)
 
   def wealthToPopulation(wealth: Double) = {
     check(wealth >= 0, s"Negative wealth $wealth")

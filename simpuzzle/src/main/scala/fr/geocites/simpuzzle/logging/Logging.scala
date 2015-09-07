@@ -22,15 +22,20 @@ import scalaz.Scalaz._
 import util.{ Success, Failure }
 import fr.geocites.simpuzzle.state
 
+
 trait Logging <: state.State {
   type LOGGING
+  type Log[T] = Writer[List[LOGGING], T]
 
-  def log[T](s: T, l: => List[LOGGING]): Writer[List[LOGGING], T]
+  def log[T](s: T, l: => List[LOGGING]): Log[T]
 
   protected implicit def tupleToWriter[T](t: (List[LOGGING], T)) = Writer(t._1, t._2)
-  protected implicit def stateWriterToValidStateWriter(w: Writer[List[LOGGING], STATE]) = w.map(s => Success(s))
-  protected implicit def toWriter[T](s: T): Writer[List[LOGGING], T] = log(s, List.empty)
+  protected implicit def stateWriterToValidStateWriter(w: Log[STATE]) = w.map(s => Success(s))
+  protected implicit def toWriter[T](s: T): Log[T] = log(s, List.empty)
   protected implicit def invalidStateToInvalidStateWriter(s: Failure[STATE]) = log(s, List.empty)
+  protected implicit class LogDecorator[T](l: Seq[Log[T]]) {
+    def combine: Log[Seq[T]] = log(l.map(_.value), l.map(_.written).flatten.toList)
+  }
 
   protected implicit def listMonoid[T] = std.list.listMonoid[T]
 }
