@@ -90,7 +90,7 @@ trait Marius <: Gugus {
     )
 
   lazy val mariusrest = Project(id = "marius-rest", base = file("models/marius/rest"), settings = defaultSettings) dependsOn(mariuscalibration) settings (
-    libraryDependencies += "fr.iscpif" %% "family" % "1.1-SNAPSHOT",
+    libraryDependencies += "fr.iscpif" %% "family" % "1.1",
     libraryDependencies += "org.scalatra" %% "scalatra" % "2.3.1",
     libraryDependencies += "org.eclipse.jetty" % "jetty-webapp" % "9.3.0.M2",
     libraryDependencies += "org.slf4j" % "slf4j-simple" % "1.7.12",
