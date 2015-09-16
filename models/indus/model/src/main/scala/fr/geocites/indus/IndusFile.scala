@@ -30,7 +30,7 @@ object IndusFile {
       Source.fromInputStream(this.getClass.getClassLoader.getResourceAsStream("fr/geocites/indus/cities.csv"))(Codec.UTF8)
 
     input.getLines.map {
-      l => l.split(",").toSeq
+      l => l.split(";").toSeq
     }
   }
 
