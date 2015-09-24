@@ -32,8 +32,8 @@ object SimPuzzleBuild extends Build with Marius with Indus with Schelling with D
 
 
 trait DefaultSettings {
-  val monocleVersion = "1.1.1"  // or "0.5-SNAPSHOT"
-  val scalazVersion = "7.1.2"
+  val monocleVersion = "1.2.0-M1"
+  val scalazVersion = "7.1.4"
 
   val defaultSettings = SbtScalariform.scalariformSettings ++ Seq(
      organization := "fr.geocites",
@@ -49,7 +49,7 @@ trait DefaultSettings {
        "com.github.julien-truffaut"  %%  "monocle-generic" % monocleVersion,
        "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion
      ),
-     libraryDependencies += "com.chuusai" %% "shapeless" % "2.1.0",
+     libraryDependencies += "com.chuusai" %% "shapeless" % "2.2.5",
      libraryDependencies += "org.apache.commons" % "commons-math3" % "3.5",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
      resolvers += Resolver.sonatypeRepo("snapshots"),
@@ -58,7 +58,7 @@ trait DefaultSettings {
 }
 
 trait Simpuzzle <: DefaultSettings {
-  lazy val geotools = "org.geotools" % "gt-referencing" % "13.0"
+  lazy val geotools = "org.geotools" % "gt-referencing" % "13.2"
 
   lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
 
