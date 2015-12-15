@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 21/05/13 Romain Reuillon
+ * Copyright (C) 2015 Romain Reuillon
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as published by
@@ -9,16 +9,14 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package fr.geocites.marius
 
-import fr.geocites.gugus._
-import fr.geocites.simpuzzle.city._
+import fr.geocites.marius.model.City
 
 import scala.collection.mutable
 import scala.io.{ Codec, Source }
@@ -53,21 +51,15 @@ object MariusFile {
   def latitudes(census: Int) = startingCities(census).map(_(4).toDouble)
   def longitudes(census: Int) = startingCities(census).map(_(5).toDouble)
 
-  def positions(census: Int) =
-    (longitudes(census) zip latitudes(census)).map {
-      case (long, lat) => Position(long, lat)
-    }
+  def positions(census: Int) = (longitudes(census) zip latitudes(census))
 
   /** Cache of the distance matrix between */
-  def distanceMatrix(census: Int): DistanceMatrix = memoize(census) {
-    positions(census).distanceMatrix
-  }
+  def distanceMatrix(census: Int): DistanceMatrix = memoize(census) { DistanceMatrix(positions(census)) }
 
+  def apply(census: Int) = new MariusFile(census)
 }
 
-trait MariusFile {
-
-  def census: Int
+class MariusFile(census: Int) {
 
   /** Read the content of the file */
   def contentCities = MariusFile.contentCities
@@ -169,10 +161,48 @@ trait MariusFile {
   /** Names of the regions */
   def regionNames = regionData.map(_(1))
 
+  def cities(populationToWealthExponent: Double) = {
+    def initialWealth(population: Double): Double = math.pow(population, populationToWealthExponent)
+    def rescaleWealth(wealth: Seq[Double], population: Seq[Double]) = {
+      val factor = population.sum / wealth.sum
+      wealth.map(_ * factor)
+    }
+
+    val pop = initialPopulations.toSeq
+    val initialWealths = rescaleWealth(pop.map(initialWealth), pop)
+
+    val cities =
+      for {
+        line <- (pop.toIterator zip cityRegions zip cityNations zip regionalCapitals zip nationalCapitals zip oilOrGazDistribution.toIterator zip coalDistribution.toIterator zip initialWealths.toIterator)
+      } yield {
+        val (((((((population,
+          region),
+          nation),
+          regionalCapital),
+          nationalCapital),
+          oilOrGaz),
+          coal),
+          initialWealth) = line
+
+        City(
+          population = population,
+          region = region,
+          nation = nation,
+          regionalCapital = regionalCapital,
+          nationalCapital = nationalCapital,
+          wealth = initialWealth,
+          oilOrGaz = oilOrGaz,
+          coal = coal
+        )
+      }
+    cities.take(nbCities).toVector
+  }
+
   /** A converter function from string to boolean */
   private def toBoolean(s: String) =
     s match {
       case "1" => true
       case _ => false
     }
+
 }

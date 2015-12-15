@@ -14,8 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.geocites
+package fr.geocites.simpuzzle
 
-package object simpuzzle {
+package object gugus {
+  case class Interaction(from: Int, to: Int, transacted: Double)
 
 }
