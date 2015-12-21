@@ -16,8 +16,8 @@
  */
 package fr.geocites.marius
 
-import fr.geocites.simpuzzle._
 import fr.geocites.marius.data._
+import fr.iscpif.simpuzzle.puzzle.Puzzle
 
 import scalaz._
 import Scalaz._
@@ -47,7 +47,7 @@ object model {
   sealed trait Error
   case class AssertionFailed(msg: String) extends Exception(msg) with Error
 
-  val model = new Model[MariusState, Interaction, Error] {}
+  val model = Puzzle[MariusState, Interaction, Error]
   import model._
 
   def marius(
@@ -59,8 +59,8 @@ object model {
     activities: Vector[Activity])(implicit log: Logger = Logger.empty): Step[Vector[City]] = {
 
     def wealthToPopulation(wealth: Double) =
-      if (wealth >= 0) math.pow(wealth, wealthToPopulationExponent).right
-      else AssertionFailed(s"Negative wealth $wealth").left
+      if (wealth >= 0) success(math.pow(wealth, wealthToPopulationExponent))
+      else failure(AssertionFailed(s"Negative wealth $wealth"))
 
     def populations(newWealths: Vector[Double], state: MariusState): Validate[Vector[Double]] =
       (state.cities zip newWealths).zipWithIndex.traverse { case ((city, newWealth), i) => population(city, newWealth, i) }
@@ -70,12 +70,12 @@ object model {
 
     def population(city: City, newWealth: Double, index: Int): Validate[Double] =
       for {
-        _ <- if (newWealth < 0) AssertionFailed(s"City $index error in wealth before conversion toPop $newWealth").left else Unit.right
+        _ <- if (newWealth < 0) failure(AssertionFailed(s"City $index error in wealth before conversion toPop $newWealth")) else success()
         newPop <- wealthToPopulation(newWealth)
         oldPop <- wealthToPopulation(city.wealth)
         deltaPopulation = (newPop - oldPop) / economicMultiplier
         newPopulation = city.population + deltaPopulation
-        _ <- if (newPopulation < 0) AssertionFailed(s"Population is negative for city $index: $newPopulation").left else Unit.right
+        _ <- if (newPopulation < 0) failure(AssertionFailed(s"Population is negative for city $index: $newPopulation")) else success()
       } yield newPopulation
 
     def newState(newPopulations: Vector[Double], newWealths: Vector[Double]) = State { state: MariusState =>
@@ -87,10 +87,10 @@ object model {
     }
 
     for {
-      state <- Step.get()
-      deltas <- Step(deltaWealths(transactions, interactionPotential, balance, economicMultiplier, activities, state))
-      newWealths <- Step(wealths(deltas, state))
-      newPopulations <- Step(populations(newWealths, state))
+      state <- Step()
+      deltas <- step(deltaWealths(transactions, interactionPotential, balance, economicMultiplier, activities, state))
+      newWealths <- step(wealths(deltas, state))
+      newPopulations <- step(populations(newWealths, state))
       newCities <- newState(newPopulations, newWealths)
     } yield newCities
 

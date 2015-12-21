@@ -15,10 +15,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package fr.geocites.simpuzzle
+package fr.iscpif.simpuzzle
 
 import java.awt.geom.Point2D
 
+import fr.iscpif.simpuzzle.puzzle.Position
 import org.geotools.referencing.GeodeticCalculator
 
 package object gis {

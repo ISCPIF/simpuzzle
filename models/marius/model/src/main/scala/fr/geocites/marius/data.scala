@@ -16,8 +16,8 @@
  */
 package fr.geocites.marius
 
-import fr.geocites.simpuzzle.Position
-import fr.geocites.simpuzzle.gis._
+import fr.iscpif.simpuzzle.gis._
+import fr.iscpif.simpuzzle.puzzle.Position
 
 object data {
   case class Cell(row: Int, value: Double)

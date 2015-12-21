@@ -14,12 +14,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.geocites.simpuzzle
+package fr.iscpif.simpuzzle.puzzle
 
+import scalaz.Scalaz._
 import scalaz._
-import Scalaz._
 
-trait Model[S, L, E] {
+object Puzzle {
+  def apply[S, L, E] = new Puzzle[S, L, E] {}
+}
+
+trait Puzzle[S, L, E] {
 
   object Log {
     implicit def logMonadEquivalence = new Equivalence[Log, Writer[Vector[L], ?]] {
@@ -75,6 +79,10 @@ trait Model[S, L, E] {
 
   case class Validate[A](v: \/[E, A])
 
+  def failure(e: E) = e.left
+  def success[A](a: A) = a.right
+  def success() = {}.right
+
   object LogValidate {
     implicit def equivalence = new Equivalence[LogValidate, WriterT[Validate, Vector[L], ?]] {
       override def get[A](t: LogValidate[A]): WriterT[Validate, Vector[L], A] = t.writer
@@ -123,15 +131,16 @@ trait Model[S, L, E] {
 
     implicit def monad = monadEquivalence[Step, InnerStep]
 
-    def get(): Step[S] = State.get[S]
-    def apply[A](a: Validate[A]): Step[A] = a.toStep
-    def apply[A](a: Log[A]): Step[A] = a.toStep
-    def apply[A](a: A): Step[A] = a.point[Step]
+    def apply(): Step[S] = State.get[S]
 
   }
 
   case class Step[A](s: Step.InnerStep[A]) {
     def run(st: S) = s.run(st)
   }
+
+  def step[A](a: Validate[A]): Step[A] = a.toStep
+  def step[A](a: Log[A]): Step[A] = a.toStep
+  def step[A](a: A): Step[A] = a.point[Step]
 
 }

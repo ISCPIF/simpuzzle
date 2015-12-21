@@ -14,8 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.geocites.simpuzzle
+package fr.iscpif.simpuzzle.puzzle
 
-package object gugus {
+object Position {
 
+  implicit val tupleIsPosition = new Position[(Double, Double)] {
+    def x(t: (Double, Double)) = t._1
+    def y(t: (Double, Double)) = t._2
+  }
+
+}
+
+trait Position[T] {
+  def x(t: T): Double
+  def y(t: T): Double
 }

@@ -14,11 +14,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package fr.geocites
+package fr.iscpif.simpuzzle
 
 import scalaz._
 
-package object simpuzzle {
+package object puzzle {
 
   def taggedMonad[M[_]: Monad, T]: Monad[λ[A => @@[M[A], T]]] = new Monad[λ[A => @@[M[A], T]]] {
     def innerMonad = implicitly[Monad[M[?]]]

@@ -16,11 +16,7 @@ object SimPuzzleBuild extends Build {
   val scalazVersion = "7.1.5"
 
   val defaultSettings = SbtScalariform.scalariformSettings ++ Seq(
-     organization := "fr.geocites",
-     publishTo := {
-       if (version.value.trim.endsWith("SNAPSHOT")) Some("ISCPIF Nexus snapshot" at "http://maven.iscpif.fr/snapshots")
-       else Some("ISCPIF Nexus" at "http://maven.iscpif.fr/releases")
-     },
+     organization := "fr.iscpif.simpuzzle",
      libraryDependencies += "com.github.scala-incubator.io" %% "scala-io-core" % "0.4.3-1",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion,
      libraryDependencies ++= Seq(
@@ -32,18 +28,36 @@ object SimPuzzleBuild extends Build {
      libraryDependencies += "org.apache.commons" % "commons-math3" % "3.5",
      libraryDependencies <+= (scalaVersion)("org.scala-lang" % "scala-reflect" % _),
      resolvers += Resolver.sonatypeRepo("snapshots"),
-     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/"
+     resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/",
+    publishTo <<= isSnapshot { snapshot =>
+      val nexus = "https://oss.sonatype.org/"
+      if (snapshot) Some("snapshots" at nexus + "content/repositories/snapshots")
+      else Some("releases" at nexus + "service/local/staging/deploy/maven2")
+    },
+    pomIncludeRepository := { _ => false},
+    licenses := Seq("Affero GPLv3" -> url("http://www.gnu.org/licenses/")),
+    homepage := Some(url("https://github.com/ISCPIF/simpuzzle")),
+    scmInfo := Some(ScmInfo(url("https://github.com/ISCPIF/simpuzzle.git"), "scm:git:git@github.com:ISCPIF/simpuzzle.git")),
+    // To sync with Maven central, you need to supply the following information:
+    pomExtra := {
+      <!-- Developer contact information -->
+        <developers>
+          <developer>
+            <id>romainreuillon</id>
+            <name>Romain Reuillon</name>
+            <url>https://github.com/romainreuillon/</url>
+          </developer>
+        </developers>
+    }
    ) ++ addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.7.1")
 
   lazy val geotools = "org.geotools" % "gt-referencing" % "13.2"
 
-  lazy val simpuzzle = Project(id = "simpuzzle", base = file("simpuzzle"), settings = defaultSettings)
+  lazy val puzzle = Project(id = "puzzle", base = file("puzzle"), settings = defaultSettings)
 
-  lazy val gis = Project(id = "gis", base = file("gis"), settings = defaultSettings) dependsOn(simpuzzle) settings (libraryDependencies += geotools)
+  lazy val gis = Project(id = "gis", base = file("gis"), settings = defaultSettings) dependsOn(puzzle) settings (libraryDependencies += geotools)
 
-  lazy val gugus = Project(id = "gugus", base = file("models/gugus/model"), settings = defaultSettings) dependsOn(simpuzzle, gis)
-
-  lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (gugus)
+  lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (puzzle, gis)
 
 }
 
