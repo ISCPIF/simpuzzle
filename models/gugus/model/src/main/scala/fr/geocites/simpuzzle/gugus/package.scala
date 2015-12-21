@@ -17,6 +17,5 @@
 package fr.geocites.simpuzzle
 
 package object gugus {
-  case class Interaction(from: Int, to: Int, transacted: Double)
 
 }

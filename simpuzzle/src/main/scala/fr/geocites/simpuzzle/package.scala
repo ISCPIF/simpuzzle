@@ -16,6 +16,34 @@
  */
 package fr.geocites
 
+import scalaz._
+
 package object simpuzzle {
+
+  def taggedMonad[M[_]: Monad, T]: Monad[λ[A => @@[M[A], T]]] = new Monad[λ[A => @@[M[A], T]]] {
+    def innerMonad = implicitly[Monad[M[?]]]
+
+    override def bind[A, B](fa: @@[M[A], T])(f: (A) => @@[M[B], T]): @@[M[B], T] = {
+      val faw: M[A] = Tag.unwrap(fa)
+      val fw: (A => M[B]) = (a: A) => Tag.unwrap(f(a))
+      Tag(innerMonad.bind[A, B](faw)(fw))
+    }
+
+    override def point[A](a: => A): @@[M[A], T] = Tag(innerMonad.point(a))
+  }
+
+  trait Equivalence[T[_], M[_]] {
+    def get[A](t: T[A]): M[A]
+    def build[A](m: M[A]): T[A]
+  }
+
+  implicit def monadEquivalence[T[_], M[_]: Monad](implicit equivalence: Equivalence[T, M]) = new Monad[T] {
+    def inner = implicitly[Monad[M]]
+    override def bind[A, B](fa: T[A])(f: (A) => T[B]): T[B] =
+      equivalence.build(inner.bind[A, B](equivalence.get(fa))(a => equivalence.get(f(a))))
+
+    override def point[A](a: => A): T[A] =
+      equivalence.build(inner.point(a))
+  }
 
 }

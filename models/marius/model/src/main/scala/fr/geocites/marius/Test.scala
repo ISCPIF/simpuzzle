@@ -17,6 +17,7 @@
 package fr.geocites.marius
 
 import model._
+import data._
 
 object Test extends App {
 
@@ -40,8 +41,15 @@ object Test extends App {
         )
     )
 
-  // val cities = MariusFile(0).cities(1.06919766558929)
+  val file = MariusFile(census = 0)
+  val cities = file.cities(populationToWealthExponent = 1.02)
 
-  //def initialState = MariusState(0, cities, initialRegions, Network.full(cities.size), distanceMatrix)
+  def initialState = MariusState(
+    step = 0,
+    cities = cities,
+    network = Network.full(cities.size),
+    distanceMatrix = DistanceMatrix(file.positions))
+
+  println(model.run(initialState))
 
 }

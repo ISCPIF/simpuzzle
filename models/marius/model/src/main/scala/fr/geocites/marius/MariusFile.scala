@@ -20,6 +20,7 @@ import fr.geocites.marius.model.City
 
 import scala.collection.mutable
 import scala.io.{ Codec, Source }
+import data._
 
 object MariusFile {
 

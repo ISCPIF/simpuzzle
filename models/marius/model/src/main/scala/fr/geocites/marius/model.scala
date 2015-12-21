@@ -16,6 +16,7 @@
  */
 package fr.geocites.marius
 
+import fr.geocites.simpuzzle._
 import fr.geocites.marius.data._
 
 import scalaz._
@@ -28,7 +29,6 @@ object model {
   case class MariusState(
     step: Int,
     cities: Vector[City],
-    regions: Vector[Region],
     network: Network,
     distanceMatrix: DistanceMatrix)
 
@@ -42,117 +42,13 @@ object model {
     oilOrGaz: Boolean,
     coal: Boolean)
 
-  case class Region(id: String, urbanisationStep: Double)
-
   case class Interaction(from: Int, to: Int, transacted: Double)
 
   sealed trait Error
   case class AssertionFailed(msg: String) extends Exception(msg) with Error
 
-  type Validate[A] = \/[Error, A]
-  type Log[A] = Writer[Vector[Interaction], A]
-
-  type LogValidate[A] = WriterT[Validate, Vector[Interaction], A]
-  type StateLogValidate[A] = StateT[LogValidate, MariusState, A]
-  type Step[A] = StateLogValidate[A]
-
-  object Validate {
-    implicit def apply[A](v: Validate[A]): LogValidate[A] =
-      implicitly[MonadTrans[WriterT[?[_], Vector[Interaction], ?]]].liftM[Validate, A](v)
-  }
-
-  object LogValidate {
-    implicit def apply[A](v: Log[A]): LogValidate[A] = WriterT[Validate, Vector[Interaction], A](v.run.right)
-  }
-
-  //object IsStep {
-
-  implicit val logValidateIsStep = new IsStep[LogValidate] {
-    override def toStep[A](s: LogValidate[A]): Step[A] = logValidateToStep(s)
-  }
-
-  implicit val stateIsStep = new IsStep[State[MariusState, ?]] {
-    override def toStep[A](s: State[MariusState, A]): Step[A] = stateToStep(s)
-  }
-
-  implicit val stateTIsStep = new IsStep[StateT[Validate, MariusState, ?]] {
-    override def toStep[A](s: StateT[Validate, MariusState, A]): Step[A] = stateTToStep(s)
-  }
-
-  implicit def logValidateToStep[A](v: LogValidate[A]): Step[A] =
-    implicitly[MonadTrans[StateT[?[_], MariusState, ?]]].liftM[LogValidate, A](v)
-
-  implicit def validateToStep[A](v: Validate[A]): Step[A] = Validate(v)
-
-  implicit def logToStep[A](v: Log[A]): Step[A] = LogValidate(v)
-
-  implicit def stateToStep[A](v: State[MariusState, A]): Step[A] = StateT[LogValidate, MariusState, A] {
-    s => v.run(s).point[LogValidate]
-  }
-
-  implicit def stateTToStep[A](v: StateT[Validate, MariusState, A]): Step[A] = v
-  // }
-
-  trait IsStep[S[_]] {
-    def toStep[A](s: S[A]): Step[A]
-  }
-
-  implicit class IsStepDecorator[S[_]: IsStep, A](s: S[A]) {
-    def toStep: Step[A] = implicitly[IsStep[S]].toStep[A](s)
-  }
-
-  //type StateTReaderTOption[C, S, A] = StateT[({ type l[X] = ReaderTOption[C, X] })#l, S, A]
-  /*object WriterTValidate extends KleisliInstances with KleisliFunctions {
-    def apply[A, B](f: A => Validate[B]): WriterTValidate[A, B] = f
-  }*/
-
-  /* type StateTReaderTOption[C, S, A] = StateT[({ type l[X] = ReaderTOption[C, X] })#l, S, A]
-
-  object StateTReaderTOption extends StateTInstances with StateTFunctions {
-    def apply[C, S, A](f: S => (S, A)) = new StateT[({ type l[X] = ReaderTOption[C, X] })#l, S, A] {
-      def apply(s: S) = f(s).point[({ type l[X] = ReaderTOption[C, X] })#l]
-    }
-    def get[C, S]: StateTReaderTOption[C, S, S] =
-      StateTReaderTOption { s => (s, s) }
-    def put[C, S](s: S): StateTReaderTOption[C, S, Unit] =
-      StateTReaderTOption { _ => (s, ()) }
-  }*/
-
-  object Logger {
-    def empty = new Logger {
-      override def apply[A](a: A, interactions: Vector[Interaction]): Log[A] = a.point[Log]
-    }
-  }
-
-  trait Logger {
-    def apply[A](a: A, interactions: Vector[Interaction] = Vector.empty): Log[A]
-  }
-
-  /*def nextState(s: STATE)(implicit rng: Random): Log[STATE] = {
-    for {
-      newWealths <- wealths(s)
-    } yield {
-      def newPopulations =
-        (cities.get(s) zip newWealths).zipWithIndex.map {
-          case ((city, newWealth), i) =>
-            check(newWealth >= 0, s"City $i error in wealth before conversion toPop $newWealth")
-            val deltaPopulation = (wealthToPopulation(newWealth) - wealthToPopulation(wealth.get(city))) / economicMultiplier
-            val newPopulation = population.get(city) + deltaPopulation
-            check(newPopulation >= 0, s"Error in population $newWealth $newPopulation")
-            newPopulation
-        }
-
-      def newCities =
-        (cities.get(s) zip newPopulations zip newWealths).map(flatten).map {
-          case (city, newPopulation, newWealth) =>
-            check(newPopulation >= 0, s"The population of $city is negative $newPopulation, $newWealth")
-            population.set(newPopulation)(wealth.set(newWealth)(city))
-        }
-
-      def updatedState = urbanTransition(cities.set(newCities)(s))
-      step.modify(_ + 1)(updatedState)
-    }
-  }*/
+  val model = new Model[MariusState, Interaction, Error] {}
+  import model._
 
   def marius(
     transactions: Transactions,
@@ -166,9 +62,11 @@ object model {
       if (wealth >= 0) math.pow(wealth, wealthToPopulationExponent).right
       else AssertionFailed(s"Negative wealth $wealth").left
 
-    def populations(newWealths: Vector[Double]): ReaderT[Validate, MariusState, Vector[Double]] = ReaderT { state: MariusState =>
+    def populations(newWealths: Vector[Double], state: MariusState): Validate[Vector[Double]] =
       (state.cities zip newWealths).zipWithIndex.traverse { case ((city, newWealth), i) => population(city, newWealth, i) }
-    }
+
+    def wealths(deltas: Vector[Double], state: MariusState): Vector[Double] =
+      (state.cities.map(_.wealth) zip deltas) map Function.tupled(_ + _)
 
     def population(city: City, newWealth: Double, index: Int): Validate[Double] =
       for {
@@ -189,29 +87,32 @@ object model {
     }
 
     for {
-      newWealths <- wealth(transactions, interactionPotential, balance, economicMultiplier, activities).state
-      newPopulations <- stateTToStep(populations(newWealths).state)
-      newCities <- stateToStep(newState(newPopulations, newWealths))
+      state <- Step.get()
+      deltas <- Step(deltaWealths(transactions, interactionPotential, balance, economicMultiplier, activities, state))
+      newWealths <- Step(wealths(deltas, state))
+      newPopulations <- Step(populations(newWealths, state))
+      newCities <- newState(newPopulations, newWealths)
     } yield newCities
 
   }
 
-  def wealth(
+  def deltaWealths(
     transactions: Transactions,
     potential: InteractionPotential,
     balance: Balance,
     economicMultiplier: Double,
-    activities: Vector[Activity])(implicit log: Logger) = ReaderT[LogValidate, MariusState, Vector[Double]] { state =>
+    activities: Vector[Activity],
+    state: MariusState)(implicit log: Logger): Log[Vector[Double]] = {
     def populations = state.cities.map(_.population)
 
     def delta(activity: Activity) = {
       val suppliesOfCities = supplies(populations, economicMultiplier, activity)
       val demandsOfCities = demands(populations, economicMultiplier, activity)
-      LogValidate(deltaWealth(transactions, potential, balance)(state.distanceMatrix, state.network, state.cities, suppliesOfCities, demandsOfCities))
+      deltaWealth(transactions, potential, balance)(state.distanceMatrix, state.network, state.cities, suppliesOfCities, demandsOfCities)
     }
 
     for {
-      a <- activities.traverse[LogValidate, Vector[Double]](delta)
+      a <- activities.traverse[Log, Vector[Double]](delta)
     } yield a.transpose.map(_.sum)
   }
 

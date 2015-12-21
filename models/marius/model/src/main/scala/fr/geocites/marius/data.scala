@@ -16,6 +16,9 @@
  */
 package fr.geocites.marius
 
+import fr.geocites.simpuzzle.Position
+import fr.geocites.simpuzzle.gis._
+
 object data {
   case class Cell(row: Int, value: Double)
 
@@ -70,6 +73,36 @@ object data {
     def inNodes(c: Int): Vector[Int]
     def outNodes(c: Int): Vector[Int]
     def mapNodes(f: (Int, Int) => Double): Matrix
+  }
+
+  object DistanceMatrix {
+    def apply[T: Position](positions: Seq[T]): DistanceMatrix = {
+      val p = positions.toVector
+      val distances = Array.ofDim[Double](p.size, p.size)
+
+      for {
+        i <- 0 until p.size
+        j <- i until p.size
+      } {
+        if (i == j) distances(i)(i) = 0.0
+        else {
+          val d = geodedicDistance(p(i), p(j))
+          distances(i)(j) = d
+          distances(j)(i) = d
+        }
+      }
+      distances
+    }
+  }
+
+  type DistanceMatrix = Array[Array[Double]]
+
+  implicit class IndexOption[T](s: Seq[T]) {
+    def indexOption(t: T) =
+      s.indexOf(t) match {
+        case -1 => None
+        case x => Some(x)
+      }
   }
 
 }
