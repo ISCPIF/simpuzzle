@@ -5,9 +5,7 @@ import sbt.Keys._
 import com.typesafe.sbt.osgi.SbtOsgi._
 
 object SimPuzzleBuild extends Build {
-
-
-
+  
   override def settings = super.settings ++ Seq (
     scalaVersion := "2.11.7"
   )
@@ -56,8 +54,6 @@ object SimPuzzleBuild extends Build {
   lazy val puzzle = Project(id = "puzzle", base = file("puzzle"), settings = defaultSettings)
 
   lazy val gis = Project(id = "gis", base = file("gis"), settings = defaultSettings) dependsOn(puzzle) settings (libraryDependencies += geotools)
-
-  lazy val marius = Project(id = "marius", base = file("models/marius/model"), settings = defaultSettings) dependsOn (puzzle, gis)
 
 }
 
