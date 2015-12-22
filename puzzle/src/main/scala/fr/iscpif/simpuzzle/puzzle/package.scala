@@ -46,4 +46,10 @@ package object puzzle {
       equivalence.build(inner.point(a))
   }
 
+  implicit class LensDecorator[A, B](lens: monocle.Lens[A, B]) {
+    def toScalaz = scalaz.Lens.lensu[A, B]((a, b) => lens.set(b)(a), lens.get)
+  }
+
+  implicit def monocleToScalazLens[A, B](lens: monocle.Lens[A, B]) = lens.toScalaz
+
 }
