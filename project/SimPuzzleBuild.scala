@@ -16,10 +16,12 @@ object SimPuzzleBuild extends Build {
   val defaultSettings = SbtScalariform.scalariformSettings ++ Seq(
      organization := "fr.iscpif.simpuzzle",
      libraryDependencies += "org.scalaz" %% "scalaz-core" % scalazVersion,
+     libraryDependencies += "org.scalaz" %% "scalaz-concurrent" % scalazVersion,
      libraryDependencies ++= Seq(
        "com.github.julien-truffaut"  %%  "monocle-core"    % monocleVersion,
        "com.github.julien-truffaut"  %%  "monocle-generic" % monocleVersion,
-       "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion
+       "com.github.julien-truffaut"  %%  "monocle-macro"   % monocleVersion,
+       "com.github.julien-truffaut"  %%  "monocle-state"   % monocleVersion
      ),
      resolvers += Resolver.sonatypeRepo("snapshots"),
      resolvers += "ISC-PIF" at "http://maven.iscpif.fr/public/",
