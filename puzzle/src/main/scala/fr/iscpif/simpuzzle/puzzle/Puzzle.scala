@@ -28,7 +28,6 @@ trait Puzzle[S, L, E] {
   object Log {
     implicit def logMonadEquivalence = new Equivalence[Log, Writer[Vector[L], ?]] {
       override def get[A](t: Log[A]): Writer[Vector[L], A] = t.writer
-
       override def build[A](m: Writer[Vector[L], A]): Log[A] = Log(m)
     }
 
@@ -51,6 +50,10 @@ trait Puzzle[S, L, E] {
     def empty = new Logger {
       override def apply[A](a: A, interactions: Vector[L]): Log[A] = Log.log(a)
     }
+
+    def log = new Logger {
+      override def apply[A](a: A, interactions: Vector[L]): Log[A] = Log(Writer(interactions, a))
+    }
   }
 
   trait Logger {
@@ -60,7 +63,6 @@ trait Puzzle[S, L, E] {
   object Validate {
     implicit def validateMonadEquivalence = new Equivalence[Validate, \/[E, ?]] {
       override def get[A](t: Validate[A]) = t.v
-
       override def build[A](m: \/[E, A]) = Validate(m)
     }
 
@@ -86,7 +88,6 @@ trait Puzzle[S, L, E] {
   object LogValidate {
     implicit def equivalence = new Equivalence[LogValidate, WriterT[Validate, Vector[L], ?]] {
       override def get[A](t: LogValidate[A]): WriterT[Validate, Vector[L], A] = t.writer
-
       override def build[A](m: WriterT[Validate, Vector[L], A]): LogValidate[A] = LogValidate(m)
     }
 
@@ -109,7 +110,6 @@ trait Puzzle[S, L, E] {
 
     implicit def equivalence = new Equivalence[Step, InnerStep] {
       override def get[A](t: Step[A]): InnerStep[A] = t.s
-
       override def build[A](m: InnerStep[A]): Step[A] = Step(m)
     }
 
